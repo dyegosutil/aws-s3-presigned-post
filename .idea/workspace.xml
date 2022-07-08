@@ -5,12 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ca9dbd5d-6266-4877-b070-fdeedeb0c9ad" name="Changes" comment="initial version">
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mendes/sutil/dyego/awspresignedpost/AwsSigner.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mendes/sutil/dyego/awspresignedpost/PostRequestData.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mendes/sutil/dyego/awspresignedpost/PresignedPost.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mendes/sutil/dyego/awspresignedpost/S3PostSigner.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/mendes/sutil/dyego/awspresignedpost/MainTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/mendes/sutil/dyego/awspresignedpost/PostRequestData.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/mendes/sutil/dyego/awspresignedpost/PostParams.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/mendes/sutil/dyego/awspresignedpost/PresignedPost.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/mendes/sutil/dyego/awspresignedpost/PresignedPost.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/mendes/sutil/dyego/awspresignedpost/S3PostSigner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/mendes/sutil/dyego/awspresignedpost/S3PostSigner.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/mendes/sutil/dyego/awspresignedpost/MainTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/mendes/sutil/dyego/awspresignedpost/MainTest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -53,6 +57,13 @@
       </state>
     </system>
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
@@ -65,18 +76,19 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "last_opened_file_path": "/Users/dyego/IdeaProjects/aws-s3-presigned-post",
-    "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "Modules",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.2"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/dyego/IdeaProjects/aws-s3-presigned-post&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/src/test/java" />
@@ -169,7 +181,8 @@
       <option name="presentableId" value="Default" />
       <updated>1657221309642</updated>
       <workItem from="1657221314889" duration="18000" />
-      <workItem from="1657221651508" duration="2380000" />
+      <workItem from="1657221651508" duration="6163000" />
+      <workItem from="1657276046431" duration="2899000" />
     </task>
     <task id="LOCAL-00001" summary="initial version">
       <created>1657223578619</created>
@@ -178,7 +191,14 @@
       <option name="project" value="LOCAL" />
       <updated>1657223578619</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="initial version">
+      <created>1657232355296</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1657232355296</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -203,19 +223,9 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/mendes/sutil/dyego/awspresignedpost/PostRequestData.java</url>
-          <line>33</line>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/test/java/mendes/sutil/dyego/awspresignedpost/MainTest.java</url>
-          <line>15</line>
+          <line>13</line>
           <option name="timeStamp" value="2" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/test/java/mendes/sutil/dyego/awspresignedpost/MainTest.java</url>
-          <line>12</line>
-          <option name="timeStamp" value="3" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

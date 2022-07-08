@@ -3,6 +3,7 @@ val jupiterVersion = "5.8.2"
 plugins {
     id("java")
     idea
+    id("io.freefair.lombok") version "6.5.0.2"
 }
 
 group = "org.example"

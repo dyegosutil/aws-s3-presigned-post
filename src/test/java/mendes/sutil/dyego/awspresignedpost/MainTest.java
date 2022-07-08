@@ -9,11 +9,9 @@ class MainTest {
 
     @Test
     public void test() {
-
-        System.out.println();
         //        createPresignedPost
         //                PresignedPost.buider().withRegion(Region.EU_CENTRAL_1).build()
-        PostRequestData postRequestData = PostRequestData
+        PostParams postParams = PostParams
                 .builder()
                 .withKey("test_pre_signed_post.txt")
                 .withRegion(Region.EU_CENTRAL_1)
@@ -26,7 +24,7 @@ class MainTest {
 
 
         StaticCredentialsProvider credentialsProvider = StaticCredentialsProvider.create(AwsSessionCredentials.create("test", "test", ""));
-        new S3PostSigner(credentialsProvider).createPresignedPost(postRequestData);
+        new S3PostSigner(credentialsProvider).createPresignedPost(postParams);
         assert true;
     }
 

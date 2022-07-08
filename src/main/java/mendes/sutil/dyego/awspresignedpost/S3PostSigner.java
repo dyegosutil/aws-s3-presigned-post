@@ -1,29 +1,41 @@
 package mendes.sutil.dyego.awspresignedpost;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import software.amazon.awssdk.auth.credentials.AwsCredentials;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
-import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 
 public class S3PostSigner {
 
     private final AwsCredentials awsCredentials;
 
-    S3PostSigner(AwsCredentialsProvider provider){
+    S3PostSigner(AwsCredentialsProvider provider) {
         this.awsCredentials = Objects.requireNonNull(
                 provider.resolveCredentials(),
                 "AwsCredentialsProvider must provide non-null AwsCredentials"
         );
     }
 
-    public void createPresignedPost(PostRequestData request) {
+    public void createPresignedPost(PostParams request) {
+        final List<String[]> result = new ArrayList<>();
+
+        request.getConditions().forEach(condition -> {
+            if (condition.getConditionField() == PostParams.ConditionField.KEY) {
+                result.add(new String[]{
+                        condition.getConditionField().name(),
+                        condition.getConditionMatch().name(),
+                        condition.getValue()
+                });
+                // $key "eq" kyc_zip
+            }
 //        val bucket = s3Properties.kycZipBucket
 //        val key = "${personId.value}/$verificationId/kyc.zip"
 //        val region = Region.EU_CENTRAL_1
 //        val date = ZonedDateTime.now(clock)
 //        String credentialsField = AwsSigner.buildCredentialField(awsCredentials, region, date)
-        String credentialsField = "";
+            String credentialsField = "";
 
 
 //        val policy = Policy(
@@ -61,10 +73,11 @@ public class S3PostSigner {
 //                date = AMZ_DATE_FORMATTER.format(date),
 //                policy = policyB64
 //        )
-    }
+        });
 
-    //    public S3PostSigner(AwsCredentialsProvider credentialsProvider) {
+        //    public S3PostSigner(AwsCredentialsProvider credentialsProvider) {
 //        mCredentialsProvider = credentialsProvider;
 //    }
 
+    }
 }
