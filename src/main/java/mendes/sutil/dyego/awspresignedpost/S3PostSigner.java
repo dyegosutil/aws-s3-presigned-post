@@ -18,10 +18,15 @@ public class S3PostSigner {
         );
     }
 
-    public void createPresignedPost(PostParams request) {
+    public PresignedPost createPresignedPost(PostParams postParams) {
+        String bucket = postParams.getBucket();
+        String region = postParams.getRegion().id();
+        String url = "https://"+bucket+".s3."+region+".amazonaws.com";
+
         final List<String[]> result = new ArrayList<>();
 
-        request.getConditions().forEach(condition -> {
+        // double check it is continuing; after one condition
+        postParams.getConditions().forEach(condition -> {
             if (condition.getConditionField() == PostParams.ConditionField.KEY) {
                 result.add(new String[]{
                         condition.getConditionField().name(),
@@ -29,6 +34,10 @@ public class S3PostSigner {
                         condition.getValue()
                 });
                 // $key "eq" kyc_zip
+            }
+
+            if(condition.getConditionField() == PostParams.ConditionField.KEY) {
+
             }
 //        val bucket = s3Properties.kycZipBucket
 //        val key = "${personId.value}/$verificationId/kyc.zip"
@@ -75,9 +84,13 @@ public class S3PostSigner {
 //        )
         });
 
+
+
         //    public S3PostSigner(AwsCredentialsProvider credentialsProvider) {
 //        mCredentialsProvider = credentialsProvider;
 //    }
 
+        PresignedPost presignedPost = new PresignedPost(url);
+        return presignedPost;
     }
 }

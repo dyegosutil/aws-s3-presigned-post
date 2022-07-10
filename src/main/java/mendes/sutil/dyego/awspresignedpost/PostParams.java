@@ -21,12 +21,18 @@ public final class PostParams {
     // TODO which fields are alwyas going to be there?
     // TODO Double check if key is really mandatory, if it goes in the signature. If the file can be uploaded without
     //  having key in the signature
+    private final String bucket;
+    private Region region;
     private final List<Condition> conditions; // $key
 
     private PostParams(
+            String bucket,
+            Region region,
             List<Condition> conditions
 //            String key // TODO is key mandatory?
     ){
+        this.bucket = bucket;
+        this.region = region;
         this.conditions = conditions;
     }
 
@@ -75,15 +81,16 @@ public final class PostParams {
 
         private List<Condition> condition = new ArrayList<>();
 
+        private String bucket;
         private Region region;
-        private String key;
+//        private String key;
 
         private Builder(){}
 
         public PostParams build(){
             // TODO Identify mandatory fields and prevent building it if they are missing?
             // TODO Make sure it is build only if it will work and nothing is missing - if possible
-            return new PostParams(condition);
+            return new PostParams(bucket, region, condition);
         }
 
         public Builder withKey(String keyValue) {
@@ -98,6 +105,11 @@ public final class PostParams {
 
         public Builder withRegion(Region region) {
             this.region = region;
+            return this;
+        }
+
+        public Builder withBucket(String bucket) {
+            this.bucket = bucket; // TODO double check but I dont think this has to be added in the policy since it is already in the url
             return this;
         }
     }
