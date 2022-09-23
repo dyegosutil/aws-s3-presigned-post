@@ -1,0 +1,10 @@
+# Gradle
+build/
+.gradle/
+
+.idea
+
+# Avoid ignoring Gradle wrapper jar file
+!gradle-wrapper.jar
+
+logs/
