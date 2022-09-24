@@ -14,9 +14,11 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 
-@Disabled
+import static org.assertj.core.api.Assertions.assertThat;
+
 class IntegrationTest {
 
+    @Disabled
     @Test
     public void test() {
         ZonedDateTime expirationDate = Instant.now(Clock.systemDefaultZone()) // TODO check if clock should be a parameter, check documentation to see how expiration time should be received, check what would happen if different zoneids are used for expiration aand for date in the policy
@@ -24,9 +26,8 @@ class IntegrationTest {
                 .atZone(ZoneId.systemDefault());
 
         PostParams postParams = PostParams
-                .builder(expirationDate) // TODO pass mandatory paramters here?
+                .builder(Region.EU_CENTRAL_1, expirationDate) // TODO pass mandatory paramters here?
                 .withKey("pira2.txt")
-                .withRegion(Region.EU_CENTRAL_1)
                 .withBucket("dyegosutil") // TODO double check what is mandatory
                 //                                        .withExpiration(getTwoDaysInTheFuture())
                 //                                        .withToken
@@ -38,22 +39,24 @@ class IntegrationTest {
         PresignedPost presignedPost = new S3PostSigner(credentialsProvider).create(postParams);
         System.out.println(presignedPost);
 
+        Boolean wasUploadSuccessful = false;
         try {
-            uploadToAws(presignedPost);
+            wasUploadSuccessful =  uploadToAws(presignedPost);
         } catch (Exception e) {
             e.printStackTrace();
-            assert false;
         }
-        assert true;
+        assertThat(wasUploadSuccessful).isTrue();
     }
 
     /**
      * TODO Change to a better http client since okhttp does not give as much information as postman when a 400 happens.
      * If errors happens here, better debug with postman
+     *
      * @param presignedPost
+     * @return
      * @throws IOException In case the upload is not successful
      */
-    private void uploadToAws(PresignedPost presignedPost) throws IOException {
+    private boolean uploadToAws(PresignedPost presignedPost) throws IOException {
         final OkHttpClient client = new OkHttpClient();
         String fileContent = "this is a testdy";
 
@@ -72,6 +75,8 @@ class IntegrationTest {
         try (Response response = client.newCall(request).execute()) {
             if (!response.isSuccessful()){
                 throw new IOException("Unexpected code " + response + response.message());
+            } else {
+                return true;
             }
         }
     }
