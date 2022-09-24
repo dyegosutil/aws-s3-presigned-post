@@ -2,6 +2,8 @@ package mendes.sutil.dyego.awspresignedpost;
 
 import lombok.Getter;
 import lombok.Setter;
+import mendes.sutil.dyego.awspresignedpost.domain.conditions.ExactKeyCondition;
+import mendes.sutil.dyego.awspresignedpost.domain.conditions.KeyCondition;
 import software.amazon.awssdk.regions.Region;
 
 import java.time.ZonedDateTime;
@@ -9,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static mendes.sutil.dyego.awspresignedpost.PostParams.ConditionMatch.EQ;
-import static mendes.sutil.dyego.awspresignedpost.PostParams.ConditionMatch.STARTS_WITH;
 
 /**
  * A pre-signed POST request that can be executed at a later time without requiring additional signing or
@@ -46,10 +47,11 @@ public final class PostParams {
      *
      * @param region Region to be used in the signature
      * @param expirationDate Date until when the pre-signed post can be used.
+     * @param keyCondition TODO You can use the ConditionHelper to provide the values
      * @return A PostParams builder
      */
-    public static Builder builder(Region region, ZonedDateTime expirationDate){
-        return new Builder(region, expirationDate);
+    public static Builder builder(Region region, ZonedDateTime expirationDate, KeyCondition keyCondition){
+        return new Builder(region, expirationDate, keyCondition);
     }
 
     enum ConditionMatch{
@@ -88,6 +90,8 @@ public final class PostParams {
             this.conditionMatch = conditionMatch;
             this.value = value;
         }
+
+        // TODO Remove?
         public static Condition create(ConditionField conditionField, ConditionMatch conditionMatch, String value) {
             return new Condition(
                     conditionField,
@@ -99,7 +103,7 @@ public final class PostParams {
 
     public static final class Builder {
 
-        private final List<Condition> condition = new ArrayList<>();
+        private final List<Condition> conditions = new ArrayList<>();
 
         private String bucket;
         private Region region;
@@ -107,26 +111,42 @@ public final class PostParams {
 
         private ZonedDateTime expirationDate;
 
-        private Builder(Region region, ZonedDateTime expirationDate) {
+        private Builder(Region region, ZonedDateTime expirationDate, KeyCondition keyCondition) {
             this.region = region;
             this.expirationDate = expirationDate;
+            addKeyCondition(keyCondition);
+        }
+
+        /**
+         * Adds the correspondent conditions according to the {@link KeyCondition} implementation used
+         * @param keyCondition A implementation of {@link KeyCondition} to be used to add the condition
+         */
+        private void addKeyCondition(KeyCondition keyCondition) {
+            if (keyCondition instanceof ExactKeyCondition exactKeyCondition) {
+                this.conditions.add(
+                        new Condition(ConditionField.KEY, EQ, exactKeyCondition.getValue())
+                );
+                return;
+            }
+
+            throw new IllegalArgumentException("This instance of KeyCondition with value "+keyCondition.getValue()+" in unknown");
         }
 
         public PostParams build(){
             // TODO Identify mandatory fields and prevent building it if they are missing?
             // TODO Make sure it is build only if it will work and nothing is missing - if possible
-            return new PostParams(bucket, region, expirationDate, condition);
+            return new PostParams(bucket, region, expirationDate, conditions);
         }
 
         public Builder withKey(String keyValue) {
-            this.condition.add(new Condition(ConditionField.KEY, EQ, keyValue));
+            this.conditions.add(new Condition(ConditionField.KEY, EQ, keyValue));
             return this;
         }
 
-        public Builder withKeyStartingWith(String keyStartingWith) {
-            this.condition.add(new Condition(ConditionField.KEY, STARTS_WITH, keyStartingWith));
-            return this;
-        }
+//        public Builder withKeyStartingWith(String keyStartingWith) {
+//            this.condition.add(new Condition(ConditionField.KEY, STARTS_WITH, keyStartingWith));
+//            return this;
+//        }
 
         public Builder withExpirationDate(ZonedDateTime expirationDate) {
             this.expirationDate = expirationDate;
@@ -134,7 +154,7 @@ public final class PostParams {
         }
 
         public Builder withBucket(String bucket) {
-            this.condition.add(new Condition(ConditionField.BUCKET, EQ, bucket));
+            this.conditions.add(new Condition(ConditionField.BUCKET, EQ, bucket));
             this.bucket = bucket; // TODO double check but I dont think this has to be added in the policy since it is already in the url
             return this;
         }

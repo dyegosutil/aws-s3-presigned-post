@@ -1,7 +1,6 @@
 package mendes.sutil.dyego.awspresignedpost;
 
 import okhttp3.*;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
@@ -14,6 +13,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 
+import static mendes.sutil.dyego.awspresignedpost.domain.conditions.KeyConditionHelper.withKey;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class IntegrationTest {
@@ -26,8 +26,7 @@ class IntegrationTest {
                 .atZone(ZoneId.systemDefault());
 
         PostParams postParams = PostParams
-                .builder(Region.EU_CENTRAL_1, expirationDate) // TODO pass mandatory paramters here?
-                .withKey("pira2.txt")
+                .builder(Region.EU_CENTRAL_1, expirationDate, withKey("test.txt")) // TODO pass mandatory paramters here?
                 .withBucket("dyegosutil") // TODO double check what is mandatory
                 //                                        .withExpiration(getTwoDaysInTheFuture())
                 //                                        .withToken
@@ -41,7 +40,7 @@ class IntegrationTest {
 
         Boolean wasUploadSuccessful = false;
         try {
-            wasUploadSuccessful =  uploadToAws(presignedPost);
+            wasUploadSuccessful = uploadToAws(presignedPost);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -63,7 +62,7 @@ class IntegrationTest {
         RequestBody formBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart(presignedPost.getAlgorithm().getKey(), presignedPost.getAlgorithm().getValue())
-                .addFormDataPart("key", "pira2.txt")
+                .addFormDataPart("key", "${filename}")
                 .addFormDataPart(presignedPost.getCredential().getKey(), presignedPost.getCredential().getValue())
                 .addFormDataPart(presignedPost.getXAmzSignature().getKey(), presignedPost.getXAmzSignature().getValue()) // TODO fix this
                 .addFormDataPart(presignedPost.getDate().getKey(), presignedPost.getDate().getValue())
