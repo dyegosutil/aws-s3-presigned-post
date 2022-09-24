@@ -1,17 +1,21 @@
 package mendes.sutil.dyego.awspresignedpost;
 
+import okhttp3.*;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 
+import java.io.IOException;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 
-class MainTest {
+@Disabled
+class IntegrationTest {
 
     @Test
     public void test() {
@@ -33,7 +37,42 @@ class MainTest {
 
         PresignedPost presignedPost = new S3PostSigner(credentialsProvider).create(postParams);
         System.out.println(presignedPost);
+
+        try {
+            uploadToAws(presignedPost);
+        } catch (Exception e) {
+            e.printStackTrace();
+            assert false;
+        }
         assert true;
     }
 
+    /**
+     * TODO Change to a better http client since okhttp does not give as much information as postman when a 400 happens.
+     * If errors happens here, better debug with postman
+     * @param presignedPost
+     * @throws IOException In case the upload is not successful
+     */
+    private void uploadToAws(PresignedPost presignedPost) throws IOException {
+        final OkHttpClient client = new OkHttpClient();
+        String fileContent = "this is a testdy";
+
+        RequestBody formBody = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart(presignedPost.getAlgorithm().getKey(), presignedPost.getAlgorithm().getValue())
+                .addFormDataPart("key", "pira2.txt")
+                .addFormDataPart(presignedPost.getCredential().getKey(), presignedPost.getCredential().getValue())
+                .addFormDataPart(presignedPost.getXAmzSignature().getKey(), presignedPost.getXAmzSignature().getValue()) // TODO fix this
+                .addFormDataPart(presignedPost.getDate().getKey(), presignedPost.getDate().getValue())
+                .addFormDataPart(presignedPost.getPolicy().getKey(), presignedPost.getPolicy().getValue())
+                .addFormDataPart("file", "test.txt", RequestBody.create(fileContent.getBytes(), MediaType.parse("text/plain")))
+                .build();
+
+        Request request = new Request.Builder().url(presignedPost.getUrl()).post(formBody).build();
+        try (Response response = client.newCall(request).execute()) {
+            if (!response.isSuccessful()){
+                throw new IOException("Unexpected code " + response + response.message());
+            }
+        }
+    }
 }

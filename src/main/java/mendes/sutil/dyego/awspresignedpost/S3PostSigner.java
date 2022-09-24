@@ -1,23 +1,18 @@
 package mendes.sutil.dyego.awspresignedpost;
 
 import java.nio.charset.StandardCharsets;
-import java.time.Clock;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import com.google.gson.Gson;
 import com.google.gson.annotations.Expose;
+import mendes.sutil.dyego.awspresignedpost.domain.AmzDate;
 import software.amazon.awssdk.auth.credentials.AwsCredentials;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 
 import static mendes.sutil.dyego.awspresignedpost.PostParams.ConditionField.*;
 
 public class S3PostSigner {
-
-    private static final DateTimeFormatter AMZ_DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss'Z'", Locale.ENGLISH)
-            .withZone(ZoneOffset.UTC);
     private final AwsCredentials awsCredentials;
 
     S3PostSigner(AwsCredentialsProvider provider) {
@@ -28,21 +23,18 @@ public class S3PostSigner {
     }
 
     public PresignedPost create(PostParams postParams) {
-        Clock clock = Clock.systemDefaultZone();
-        ZonedDateTime date = ZonedDateTime.now(clock);
+        AmzDate amzDate = new AmzDate();
 
         String bucket = postParams.getBucket();
         String region = postParams.getRegion().id();
         String url = "https://"+bucket+".s3."+region+".amazonaws.com";
-        String credentials = AwsSigner.buildCredentialField(awsCredentials, postParams.getRegion(), date);
-
-        buildConditions(postParams.getConditions(), date, credentials);
+        String credentials = AwsSigner.buildCredentialField(awsCredentials, postParams.getRegion(), amzDate);
 
         Policy policy = new Policy(
                DateTimeFormatter.ISO_INSTANT.format(postParams.getExpirationDate()),
                 buildConditions(
                         postParams.getConditions(),
-                        date,
+                        amzDate,
                         credentials
                 )
         );
@@ -54,14 +46,14 @@ public class S3PostSigner {
                         AwsSigner.generateSigningKey(
                                 awsCredentials.secretAccessKey(),
                                 postParams.getRegion(),
-                                date
+                                amzDate
                         ),
                         policyB64.getBytes(StandardCharsets.UTF_8)
                 )
         );
 
         return new PresignedPost(
-                url,credentials, AMZ_DATE_FORMATTER.format(date), signature, policyB64, "AWS4-HMAC-SHA256"
+                url,credentials, amzDate.formatForPolicy(), signature, policyB64, "AWS4-HMAC-SHA256"
         );
     }
 
@@ -101,7 +93,7 @@ public class S3PostSigner {
 
     private List<String[]> buildConditions(
             List<PostParams.Condition> conditions,
-            ZonedDateTime date,
+            AmzDate xAmzDate,
             String credentials) { //TODO Two conditions? find a better name
         final List<String[]> result = new ArrayList<>();
 
@@ -123,7 +115,7 @@ public class S3PostSigner {
         });
 
         result.add(new String[]{"eq", ALGORITHM.name, "AWS4-HMAC-SHA256"});
-        result.add(new String[]{"eq", DATE.name, AMZ_DATE_FORMATTER.format(date)});
+        result.add(new String[]{"eq", DATE.name, xAmzDate.formatForPolicy()});
         result.add(new String[]{"eq", CREDENTIAL.name, credentials});
 
         return result;
