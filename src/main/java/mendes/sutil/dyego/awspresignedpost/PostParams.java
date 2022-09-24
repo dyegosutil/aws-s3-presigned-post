@@ -41,8 +41,15 @@ public final class PostParams {
         this.conditions = conditions;
     }
 
-    public static Builder builder(ZonedDateTime expirationDate){
-        return new Builder(expirationDate);
+    /**
+     * Accepts all the minimum params necessary to generate a pre-signed post return a builder for PostParams // TODO fix javadoc
+     *
+     * @param region Region to be used in the signature
+     * @param expirationDate Date until when the pre-signed post can be used.
+     * @return A PostParams builder
+     */
+    public static Builder builder(Region region, ZonedDateTime expirationDate){
+        return new Builder(region, expirationDate);
     }
 
     enum ConditionMatch{
@@ -99,7 +106,9 @@ public final class PostParams {
 //        private String key;
 
         private ZonedDateTime expirationDate;
-        private Builder(ZonedDateTime expirationDate){
+
+        private Builder(Region region, ZonedDateTime expirationDate) {
+            this.region = region;
             this.expirationDate = expirationDate;
         }
 
@@ -121,11 +130,6 @@ public final class PostParams {
 
         public Builder withExpirationDate(ZonedDateTime expirationDate) {
             this.expirationDate = expirationDate;
-            return this;
-        }
-
-        public Builder withRegion(Region region) {
-            this.region = region;
             return this;
         }
 
