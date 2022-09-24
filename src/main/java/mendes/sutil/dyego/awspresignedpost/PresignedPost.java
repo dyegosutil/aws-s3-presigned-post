@@ -12,7 +12,7 @@ public class PresignedPost {
     private String url; //"https://$bucket.s3.eu-central-1.amazonaws.com", //         https://dev-de.fourthline-zip-upload.scalable.s3.eu-central-1.amazonaws.com"
     private Pair algorithm; // "AWS4-HMAC-SHA256";
     private Pair credential; // credentialsField;
-    private Pair xAmzSignature;
+    private Pair xAmzSignature; // TODO Find a patter for all of them, putting the x in front or not
     private Pair date; // AMZ_DATE_FORMATTER.format(date),
     private Pair policy; // policyB64
     private Pair key;
@@ -32,19 +32,11 @@ public class PresignedPost {
             super(key, value);
         }
 
-        /**
-         * TODO
-         * @return
-         */
         @Override
         public String getKey() {
             return super.getKey();
         }
 
-        /**
-         * TODO
-         * @return
-         */
         @Override
         public String getValue() {
             return super.getValue();
