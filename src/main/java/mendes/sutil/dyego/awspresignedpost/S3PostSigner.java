@@ -7,11 +7,11 @@ import java.util.*;
 import com.google.gson.Gson;
 import com.google.gson.annotations.Expose;
 import mendes.sutil.dyego.awspresignedpost.domain.AmzDate;
-import mendes.sutil.dyego.awspresignedpost.domain.Condition;
+import mendes.sutil.dyego.awspresignedpost.domain.conditions.Condition;
 import software.amazon.awssdk.auth.credentials.AwsCredentials;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 
-import static mendes.sutil.dyego.awspresignedpost.domain.Condition.ConditionField.*;
+import static mendes.sutil.dyego.awspresignedpost.domain.conditions.Condition.ConditionField.*;
 
 public class S3PostSigner {
     private final AwsCredentials awsCredentials;
