@@ -1,16 +1,15 @@
 package mendes.sutil.dyego.awspresignedpost;
 
 import lombok.Getter;
-import mendes.sutil.dyego.awspresignedpost.domain.Condition;
-import mendes.sutil.dyego.awspresignedpost.domain.conditions.ExactKeyCondition;
-import mendes.sutil.dyego.awspresignedpost.domain.conditions.KeyCondition;
+import mendes.sutil.dyego.awspresignedpost.domain.conditions.Condition;
+import mendes.sutil.dyego.awspresignedpost.domain.conditions.key.KeyCondition;
 import software.amazon.awssdk.regions.Region;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static mendes.sutil.dyego.awspresignedpost.domain.Condition.ConditionMatch.EQ;
+import static mendes.sutil.dyego.awspresignedpost.domain.conditions.Condition.ConditionMatch.EQ;
 
 /**
  * A pre-signed POST request that can be executed at a later time without requiring additional signing or
@@ -72,7 +71,7 @@ public final class PostParams {
             // TODO add validation for expiration date?
             this.region = region;
             this.expirationDate = expirationDate;
-            keyCondition.addItselfTo(conditions); // TODO see to refactor this to have only 1 condiiton class and not two
+            conditions.add(keyCondition);
             this.conditions.add(new Condition(Condition.ConditionField.BUCKET, EQ, bucket));
             this.bucket = bucket;
         }

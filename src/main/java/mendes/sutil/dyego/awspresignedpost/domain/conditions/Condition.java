@@ -1,9 +1,19 @@
-package mendes.sutil.dyego.awspresignedpost.domain;
+package mendes.sutil.dyego.awspresignedpost.domain.conditions;
 
+/**
+ * Uses to specify in which circumstances the upload to s3 should be accepted
+ */
 public class Condition {
     private ConditionField conditionField;
     private ConditionMatch conditionMatch;
     private String value;
+
+    // TODO use lombok
+    public Condition(ConditionField conditionField, ConditionMatch conditionMatch, String value) {
+        this.conditionField = conditionField;
+        this.conditionMatch = conditionMatch;
+        this.value = value;
+    }
 
     public ConditionField getConditionField() {
         return conditionField;
@@ -26,13 +36,6 @@ public class Condition {
     }
 
     public void setValue(String value) {
-        this.value = value;
-    }
-
-    // TODO use lombok
-    public Condition(ConditionField conditionField, ConditionMatch conditionMatch, String value) {
-        this.conditionField = conditionField;
-        this.conditionMatch = conditionMatch;
         this.value = value;
     }
 
