@@ -1,7 +1,6 @@
 package mendes.sutil.dyego.awspresignedpost;
 
 import java.nio.charset.StandardCharsets;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import com.google.gson.Gson;
@@ -13,7 +12,7 @@ import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 
 import static mendes.sutil.dyego.awspresignedpost.domain.conditions.Condition.ConditionField.*;
 
-public class S3PostSigner {
+public class S3PostSigner { // TODO rename?
     private final AwsCredentials awsCredentials;
 
     S3PostSigner(AwsCredentialsProvider provider) {
@@ -32,7 +31,7 @@ public class S3PostSigner {
         String credentials = AwsSigner.buildCredentialField(awsCredentials, postParams.getRegion(), amzDate);
 
         Policy policy = new Policy(
-               DateTimeFormatter.ISO_INSTANT.format(postParams.getExpirationDate()),
+                postParams.getAmzExpirationDate().formatForPolicy(),
                 buildConditions(
                         postParams.getConditions(),
                         amzDate,
