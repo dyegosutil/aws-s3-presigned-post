@@ -7,10 +7,11 @@ import java.util.*;
 import com.google.gson.Gson;
 import com.google.gson.annotations.Expose;
 import mendes.sutil.dyego.awspresignedpost.domain.AmzDate;
+import mendes.sutil.dyego.awspresignedpost.domain.Condition;
 import software.amazon.awssdk.auth.credentials.AwsCredentials;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 
-import static mendes.sutil.dyego.awspresignedpost.PostParams.ConditionField.*;
+import static mendes.sutil.dyego.awspresignedpost.domain.Condition.ConditionField.*;
 
 public class S3PostSigner {
     private final AwsCredentials awsCredentials;
@@ -92,7 +93,7 @@ public class S3PostSigner {
 
 
     private List<String[]> buildConditions(
-            List<PostParams.Condition> conditions,
+            List<Condition> conditions,
             AmzDate xAmzDate,
             String credentials) { //TODO Two conditions? find a better name
         final List<String[]> result = new ArrayList<>();

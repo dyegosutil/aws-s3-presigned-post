@@ -1,7 +1,7 @@
 package mendes.sutil.dyego.awspresignedpost;
 
 import lombok.Getter;
-import lombok.Setter;
+import mendes.sutil.dyego.awspresignedpost.domain.Condition;
 import mendes.sutil.dyego.awspresignedpost.domain.conditions.ExactKeyCondition;
 import mendes.sutil.dyego.awspresignedpost.domain.conditions.KeyCondition;
 import software.amazon.awssdk.regions.Region;
@@ -10,7 +10,7 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static mendes.sutil.dyego.awspresignedpost.PostParams.ConditionMatch.EQ;
+import static mendes.sutil.dyego.awspresignedpost.domain.Condition.ConditionMatch.EQ;
 
 /**
  * A pre-signed POST request that can be executed at a later time without requiring additional signing or
@@ -50,55 +50,12 @@ public final class PostParams {
      * @param keyCondition TODO You can use the ConditionHelper to provide the values
      * @return A PostParams builder
      */
-    public static Builder builder(Region region, ZonedDateTime expirationDate, KeyCondition keyCondition){
-        return new Builder(region, expirationDate, keyCondition);
-    }
-
-    enum ConditionMatch{
-        EQ,
-        STARTS_WITH
-    }
-
-    enum ConditionField { // TODO move it
-        KEY("$key"), // TODO confirm if the fields should have $ or not depending on the condition.
-        SUCCESS_ACTION_STATUS("$success_action_status"), // TODO Confirm if this is correct.
-        ALGORITHM("$x-amz-algorithm"),
-        CREDENTIAL("$x-amz-credential"),
-        CONTENT_TYPE(""),
-        CONTENT_ENCODING(""),
-        CONTENT_DISPOSITION(""),
-        SUCCESS_ACTION_REDIRECT(""),
-        ACL(""),
-        DATE("$x-amz-date"), // confirm all these fields to see which condition matching they accept.
-        BUCKET("");
-        public final String name;
-
-        ConditionField(String name) {
-            this.name = name;
-        }
-    }
-
-    @Getter @Setter
-    static class Condition {
-        private ConditionField conditionField;
-        private ConditionMatch conditionMatch;
-        private String value;
-
-        // TODO use lombok
-        private Condition(ConditionField conditionField, ConditionMatch conditionMatch, String value) {
-            this.conditionField = conditionField;
-            this.conditionMatch = conditionMatch;
-            this.value = value;
-        }
-
-        // TODO Remove?
-        public static Condition create(ConditionField conditionField, ConditionMatch conditionMatch, String value) {
-            return new Condition(
-                    conditionField,
-                    conditionMatch,
-                    value
-            );
-        }
+    public static Builder builder(
+            Region region,
+            ZonedDateTime expirationDate,
+            KeyCondition keyCondition,
+            String bucket){
+        return new Builder(region, expirationDate, keyCondition, bucket);
     }
 
     public static final class Builder {
@@ -111,25 +68,13 @@ public final class PostParams {
 
         private ZonedDateTime expirationDate;
 
-        private Builder(Region region, ZonedDateTime expirationDate, KeyCondition keyCondition) {
+        private Builder(Region region, ZonedDateTime expirationDate, KeyCondition keyCondition, String bucket) {
+            // TODO add validation for expiration date?
             this.region = region;
             this.expirationDate = expirationDate;
-            addKeyCondition(keyCondition);
-        }
-
-        /**
-         * Adds the correspondent conditions according to the {@link KeyCondition} implementation used
-         * @param keyCondition A implementation of {@link KeyCondition} to be used to add the condition
-         */
-        private void addKeyCondition(KeyCondition keyCondition) {
-            if (keyCondition instanceof ExactKeyCondition exactKeyCondition) {
-                this.conditions.add(
-                        new Condition(ConditionField.KEY, EQ, exactKeyCondition.getValue())
-                );
-                return;
-            }
-
-            throw new IllegalArgumentException("This instance of KeyCondition with value "+keyCondition.getValue()+" in unknown");
+            keyCondition.addItselfTo(conditions); // TODO see to refactor this to have only 1 condiiton class and not two
+            this.conditions.add(new Condition(Condition.ConditionField.BUCKET, EQ, bucket));
+            this.bucket = bucket;
         }
 
         public PostParams build(){
@@ -138,24 +83,14 @@ public final class PostParams {
             return new PostParams(bucket, region, expirationDate, conditions);
         }
 
-        public Builder withKey(String keyValue) {
-            this.conditions.add(new Condition(ConditionField.KEY, EQ, keyValue));
-            return this;
-        }
-
 //        public Builder withKeyStartingWith(String keyStartingWith) {
 //            this.condition.add(new Condition(ConditionField.KEY, STARTS_WITH, keyStartingWith));
 //            return this;
 //        }
 
-        public Builder withExpirationDate(ZonedDateTime expirationDate) {
-            this.expirationDate = expirationDate;
-            return this;
-        }
-
         public Builder withBucket(String bucket) {
-            this.conditions.add(new Condition(ConditionField.BUCKET, EQ, bucket));
-            this.bucket = bucket; // TODO double check but I dont think this has to be added in the policy since it is already in the url
+            this.conditions.add(new Condition(Condition.ConditionField.BUCKET, EQ, bucket));
+            this.bucket = bucket;
             return this;
         }
     }

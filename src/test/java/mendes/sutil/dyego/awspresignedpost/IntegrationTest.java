@@ -13,7 +13,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 
-import static mendes.sutil.dyego.awspresignedpost.domain.conditions.KeyConditionHelper.withKey;
+import static mendes.sutil.dyego.awspresignedpost.domain.conditions.helper.KeyConditionHelper.withKey;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class IntegrationTest {
@@ -26,8 +26,12 @@ class IntegrationTest {
                 .atZone(ZoneId.systemDefault());
 
         PostParams postParams = PostParams
-                .builder(Region.EU_CENTRAL_1, expirationDate, withKey("test.txt")) // TODO pass mandatory paramters here?
-                .withBucket("dyegosutil") // TODO double check what is mandatory
+                .builder(
+                        Region.EU_CENTRAL_1,
+                        expirationDate,
+                        withKey("test.txt"),
+                        "dyegosutil"
+                )
                 //                                        .withExpiration(getTwoDaysInTheFuture())
                 //                                        .withToken
                 //                                        ("FwoGZXIvYXdzEAMaDJnjMcCzZ05MxE5udCKzAd8acj8V3dKJfJbtEASA07VbfGfsSsd5MXSC4PnsBr8q4VXbseNaV6IXIeAknFF0w4+Vcy/2q2krRqxXYhaQBKrTqj0f/622MlaS+DCQc6rJm0JxG9p0Ws3ftDWC89Nm85bRoFmNucBpVIr1eakuzFknTIqtm5PuLlYiis6ybiTRrUQ8kXmEjy8u5BjSORKScjMVy5WQmcfcxTIodyonRVbyGr6tJo4URs7Iu2CKJL6LQgURKJOa8pUGMi0Hcs2nE/IEApn7izSTyUmgfTgzNcGJsTbBeeJHM49RNOaCcI8IVkRlZlJFE28=")
@@ -62,7 +66,7 @@ class IntegrationTest {
         RequestBody formBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart(presignedPost.getAlgorithm().getKey(), presignedPost.getAlgorithm().getValue())
-                .addFormDataPart("key", "${filename}")
+                .addFormDataPart("key", "test.txt")
                 .addFormDataPart(presignedPost.getCredential().getKey(), presignedPost.getCredential().getValue())
                 .addFormDataPart(presignedPost.getXAmzSignature().getKey(), presignedPost.getXAmzSignature().getValue()) // TODO fix this
                 .addFormDataPart(presignedPost.getDate().getKey(), presignedPost.getDate().getValue())

@@ -2,7 +2,7 @@ package mendes.sutil.dyego.awspresignedpost.domain.conditions;
 
 import org.junit.jupiter.api.Test;
 
-import static mendes.sutil.dyego.awspresignedpost.domain.conditions.KeyConditionHelper.withKey;
+import static mendes.sutil.dyego.awspresignedpost.domain.conditions.helper.KeyConditionHelper.withKey;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class KeyConditionHelperTest {
