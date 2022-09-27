@@ -100,8 +100,8 @@ public class S3PostSigner { // TODO rename?
         // double check it is continuing; after one condition
         conditions.forEach(condition -> {
             switch (condition.getConditionField()) {
-                case KEY -> result.add(new String[]{   // TODO Should key be on the policy? see if not adding it here will work fine or not
-                        "eq",
+                case KEY -> result.add(new String[]{
+                        condition.getConditionMatch().toString(),
                         "$key",
                         condition.getValue()
                 });

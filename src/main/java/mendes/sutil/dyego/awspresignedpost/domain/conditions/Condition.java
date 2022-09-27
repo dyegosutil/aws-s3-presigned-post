@@ -59,7 +59,18 @@ public class Condition {
     }
 
     public enum ConditionMatch{
-        EQ,
-        STARTS_WITH
+        EQ("eq"),
+        STARTS_WITH("starts-with");
+
+        private final String value;
+
+        ConditionMatch(String value) {
+            this.value = value;
+        }
+
+        @Override
+        public String toString() {
+            return this.value;
+        }
     }
 }

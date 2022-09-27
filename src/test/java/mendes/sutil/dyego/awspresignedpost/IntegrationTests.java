@@ -4,6 +4,8 @@ import mendes.sutil.dyego.awspresignedpost.domain.conditions.key.KeyCondition;
 import okhttp3.*;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
+
+import static mendes.sutil.dyego.awspresignedpost.domain.conditions.helper.KeyConditionHelper.*;
 import static org.junit.jupiter.params.provider.Arguments.of;
 
 import org.junit.jupiter.params.provider.Arguments;
@@ -20,7 +22,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import static mendes.sutil.dyego.awspresignedpost.domain.conditions.helper.KeyConditionHelper.withKey;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Disabled
@@ -89,7 +90,7 @@ class IntegrationTests {
                         expirationDate,
                         bucket,
                         withKey("test.txt"),
-                        buildConditionsMap("key","test.txt"),
+                        buildConditionsUsedByHttpClientMap("key","test.txt"),
                         true
                 ),
 
@@ -99,7 +100,7 @@ class IntegrationTests {
                         expirationDate,
                         bucket,
                         withKey("test.txt"),
-                        buildConditionsMap("key","different_key.txt"),
+                        buildConditionsUsedByHttpClientMap("key","different_key.txt"),
                         false
                 ),
 
@@ -109,7 +110,7 @@ class IntegrationTests {
                         expirationDate,
                         "wrongbucket",
                         withKey("test.txt"),
-                        buildConditionsMap("key","test.txt"),
+                        buildConditionsUsedByHttpClientMap("key","test.txt"),
                         false
                 ),
 
@@ -119,7 +120,7 @@ class IntegrationTests {
                         expirationDate,
                         bucket,
                         withKey("test.txt"),
-                        buildConditionsMap("key","test.txt"),
+                        buildConditionsUsedByHttpClientMap("key","test.txt"),
                         false
                 ),
 
@@ -129,8 +130,38 @@ class IntegrationTests {
                         getInvalidExpirationDate(),
                         bucket,
                         withKey("test.txt"),
-                        buildConditionsMap("key","test.txt"),
+                        buildConditionsUsedByHttpClientMap("key","test.txt"),
                         false
+                ),
+
+                // key starts-with
+                of("Should succeed while uploading file to S3 when key correctly starts-with the value specified in the policy",
+                        region,
+                        expirationDate,
+                        bucket,
+                        witKeyStartingWith("user/leo/"),
+                        buildConditionsUsedByHttpClientMap("key","user/leo/file.txt"),
+                        true
+                ),
+
+                // key starts-with
+                of("Should succeed while uploading file to S3 when key correctly starts-with the value specified in the policy",
+                        region,
+                        expirationDate,
+                        bucket,
+                        witKeyStartingWith("user/leo/"),
+                        buildConditionsUsedByHttpClientMap("key","file.txt"),
+                        false
+                ),
+
+                // key starts-with anything - used also when the file name provided by the user should be used
+                of("Should succeed while uploading file to S3 when key correctly starts-with the value specified in the policy",
+                        region,
+                        expirationDate,
+                        bucket,
+                        withAnyKey(),
+                        buildConditionsUsedByHttpClientMap("key","file.txt"),
+                        true
                 )
         );
     }
@@ -141,7 +172,7 @@ class IntegrationTests {
                 .atZone(ZoneOffset.UTC);
     }
 
-    private static Map<String, String> buildConditionsMap(String key, String value) {
+    private static Map<String, String> buildConditionsUsedByHttpClientMap(String key, String value) {
         Map<String, String> formDataParts = new HashMap<>();
         formDataParts.put(key,value);
         return formDataParts;

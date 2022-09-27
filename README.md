@@ -60,3 +60,9 @@ AWS_WRONG_REGION = This should be a bucket which is not the one you have configu
 ```
 
 Also is necessary to remove the @Disabled annotation from the test zzz
+
+TODO
+Add good logging and documentation for it so that if they want to set the conditions
+them selves they can know what is wrong? Well they can use postman, but put some errors or warnings if possible
+
+If you want to allow the user upload any key use ```withAnyKey()``` and submit as key name ```${filename}``` 
