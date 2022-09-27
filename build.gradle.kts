@@ -23,6 +23,7 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$jupiterVersion") // TODO is it really needed?
     testImplementation("com.squareup.okhttp3:okhttp:4.10.0") // TODO test other levels.
     testImplementation("org.assertj:assertj-core:3.23.1")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:5.9.0") // TODO double check
 }
 
 //dependencyManagement {
