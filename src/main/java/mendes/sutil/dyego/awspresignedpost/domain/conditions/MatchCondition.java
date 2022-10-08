@@ -4,7 +4,7 @@ package mendes.sutil.dyego.awspresignedpost.domain.conditions;
  * Used to specify in which circumstances the upload to s3 should be accepted
  */
 public class MatchCondition extends Condition {
-    private Operator operator;
+    private final Operator operator;
     private final String value;
 
     // TODO use lombok

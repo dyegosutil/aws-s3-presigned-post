@@ -12,8 +12,10 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static mendes.sutil.dyego.awspresignedpost.domain.conditions.ConditionField.CACHE_CONTROL;
 import static mendes.sutil.dyego.awspresignedpost.domain.conditions.MatchCondition.Operator.EQ;
 import static mendes.sutil.dyego.awspresignedpost.domain.conditions.ConditionField.BUCKET;
+import static mendes.sutil.dyego.awspresignedpost.domain.conditions.MatchCondition.Operator.STARTS_WITH;
 
 /**
  * A pre-signed POST request that can be executed at a later time without requiring additional signing or
@@ -53,7 +55,7 @@ public final class PostParams {
      * @param expirationDate Date until when the pre-signed post can be used.
      * @param keyCondition TODO You can use the ConditionHelper to provide the values
      * @param bucket The bucket when the file should be uploaded to.
-     * @return A PostParams builder which allows more fine grained conditions to be added
+     * @return A PostParams builder which allows more fine-grained conditions to be added
      */
     public static Builder builder(
             Region region,
@@ -72,7 +74,6 @@ public final class PostParams {
 
         private final String bucket;
         private final Region region;
-//        private String key;
 
         private final AmzExpirationDate amzExpirationDate;
 
@@ -91,11 +92,6 @@ public final class PostParams {
             return new PostParams(bucket, region, amzExpirationDate, conditions);
         }
 
-//        public Builder withKeyStartingWith(String keyStartingWith) {
-//            this.condition.add(new Condition(ConditionField.KEY, STARTS_WITH, keyStartingWith));
-//            return this;
-//        }
-
         /**
          * Used to limit the size of the file to be uploaded
          * <p>
@@ -109,6 +105,28 @@ public final class PostParams {
         public Builder withContentLengthRange(long minimumValue, long maximumValue) {
             ContentLengthRangeCondition condition = new ContentLengthRangeCondition(minimumValue, maximumValue);
             this.conditions.add(condition);
+            return this;
+        }
+
+        /**
+         * Allows specifying the exact value to be used for the cache control condition
+         *
+         * @param value Cache control value. Example: public, max-age=7200
+         * @return The {@link Builder} object
+         */
+        public Builder withCacheControl(String value) {
+            this.conditions.add(new MatchCondition(CACHE_CONTROL, EQ, value));
+            return this;
+        }
+
+        /**
+         * Allows specifying with which value the cache control condition should start with.
+         *
+         * @param value Cache control starting value. Example: public
+         * @return The {@link Builder} object
+         */
+        public Builder withCacheControlStartingWith(String value) {
+            this.conditions.add(new MatchCondition(CACHE_CONTROL, STARTS_WITH, value));
             return this;
         }
     }

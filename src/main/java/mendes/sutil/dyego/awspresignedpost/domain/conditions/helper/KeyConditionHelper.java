@@ -27,7 +27,7 @@ public class KeyConditionHelper {
      * @param value The value which the key should start with when provided by the pre-signed post user
      * @return @link KeyStartsWithCondition}
      */
-    public static KeyCondition witKeyStartingWith(String value) {
+    public static KeyCondition withKeyStartingWith(String value) {
         return new KeyStartsWithCondition(value);
     }
 
