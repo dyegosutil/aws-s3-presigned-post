@@ -4,13 +4,13 @@ package mendes.sutil.dyego.awspresignedpost.domain.conditions;
  * Used to specify in which circumstances the upload to s3 should be accepted
  */
 public class MatchCondition extends Condition {
-    private Match match;
-    private String value;
+    private Operator operator;
+    private final String value;
 
     // TODO use lombok
-    public MatchCondition(ConditionField conditionField, Match match, String value) {
+    public MatchCondition(ConditionField conditionField, Operator operator, String value) {
         super(conditionField);
-        this.match = match;
+        this.operator = operator;
         this.value = value;
     }
 
@@ -18,31 +18,27 @@ public class MatchCondition extends Condition {
         return conditionField;
     }
 
-    public Match getConditionMatch() {
-        return match;
-    }
-
-    public void setConditionMatch(Match match) {
-        this.match = match;
+    public Operator getConditionMatch() {
+        return operator;
     }
 
     public String getValue() {
         return value;
     }
 
-    public enum Match {
+    public enum Operator {
         EQ("eq"),
         STARTS_WITH("starts-with");
 
-        private final String value;
+        public final String awsOperatorValue;
 
-        Match(String value) {
-            this.value = value;
+        Operator(String awsOperatorValue) {
+            this.awsOperatorValue = awsOperatorValue;
         }
 
         @Override
         public String toString() {
-            return this.value;
+            return this.awsOperatorValue;
         }
     }
 }

@@ -12,7 +12,7 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static mendes.sutil.dyego.awspresignedpost.domain.conditions.MatchCondition.Match.EQ;
+import static mendes.sutil.dyego.awspresignedpost.domain.conditions.MatchCondition.Operator.EQ;
 import static mendes.sutil.dyego.awspresignedpost.domain.conditions.ConditionField.BUCKET;
 
 /**
