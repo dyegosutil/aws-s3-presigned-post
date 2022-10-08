@@ -1,15 +1,15 @@
 package mendes.sutil.dyego.awspresignedpost.domain.conditions.key;
 
-import mendes.sutil.dyego.awspresignedpost.domain.conditions.Condition;
+import mendes.sutil.dyego.awspresignedpost.domain.conditions.MatchCondition;
 
-import static mendes.sutil.dyego.awspresignedpost.domain.conditions.Condition.ConditionField.KEY;
+import static mendes.sutil.dyego.awspresignedpost.domain.conditions.ConditionField.KEY;
 
 /**
  * Used as a base for classes specifying conditions about how the s3 key should be like
  */
-public abstract class KeyCondition extends Condition {
+public abstract class KeyCondition extends MatchCondition {
 
-    public KeyCondition(ConditionMatch conditionMatch, String bucketValue) {
-        super(KEY, conditionMatch, bucketValue);
+    public KeyCondition(Match match, String bucketValue) {
+        super(KEY, match, bucketValue);
     }
 }

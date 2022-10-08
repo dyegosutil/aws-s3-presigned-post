@@ -13,6 +13,8 @@ That is, the only parameters necessary are the ```key``` and ```file```.
 - https://docs.aws.amazon.com/AmazonS3/latest/API/RESTObjectPOST.html
 
 # Issues
+
+sometimes seems that due to the ```=``` in the end of the policy, there was a signature problem. Removing one of the 3 = symbols in the end of the request made it work. Investigate this better. Perhaps print the policy withouth any = in the end to avoid problems. But test this first.
 - include support for/check ```x-ignore-```
 - Test to be done
   - upload with key in policy 
