@@ -11,6 +11,7 @@ public enum ConditionField { // TODO move it
     CONTENT_DISPOSITION(""),
     SUCCESS_ACTION_REDIRECT(""),
     ACL(""),
+    CACHE_CONTROL("$Cache-Control"),
     DATE("$x-amz-date"), // confirm all these fields to see which condition matching they accept.
     BUCKET("$bucket"),
     CONTENT_LENGTH_RANGE("content-length-range");

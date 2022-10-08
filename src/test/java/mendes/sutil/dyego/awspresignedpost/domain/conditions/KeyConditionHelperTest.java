@@ -29,7 +29,7 @@ class KeyConditionHelperTest {
         String value = "/user/leo";
 
         // Act
-        KeyCondition startWithCondition = witKeyStartingWith(value);
+        KeyCondition startWithCondition = withKeyStartingWith(value);
 
         // Assert
         assertThat(startWithCondition).isInstanceOf(KeyStartsWithCondition.class);

@@ -102,19 +102,24 @@ public class S3PostSigner { // TODO rename?
         conditions.forEach(condition -> {
             switch (condition.getConditionField()) { // TODO CHECK if continue keyword should be added to avoid checking useless conditions.
                 case KEY -> result.add(new String[]{
-                        ((MatchCondition)condition).getConditionMatch().awsOperatorValue,
+                        ((MatchCondition) condition).getConditionMatch().awsOperatorValue,
                         condition.getConditionField().awsConditionName,
-                        ((MatchCondition)condition).getValue()
+                        ((MatchCondition) condition).getValue()
                 });
-                case BUCKET -> result.add(new String[]{   // TODO Should key be on the policy? see if not adding it here will work fine or not
-                        ((MatchCondition)condition).getConditionMatch().awsOperatorValue,
+                case BUCKET -> result.add(new String[]{
+                        ((MatchCondition) condition).getConditionMatch().awsOperatorValue,
                         condition.getConditionField().awsConditionName,
-                        ((MatchCondition)condition).getValue()
+                        ((MatchCondition) condition).getValue()
                 });
                 case CONTENT_LENGTH_RANGE -> result.add(new String[]{
                         condition.getConditionField().awsConditionName,
                         String.valueOf(((ContentLengthRangeCondition) condition).getMinimumValue()),
                         String.valueOf(((ContentLengthRangeCondition) condition).getMaximumValue())
+                });
+                case CACHE_CONTROL -> result.add(new String[]{
+                        ((MatchCondition) condition).getConditionMatch().awsOperatorValue, // TODO perhaps change this to interfaces somehow object.getAwsOperatorValue
+                        condition.getConditionField().awsConditionName,
+                        ((MatchCondition) condition).getValue()
                 });
             }
         });
@@ -124,44 +129,6 @@ public class S3PostSigner { // TODO rename?
         result.add(new String[]{"eq", CREDENTIAL.awsConditionName, credentials});
 
         return result;
-//        final List<String[]> result = new ArrayList<>();
-//        final Map<S3PostSignRequest.ConditionFields, Pair<String, S3PostSignRequest.ConditionMatch>> conditions = request.getConditions();
-//
-//        for (Map.Entry<S3PostSignRequest.ConditionFields, Pair<String, S3PostSignRequest.ConditionMatch>> item : conditions.entrySet()) {
-//            switch (item.getKey()) {
-//                case BUCKET:
-//                case CREDENTIAL: {
-//                    result.add(new String[] {
-//                            "eq",
-//                            item.getKey().name,
-//                            item.getValue().getLeft()
-//                    });
-//                    break;
-//                }
-//                case KEY:
-//                case CONTENT_TYPE:
-//                case CONTENT_DISPOSITION:
-//                case CONTENT_ENCODING:
-//                case SUCCESS_ACTION_REDIRECT:
-//                case SUCCESS_ACTION_STATUS: {
-//                    result.add(new String[] {
-//                            item.getValue().getRight().toString(),
-//                            item.getKey().name,
-//                            item.getValue().getLeft()
-//                    });
-//                    break;
-//                }
-//                case ACL: {
-//                    break;
-//                }
-//            }
-//        }
-//
-//        result.add(new String[]{"eq", S3PostSignRequest.ConditionFields.ALGORITHM.name, "AWS4-HMAC-SHA256"});
-//        result.add(new String[]{"eq", S3PostSignRequest.ConditionFields.DATE.name, AMZ_DATE_FORMATTER.format(date)});
-//        result.add(new String[]{"eq", S3PostSignRequest.ConditionFields.CREDENTIAL.name, credentials});
-//
-//        return result;
     }
 
 

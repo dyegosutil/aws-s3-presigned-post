@@ -33,9 +33,22 @@ class IntegrationTests {
     private static final String BUCKET = System.getenv("AWS_BUCKET");
 
     // TODO to check If you created a presigned URL using a temporary token, then the URL expires when the token expires. This is true even if the URL was created with a later expiration time.
+
+    @Disabled
+    /**
+     * Generates the pre-signed post using the minimum mandatory params and performs the upload to S3 using a http client.
+     *
+     * @param testDescription
+     * @param region
+     * @param expirationDate
+     * @param bucket
+     * @param keyCondition
+     * @param formDataParts
+     * @param expectedResult
+     */
     @ParameterizedTest(name = "{0}")
     @MethodSource("getTestCasesMandatoryParams")
-    void generatePreSignedPostAndPerformUploadToS3ForMandatoryParams(
+    void testWithMandatoryParams(
             String testDescription,
             Region region,
             ZonedDateTime expirationDate,
@@ -69,9 +82,17 @@ class IntegrationTests {
         assertThat(wasUploadSuccessful).isEqualTo(expectedResult);
     }
 
+    /**
+     * Generates the pre-signed post using the mandatory params and also optional params performing the upload to S3.
+     *
+     * @param testDescription
+     * @param postParams
+     * @param formDataParts
+     * @param expectedResult
+     */
     @ParameterizedTest(name = "{0}")
-    @MethodSource("getTestCasesNonMandatoryParams")
-    void generatePreSignedPostAndPerformUploadToS3NonMandatoryParams(
+    @MethodSource("getTestCasesOptionalParams")
+    void testWithOptionalParams(
             String testDescription,
             PostParams postParams,
             Map<String,String> formDataParts,
@@ -114,14 +135,14 @@ class IntegrationTests {
                 );
     }
 
-    private static Stream<Arguments> getTestCasesNonMandatoryParams() {
+    private static Stream<Arguments> getTestCasesOptionalParams() {
         return Stream.of(
                 // content-length-range
                 of("Should succeed while uploading file to S3 when it's size is between the minimum and maximum specified values in the policy",
                         createDefaultPostParamBuilder()
                                 .withContentLengthRange(7, 20)
                                 .build(),
-                        createFormDataParts("key", "${filename}"), // TODO rename?
+                        createFormDataParts("key", "${filename}"),
                         true
                 ),
                 // content-length-range
@@ -146,6 +167,38 @@ class IntegrationTests {
                                 .withContentLengthRange(15, 20)
                                 .build(),
                         createFormDataParts("key", "${filename}"),
+                        false
+                ),
+                // Cache-Control
+                of("Should succeed while uploading file to S3 when the cache-control specified is the same as the one in the policy",
+                        createDefaultPostParamBuilder()
+                                .withCacheControl("public, max-age=7200")
+                                .build(),
+                        createFormDataPartsWithKeyCondition("Cache-Control", "public, max-age=7200"),
+                        true
+                ),
+                // Cache-Control
+                of("Should fail while uploading file to S3 when the cache-control specified is not the same as the one in the policy",
+                        createDefaultPostParamBuilder()
+                                .withCacheControl("public, max-age=7200")
+                                .build(),
+                        createFormDataPartsWithKeyCondition("Cache-Control", "public, max-age=7201"),
+                        false
+                ),
+                // Cache-Control
+                of("Should succeed while uploading file to S3 when the cache-control specified starts with the same value specified in the policy",
+                        createDefaultPostParamBuilder()
+                                .withCacheControlStartingWith("public,")
+                                .build(),
+                        createFormDataPartsWithKeyCondition("Cache-Control", "public, max-age=7200"),
+                        true
+                ),
+                // Cache-Control
+                of("Should fail while uploading file to S3 when the cache-control specified does not start with the same value specified in the policy",
+                        createDefaultPostParamBuilder()
+                                .withCacheControl("public, max-age=7200")
+                                .build(),
+                        createFormDataPartsWithKeyCondition("Cache-Control", "public, max-age=7201"),
                         false
                 )
         );
@@ -210,7 +263,7 @@ class IntegrationTests {
                         REGION,
                         EXPIRATION_DATE,
                         BUCKET,
-                        witKeyStartingWith("user/leo/"),
+                        withKeyStartingWith("user/leo/"),
                         createFormDataParts("key","user/leo/file.txt"),
                         true
                 ),
@@ -220,7 +273,7 @@ class IntegrationTests {
                         REGION,
                         EXPIRATION_DATE,
                         BUCKET,
-                        witKeyStartingWith("user/leo/"),
+                        withKeyStartingWith("user/leo/"),
                         createFormDataParts("key","file.txt"),
                         false
                 ),
@@ -246,6 +299,13 @@ class IntegrationTests {
     private static Map<String, String> createFormDataParts(String key, String value) {
         Map<String, String> formDataParts = new HashMap<>();
         formDataParts.put(key,value);
+        return formDataParts;
+    }
+
+    private static Map<String, String> createFormDataPartsWithKeyCondition(String key, String value) {
+        Map<String, String> formDataParts = new HashMap<>();
+        formDataParts.put(key,value);
+        formDataParts.put("key","${filename}");
         return formDataParts;
     }
 
