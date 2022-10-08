@@ -102,26 +102,26 @@ public class S3PostSigner { // TODO rename?
         conditions.forEach(condition -> {
             switch (condition.getConditionField()) { // TODO CHECK if continue keyword should be added to avoid checking useless conditions.
                 case KEY -> result.add(new String[]{
-                        ((MatchCondition)condition).getConditionMatch().toString(),
-                        "$key",
+                        ((MatchCondition)condition).getConditionMatch().awsOperatorValue,
+                        condition.getConditionField().awsConditionName,
                         ((MatchCondition)condition).getValue()
                 });
                 case BUCKET -> result.add(new String[]{   // TODO Should key be on the policy? see if not adding it here will work fine or not
-                        "eq", // TODO change to the correct one from class
-                        "$bucket", // TODO is this working correclty for starts-with?
+                        ((MatchCondition)condition).getConditionMatch().awsOperatorValue,
+                        condition.getConditionField().awsConditionName,
                         ((MatchCondition)condition).getValue()
                 });
                 case CONTENT_LENGTH_RANGE -> result.add(new String[]{
-                        condition.getConditionField().name,
+                        condition.getConditionField().awsConditionName,
                         String.valueOf(((ContentLengthRangeCondition) condition).getMinimumValue()),
                         String.valueOf(((ContentLengthRangeCondition) condition).getMaximumValue())
                 });
             }
         });
 
-        result.add(new String[]{"eq", ALGORITHM.name, "AWS4-HMAC-SHA256"});
-        result.add(new String[]{"eq", DATE.name, xAmzDate.formatForPolicy()});
-        result.add(new String[]{"eq", CREDENTIAL.name, credentials});
+        result.add(new String[]{"eq", ALGORITHM.awsConditionName, "AWS4-HMAC-SHA256"});
+        result.add(new String[]{"eq", DATE.awsConditionName, xAmzDate.formatForPolicy()});
+        result.add(new String[]{"eq", CREDENTIAL.awsConditionName, credentials});
 
         return result;
 //        final List<String[]> result = new ArrayList<>();

@@ -5,6 +5,6 @@ package mendes.sutil.dyego.awspresignedpost.domain.conditions.key;
  */
 public class ExactKeyCondition extends KeyCondition {
     public ExactKeyCondition(String expectedExactKeyValue) {
-        super(Match.EQ, expectedExactKeyValue);
+        super(Operator.EQ, expectedExactKeyValue);
     }
 }

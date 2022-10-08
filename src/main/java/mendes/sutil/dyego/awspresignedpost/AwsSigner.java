@@ -33,10 +33,6 @@ public final class AwsSigner{
         String regionId = region.id();
         String date = amzDate.formatForCredentials();
         return accessKeyId+"/"+date+"/"+regionId+"/s3/aws4_request";
-//        return credentials.accessKeyId() + "/" +
-//                DATE_FORMATTER.format(ZonedDateTime.now()) + "/" +
-//                region.id() + "/" +
-//                "s3/aws4_request";
     }
 
     static byte[] signMac(byte[] key, byte[] data) {

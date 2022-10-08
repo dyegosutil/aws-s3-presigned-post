@@ -9,7 +9,7 @@ import static mendes.sutil.dyego.awspresignedpost.domain.conditions.ConditionFie
  */
 public abstract class KeyCondition extends MatchCondition {
 
-    public KeyCondition(Match match, String bucketValue) {
-        super(KEY, match, bucketValue);
+    public KeyCondition(Operator operator, String bucketValue) {
+        super(KEY, operator, bucketValue);
     }
 }
