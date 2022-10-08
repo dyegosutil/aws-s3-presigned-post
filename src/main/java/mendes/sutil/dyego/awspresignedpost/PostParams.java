@@ -2,7 +2,9 @@ package mendes.sutil.dyego.awspresignedpost;
 
 import lombok.Getter;
 import mendes.sutil.dyego.awspresignedpost.domain.AmzExpirationDate;
+import mendes.sutil.dyego.awspresignedpost.domain.conditions.MatchCondition;
 import mendes.sutil.dyego.awspresignedpost.domain.conditions.Condition;
+import mendes.sutil.dyego.awspresignedpost.domain.conditions.ContentLengthRangeCondition;
 import mendes.sutil.dyego.awspresignedpost.domain.conditions.key.KeyCondition;
 import software.amazon.awssdk.regions.Region;
 
@@ -10,7 +12,8 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static mendes.sutil.dyego.awspresignedpost.domain.conditions.Condition.ConditionMatch.EQ;
+import static mendes.sutil.dyego.awspresignedpost.domain.conditions.MatchCondition.Match.EQ;
+import static mendes.sutil.dyego.awspresignedpost.domain.conditions.ConditionField.BUCKET;
 
 /**
  * A pre-signed POST request that can be executed at a later time without requiring additional signing or
@@ -78,7 +81,7 @@ public final class PostParams {
             this.region = region;
             this.amzExpirationDate = amzExpirationDate;
             conditions.add(keyCondition);
-            this.conditions.add(new Condition(Condition.ConditionField.BUCKET, EQ, bucket));
+            this.conditions.add(new MatchCondition(BUCKET, EQ, bucket));
             this.bucket = bucket;
         }
 
@@ -92,5 +95,21 @@ public final class PostParams {
 //            this.condition.add(new Condition(ConditionField.KEY, STARTS_WITH, keyStartingWith));
 //            return this;
 //        }
+
+        /**
+         * Used to limit the size of the file to be uploaded
+         * <p>
+         * For example, calling the method with the values withContentLengthRange(1048576, 10485760) allows the
+         * upload of a file from 1 to 10 MiB
+         *
+         * @param minimumValue Specified in bytes, indicates the minimum size of the file for it to be accepted
+         * @param maximumValue Specified in bytes, indicates the maximum size of the file for it to be accepted
+         * @return The {@link Builder} object
+         */
+        public Builder withContentLengthRange(long minimumValue, long maximumValue) {
+            ContentLengthRangeCondition condition = new ContentLengthRangeCondition(minimumValue, maximumValue);
+            this.conditions.add(condition);
+            return this;
+        }
     }
 }

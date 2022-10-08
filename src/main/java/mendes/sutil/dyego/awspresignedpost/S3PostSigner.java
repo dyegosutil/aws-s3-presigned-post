@@ -6,11 +6,12 @@ import java.util.*;
 import com.google.gson.Gson;
 import com.google.gson.annotations.Expose;
 import mendes.sutil.dyego.awspresignedpost.domain.AmzDate;
+import mendes.sutil.dyego.awspresignedpost.domain.conditions.MatchCondition;
 import mendes.sutil.dyego.awspresignedpost.domain.conditions.Condition;
+import mendes.sutil.dyego.awspresignedpost.domain.conditions.ContentLengthRangeCondition;
 import software.amazon.awssdk.auth.credentials.AwsCredentials;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
-
-import static mendes.sutil.dyego.awspresignedpost.domain.conditions.Condition.ConditionField.*;
+import static mendes.sutil.dyego.awspresignedpost.domain.conditions.ConditionField.*;
 
 public class S3PostSigner { // TODO rename?
     private final AwsCredentials awsCredentials;
@@ -99,18 +100,22 @@ public class S3PostSigner { // TODO rename?
 
         // double check it is continuing; after one condition
         conditions.forEach(condition -> {
-            switch (condition.getConditionField()) {
+            switch (condition.getConditionField()) { // TODO CHECK if continue keyword should be added to avoid checking useless conditions.
                 case KEY -> result.add(new String[]{
-                        condition.getConditionMatch().toString(),
+                        ((MatchCondition)condition).getConditionMatch().toString(),
                         "$key",
-                        condition.getValue()
+                        ((MatchCondition)condition).getValue()
                 });
                 case BUCKET -> result.add(new String[]{   // TODO Should key be on the policy? see if not adding it here will work fine or not
-                        "eq",
-                        "$bucket",
-                        condition.getValue()
+                        "eq", // TODO change to the correct one from class
+                        "$bucket", // TODO is this working correclty for starts-with?
+                        ((MatchCondition)condition).getValue()
                 });
-//                case SUCCESS_ACTION_STATUS -> System.out.println();
+                case CONTENT_LENGTH_RANGE -> result.add(new String[]{
+                        condition.getConditionField().name,
+                        String.valueOf(((ContentLengthRangeCondition) condition).getMinimumValue()),
+                        String.valueOf(((ContentLengthRangeCondition) condition).getMaximumValue())
+                });
             }
         });
 

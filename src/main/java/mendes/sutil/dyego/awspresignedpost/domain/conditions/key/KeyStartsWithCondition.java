@@ -6,6 +6,6 @@ package mendes.sutil.dyego.awspresignedpost.domain.conditions.key;
 public class KeyStartsWithCondition extends KeyCondition {
 
     public KeyStartsWithCondition(String keyStartWithValue) {
-        super(ConditionMatch.STARTS_WITH, keyStartWithValue);
+        super(Match.STARTS_WITH, keyStartWithValue);
     }
 }

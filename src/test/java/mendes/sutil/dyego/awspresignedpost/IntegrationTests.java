@@ -26,10 +26,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @Disabled
 class IntegrationTests {
+    private static final Region REGION = Region.of(System.getenv("AWS_REGION"));
+    private static final ZonedDateTime EXPIRATION_DATE = Instant.now(Clock.systemUTC()) // TODO check if clock should be a parameter, check documentation to see how expiration time should be received, check what would happen if different zoneids are used for expiration aand for date in the policy
+            .plus(1, ChronoUnit.MINUTES)
+            .atZone(ZoneOffset.UTC);
+    private static final String BUCKET = System.getenv("AWS_BUCKET");
+
     // TODO to check If you created a presigned URL using a temporary token, then the URL expires when the token expires. This is true even if the URL was created with a later expiration time.
     @ParameterizedTest(name = "{0}")
-    @MethodSource("getTestCases")
-    void generatePreSignedPostAndPerformUploadToS3(
+    @MethodSource("getTestCasesMandatoryParams")
+    void generatePreSignedPostAndPerformUploadToS3ForMandatoryParams(
             String testDescription,
             Region region,
             ZonedDateTime expirationDate,
@@ -58,7 +64,27 @@ class IntegrationTests {
         try {
             wasUploadSuccessful = uploadToAws(presignedPost, formDataParts);
         } catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace(); // TODO is this good?
+        }
+        assertThat(wasUploadSuccessful).isEqualTo(expectedResult);
+    }
+
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getTestCasesNonMandatoryParams")
+    void generatePreSignedPostAndPerformUploadToS3NonMandatoryParams(
+            String testDescription,
+            PostParams postParams,
+            Map<String,String> formDataParts,
+            Boolean expectedResult
+    ) {
+        PresignedPost presignedPost = new S3PostSigner(getAmazonCredentialsProvider()).create(postParams);
+        System.out.println(presignedPost); // TODO Check about logging for tests, would be nice to know why it failed in GIT
+
+        Boolean wasUploadSuccessful = false;
+        try {
+            wasUploadSuccessful = uploadToAws(presignedPost, formDataParts);
+        } catch (Exception e) {
+            e.printStackTrace(); // TODO is this good?
         }
         assertThat(wasUploadSuccessful).isEqualTo(expectedResult);
     }
@@ -74,93 +100,138 @@ class IntegrationTests {
         );
     }
 
-    private static Stream<Arguments> getTestCases() {
-        final Region region = Region.of(System.getenv("AWS_REGION"));
-        final Region incorrectRegion = Region.of(System.getenv("AWS_WRONG_REGION"));
-        final String bucket = System.getenv("AWS_BUCKET");
+    /**
+     * Creates a {@link PostParams.Builder} with the minimum mandatory parameters
+     * @return A {@link PostParams.Builder}
+     */
+    private static PostParams.Builder createDefaultPostParamBuilder() {
+        return PostParams
+                .builder(
+                        REGION,
+                        EXPIRATION_DATE,
+                        BUCKET,
+                        withAnyKey()
+                );
+    }
 
-        ZonedDateTime expirationDate = Instant.now(Clock.systemUTC()) // TODO check if clock should be a parameter, check documentation to see how expiration time should be received, check what would happen if different zoneids are used for expiration aand for date in the policy
-                .plus(1, ChronoUnit.MINUTES)
-                .atZone(ZoneOffset.UTC);
+    private static Stream<Arguments> getTestCasesNonMandatoryParams() {
+        return Stream.of(
+                // content-length-range
+                of("Should succeed while uploading file to S3 when it's size is between the minimum and maximum specified values in the policy",
+                        createDefaultPostParamBuilder()
+                                .withContentLengthRange(7, 20)
+                                .build(),
+                        createFormDataParts("key", "${filename}"), // TODO rename?
+                        true
+                ),
+                // content-length-range
+                of("Should succeed while uploading file to S3 when it's size is of the exact size specified values in the policy",
+                        createDefaultPostParamBuilder()
+                                .withContentLengthRange(14, 14)
+                                .build(),
+                        createFormDataParts("key", "${filename}"),
+                        true
+                ),
+                // content-length-range
+                of("Should fail while uploading file to S3 when it's size is over the maximum specified value in the policy",
+                        createDefaultPostParamBuilder()
+                                .withContentLengthRange(1, 2)
+                                .build(),
+                        createFormDataParts("key", "${filename}"),
+                        false
+                ),
+                // content-length-range
+                of("Should fail while uploading file to S3 when it's size is under the minimum specified value in the policy",
+                        createDefaultPostParamBuilder()
+                                .withContentLengthRange(15, 20)
+                                .build(),
+                        createFormDataParts("key", "${filename}"),
+                        false
+                )
+        );
+    }
+
+    private static Stream<Arguments> getTestCasesMandatoryParams() {
+        final Region incorrectRegion = Region.of(System.getenv("AWS_WRONG_REGION"));
 
         return Stream.of(
                 // key
                 of("Should succeed while uploading file to S3 using the exact key specified in the policy",
-                        region,
-                        expirationDate,
-                        bucket,
+                        REGION,
+                        EXPIRATION_DATE,
+                        BUCKET,
                         withKey("test.txt"),
-                        buildConditionsUsedByHttpClientMap("key","test.txt"),
+                        createFormDataParts("key","test.txt"),
                         true
                 ),
 
                 // key
                 of("Should fail while uploading file to S3 using a different key then specified in the policy",
-                        region,
-                        expirationDate,
-                        bucket,
+                        REGION,
+                        EXPIRATION_DATE,
+                        BUCKET,
                         withKey("test.txt"),
-                        buildConditionsUsedByHttpClientMap("key","different_key.txt"),
+                        createFormDataParts("key","different_key.txt"),
                         false
                 ),
 
                 // bucket
                 of("Should fail while uploading file to S3 using a different bucket then the one configured in the policy",
-                        region,
-                        expirationDate,
+                        REGION,
+                        EXPIRATION_DATE,
                         "wrongbucket",
                         withKey("test.txt"),
-                        buildConditionsUsedByHttpClientMap("key","test.txt"),
+                        createFormDataParts("key","test.txt"),
                         false
                 ),
 
                 // region
                 of("Should fail while uploading file to S3 using a different region then the one configured in the policy",
                         incorrectRegion,
-                        expirationDate,
-                        bucket,
+                        EXPIRATION_DATE,
+                        BUCKET,
                         withKey("test.txt"),
-                        buildConditionsUsedByHttpClientMap("key","test.txt"),
+                        createFormDataParts("key","test.txt"),
                         false
                 ),
 
                  // expiration date
                 of("Should fail while uploading file to S3 when the expiration date has passed",
-                        region,
+                        REGION,
                         getInvalidExpirationDate(),
-                        bucket,
+                        BUCKET,
                         withKey("test.txt"),
-                        buildConditionsUsedByHttpClientMap("key","test.txt"),
+                        createFormDataParts("key","test.txt"),
                         false
                 ),
 
                 // key starts-with
                 of("Should succeed while uploading file to S3 when key correctly starts-with the value specified in the policy",
-                        region,
-                        expirationDate,
-                        bucket,
+                        REGION,
+                        EXPIRATION_DATE,
+                        BUCKET,
                         witKeyStartingWith("user/leo/"),
-                        buildConditionsUsedByHttpClientMap("key","user/leo/file.txt"),
+                        createFormDataParts("key","user/leo/file.txt"),
                         true
                 ),
 
                 // key starts-with
                 of("Should succeed while uploading file to S3 when key correctly starts-with the value specified in the policy",
-                        region,
-                        expirationDate,
-                        bucket,
+                        REGION,
+                        EXPIRATION_DATE,
+                        BUCKET,
                         witKeyStartingWith("user/leo/"),
-                        buildConditionsUsedByHttpClientMap("key","file.txt"),
+                        createFormDataParts("key","file.txt"),
                         false
                 ),
 
                 // key starts-with anything - used also when the file name provided by the user should be used
                 of("Should succeed while uploading file to S3 when key correctly starts-with the value specified in the policy",
-                        region,
-                        expirationDate,
-                        bucket,
+                        REGION,
+                        EXPIRATION_DATE,
+                        BUCKET,
                         withAnyKey(),
-                        buildConditionsUsedByHttpClientMap("key","file.txt"),
+                        createFormDataParts("key","file.txt"),
                         true
                 )
         );
@@ -172,7 +243,7 @@ class IntegrationTests {
                 .atZone(ZoneOffset.UTC);
     }
 
-    private static Map<String, String> buildConditionsUsedByHttpClientMap(String key, String value) {
+    private static Map<String, String> createFormDataParts(String key, String value) {
         Map<String, String> formDataParts = new HashMap<>();
         formDataParts.put(key,value);
         return formDataParts;
