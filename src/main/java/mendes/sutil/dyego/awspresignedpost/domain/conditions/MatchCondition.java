@@ -18,7 +18,16 @@ public class MatchCondition extends Condition {
         return conditionField;
     }
 
-    public Operator getConditionMatch() {
+    @Override
+    public String[] asAwsPolicyCondition() {
+       return new String[]{
+               getConditionOperator().awsOperatorValue,
+               conditionField.awsConditionName,
+               getValue()
+       };
+    }
+
+    public Operator getConditionOperator() {
         return operator;
     }
 
