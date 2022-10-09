@@ -6,12 +6,12 @@ public enum ConditionField { // TODO move it
     SUCCESS_ACTION_STATUS("$success_action_status"), // TODO Confirm if this is correct.
     ALGORITHM("$x-amz-algorithm"),
     CREDENTIAL("$x-amz-credential"),
-    CONTENT_TYPE(""),
     CONTENT_ENCODING(""),
     CONTENT_DISPOSITION(""),
     SUCCESS_ACTION_REDIRECT(""),
     ACL(""),
     CACHE_CONTROL("$Cache-Control"),
+    CONTENT_TYPE("$Content-Type"),
     DATE("$x-amz-date"), // confirm all these fields to see which condition matching they accept.
     BUCKET("$bucket"),
     CONTENT_LENGTH_RANGE("content-length-range");
