@@ -67,4 +67,9 @@ TODO
 Add good logging and documentation for it so that if they want to set the conditions
 them selves they can know what is wrong? Well they can use postman, but put some errors or warnings if possible
 
-If you want to allow the user upload any key use ```withAnyKey()``` and submit as key name ```${filename}``` 
+TODO
+add log of IKIA inside token but without shwoing it full - show only A********Y
+If you want to allow the user upload any key use ```withAnyKey()``` and submit as key name ```${filename}```
+
+TODO
+Add examples of how to use each one of the options, content type, range, etc.

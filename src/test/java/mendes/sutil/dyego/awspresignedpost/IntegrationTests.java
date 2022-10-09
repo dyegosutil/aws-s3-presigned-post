@@ -4,10 +4,6 @@ import mendes.sutil.dyego.awspresignedpost.domain.conditions.key.KeyCondition;
 import okhttp3.*;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
-
-import static mendes.sutil.dyego.awspresignedpost.domain.conditions.helper.KeyConditionHelper.*;
-import static org.junit.jupiter.params.provider.Arguments.of;
-
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
@@ -16,25 +12,28 @@ import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 
 import java.io.IOException;
-import java.time.*;
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import static mendes.sutil.dyego.awspresignedpost.domain.conditions.helper.KeyConditionHelper.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.params.provider.Arguments.of;
 
-@Disabled
 class IntegrationTests {
     private static final Region REGION = Region.of(System.getenv("AWS_REGION"));
     private static final ZonedDateTime EXPIRATION_DATE = Instant.now(Clock.systemUTC()) // TODO check if clock should be a parameter, check documentation to see how expiration time should be received, check what would happen if different zoneids are used for expiration aand for date in the policy
-            .plus(1, ChronoUnit.MINUTES)
+            .plus(10, ChronoUnit.MINUTES)
             .atZone(ZoneOffset.UTC);
     private static final String BUCKET = System.getenv("AWS_BUCKET");
 
     // TODO to check If you created a presigned URL using a temporary token, then the URL expires when the token expires. This is true even if the URL was created with a later expiration time.
 
-    @Disabled
     /**
      * Generates the pre-signed post using the minimum mandatory params and performs the upload to S3 using a http client.
      *
@@ -47,6 +46,7 @@ class IntegrationTests {
      * @param expectedResult
      */
     @ParameterizedTest(name = "{0}")
+    @Disabled
     @MethodSource("getTestCasesMandatoryParams")
     void testWithMandatoryParams(
             String testDescription,
@@ -54,7 +54,7 @@ class IntegrationTests {
             ZonedDateTime expirationDate,
             String bucket,
             KeyCondition keyCondition,
-            Map<String,String> formDataParts,
+            Map<String, String> formDataParts,
             Boolean expectedResult
     ) {
         //TODO check about the token part
@@ -95,7 +95,7 @@ class IntegrationTests {
     void testWithOptionalParams(
             String testDescription,
             PostParams postParams,
-            Map<String,String> formDataParts,
+            Map<String, String> formDataParts,
             Boolean expectedResult
     ) {
         PresignedPost presignedPost = new S3PostSigner(getAmazonCredentialsProvider()).create(postParams);
@@ -112,6 +112,7 @@ class IntegrationTests {
 
     /**
      * TODO check if this is really necessary, if it could be just done using not aws lib code
+     *
      * @return The AwsCredentialsProvider to be used to create the pre-signed post
      */
     private AwsCredentialsProvider getAmazonCredentialsProvider() {
@@ -123,6 +124,7 @@ class IntegrationTests {
 
     /**
      * Creates a {@link PostParams.Builder} with the minimum mandatory parameters
+     *
      * @return A {@link PostParams.Builder}
      */
     private static PostParams.Builder createDefaultPostParamBuilder() {
@@ -200,6 +202,38 @@ class IntegrationTests {
                                 .build(),
                         createFormDataPartsWithKeyCondition("Cache-Control", "public, max-age=7201"),
                         false
+                ),
+                // Content-Type
+                of("Should succeed while uploading file to S3 when the exact Content-Type specified is the same as the one in the policy",
+                        createDefaultPostParamBuilder()
+                                .withContentType("text/plain")
+                                .build(),
+                        createFormDataPartsWithKeyCondition("Content-Type", "text/plain"),
+                        true
+                ),
+                // Content-Type
+                of("Should fail while uploading file to S3 when the exact Content-Type specified is not the same as the one in the policy",
+                        createDefaultPostParamBuilder()
+                                .withContentType("text/plain")
+                                .build(),
+                        createFormDataPartsWithKeyCondition("Content-Type", "Aext/plain"),
+                        false
+                ),
+                // Content-Type
+                of("Should succeed while uploading file to S3 when the Content-Type specified starts with the same value specified in the policy",
+                        createDefaultPostParamBuilder()
+                                .withContentTypeStartingWith("tex")
+                                .build(),
+                        createFormDataPartsWithKeyCondition("Content-Type", "text/plain"),
+                        true
+                ),
+                // Content-Type
+                of("Should fail while uploading file to S3 when the Content-Type specified does not start with the same value specified in the policy",
+                        createDefaultPostParamBuilder()
+                                .withContentTypeStartingWith("dex")
+                                .build(),
+                        createFormDataPartsWithKeyCondition("Content-Type", "text/plain"),
+                        false
                 )
         );
     }
@@ -214,7 +248,7 @@ class IntegrationTests {
                         EXPIRATION_DATE,
                         BUCKET,
                         withKey("test.txt"),
-                        createFormDataParts("key","test.txt"),
+                        createFormDataParts("key", "test.txt"),
                         true
                 ),
 
@@ -224,7 +258,7 @@ class IntegrationTests {
                         EXPIRATION_DATE,
                         BUCKET,
                         withKey("test.txt"),
-                        createFormDataParts("key","different_key.txt"),
+                        createFormDataParts("key", "different_key.txt"),
                         false
                 ),
 
@@ -234,7 +268,7 @@ class IntegrationTests {
                         EXPIRATION_DATE,
                         "wrongbucket",
                         withKey("test.txt"),
-                        createFormDataParts("key","test.txt"),
+                        createFormDataParts("key", "test.txt"),
                         false
                 ),
 
@@ -244,17 +278,17 @@ class IntegrationTests {
                         EXPIRATION_DATE,
                         BUCKET,
                         withKey("test.txt"),
-                        createFormDataParts("key","test.txt"),
+                        createFormDataParts("key", "test.txt"),
                         false
                 ),
 
-                 // expiration date
+                // expiration date
                 of("Should fail while uploading file to S3 when the expiration date has passed",
                         REGION,
                         getInvalidExpirationDate(),
                         BUCKET,
                         withKey("test.txt"),
-                        createFormDataParts("key","test.txt"),
+                        createFormDataParts("key", "test.txt"),
                         false
                 ),
 
@@ -264,7 +298,7 @@ class IntegrationTests {
                         EXPIRATION_DATE,
                         BUCKET,
                         withKeyStartingWith("user/leo/"),
-                        createFormDataParts("key","user/leo/file.txt"),
+                        createFormDataParts("key", "user/leo/file.txt"),
                         true
                 ),
 
@@ -274,7 +308,7 @@ class IntegrationTests {
                         EXPIRATION_DATE,
                         BUCKET,
                         withKeyStartingWith("user/leo/"),
-                        createFormDataParts("key","file.txt"),
+                        createFormDataParts("key", "file.txt"),
                         false
                 ),
 
@@ -284,7 +318,7 @@ class IntegrationTests {
                         EXPIRATION_DATE,
                         BUCKET,
                         withAnyKey(),
-                        createFormDataParts("key","file.txt"),
+                        createFormDataParts("key", "file.txt"),
                         true
                 )
         );
@@ -298,14 +332,14 @@ class IntegrationTests {
 
     private static Map<String, String> createFormDataParts(String key, String value) {
         Map<String, String> formDataParts = new HashMap<>();
-        formDataParts.put(key,value);
+        formDataParts.put(key, value);
         return formDataParts;
     }
 
     private static Map<String, String> createFormDataPartsWithKeyCondition(String key, String value) {
         Map<String, String> formDataParts = new HashMap<>();
-        formDataParts.put(key,value);
-        formDataParts.put("key","${filename}");
+        formDataParts.put(key, value);
+        formDataParts.put("key", "${filename}");
         return formDataParts;
     }
 
@@ -339,7 +373,7 @@ class IntegrationTests {
 
         Request request = new Request.Builder().url(presignedPost.getUrl()).post(multipartBody).build();
         try (Response response = client.newCall(request).execute()) {
-            if (!response.isSuccessful()){
+            if (!response.isSuccessful()) {
                 throw new IOException("Unexpected code " + response + response.message());
             } else {
                 return true;
