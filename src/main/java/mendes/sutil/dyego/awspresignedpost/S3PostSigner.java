@@ -98,31 +98,7 @@ public class S3PostSigner { // TODO rename?
             String credentials) { //TODO Two conditions? find a better name
         final List<String[]> result = new ArrayList<>();
 
-        // double check it is continuing; after one condition
-        conditions.forEach(condition -> {
-            switch (condition.getConditionField()) { // TODO CHECK if continue keyword should be added to avoid checking useless conditions.
-                case KEY -> result.add(new String[]{
-                        ((MatchCondition) condition).getConditionMatch().awsOperatorValue,
-                        condition.getConditionField().awsConditionName,
-                        ((MatchCondition) condition).getValue()
-                });
-                case BUCKET -> result.add(new String[]{
-                        ((MatchCondition) condition).getConditionMatch().awsOperatorValue,
-                        condition.getConditionField().awsConditionName,
-                        ((MatchCondition) condition).getValue()
-                });
-                case CONTENT_LENGTH_RANGE -> result.add(new String[]{
-                        condition.getConditionField().awsConditionName,
-                        String.valueOf(((ContentLengthRangeCondition) condition).getMinimumValue()),
-                        String.valueOf(((ContentLengthRangeCondition) condition).getMaximumValue())
-                });
-                case CACHE_CONTROL, CONTENT_TYPE -> result.add(new String[]{
-                        ((MatchCondition) condition).getConditionMatch().awsOperatorValue, // TODO perhaps change this to interfaces somehow object.getAwsOperatorValue or condition.addItselfToBuiltConditions
-                        condition.getConditionField().awsConditionName,
-                        ((MatchCondition) condition).getValue()
-                });
-            }
-        });
+        conditions.forEach(condition -> result.add(condition.asAwsPolicyCondition()));
 
         result.add(new String[]{"eq", ALGORITHM.awsConditionName, "AWS4-HMAC-SHA256"});
         result.add(new String[]{"eq", DATE.awsConditionName, xAmzDate.formatForPolicy()});

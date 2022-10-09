@@ -10,8 +10,7 @@ import software.amazon.awssdk.regions.Region;
 import java.time.ZonedDateTime;
 import java.util.stream.Stream;
 
-import static mendes.sutil.dyego.awspresignedpost.domain.conditions.ConditionField.CACHE_CONTROL;
-import static mendes.sutil.dyego.awspresignedpost.domain.conditions.ConditionField.CONTENT_TYPE;
+import static mendes.sutil.dyego.awspresignedpost.domain.conditions.ConditionField.*;
 import static mendes.sutil.dyego.awspresignedpost.domain.conditions.helper.KeyConditionHelper.withAnyKey;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.params.provider.Arguments.of;
@@ -63,6 +62,22 @@ class PostParamsTest {
                                         .withContentType("test")
                                         .withContentTypeStartingWith("test"),
                         getExceptionMessage(CONTENT_TYPE)
+                ),
+                of(
+                        "Should assert that there is no conflicting STARTS_WITH and EQ CONTENT_DISPOSITION conditions",
+                        (ThrowableAssert.ThrowingCallable) () ->
+                                createBuilder()
+                                        .withContentDispositionStartingWith("test")
+                                        .withContentDisposition("test"),
+                        getExceptionMessage(CONTENT_DISPOSITION)
+                ),
+                of(
+                        "Should assert that there is no conflicting EQ and STARTS_WITH CONTENT_DISPOSITION conditions",
+                        (ThrowableAssert.ThrowingCallable) () ->
+                                createBuilder()
+                                        .withContentDispositionStartingWith("test")
+                                        .withContentDisposition("test"),
+                        getExceptionMessage(CONTENT_DISPOSITION)
                 )
         );
     }

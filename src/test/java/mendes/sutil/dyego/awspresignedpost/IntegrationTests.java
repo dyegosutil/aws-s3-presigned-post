@@ -2,7 +2,6 @@ package mendes.sutil.dyego.awspresignedpost;
 
 import mendes.sutil.dyego.awspresignedpost.domain.conditions.key.KeyCondition;
 import okhttp3.*;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -46,7 +45,6 @@ class IntegrationTests {
      * @param expectedResult
      */
     @ParameterizedTest(name = "{0}")
-    @Disabled
     @MethodSource("getTestCasesMandatoryParams")
     void testWithMandatoryParams(
             String testDescription,
@@ -233,6 +231,37 @@ class IntegrationTests {
                                 .withContentTypeStartingWith("dex")
                                 .build(),
                         createFormDataPartsWithKeyCondition("Content-Type", "text/plain"),
+                        false
+                ),
+                // Content Disposition
+                of("Should succeed while uploading file to S3 using the exact content disposition set in the policy",
+                        createDefaultPostParamBuilder()
+                                .withContentDisposition("inline")
+                                .build(),
+                        createFormDataPartsWithKeyCondition("Content-Disposition", "inline"),
+                        true
+                ),
+                // Content Disposition
+                of("Should fail while uploading file to S3 not using the exact content disposition set in the policy",
+                        createDefaultPostParamBuilder()
+                                .withContentDisposition("inline")
+                                .build(),
+                        createFormDataPartsWithKeyCondition("Content-Disposition", "attachment"),
+                        false
+                ),
+                of("Should succeed while uploading file to S3 using the content disposition starting with value as set in the policy",
+                        createDefaultPostParamBuilder()
+                                .withContentDispositionStartingWith("inli")
+                                .build(),
+                        createFormDataPartsWithKeyCondition("Content-Disposition", "inline"),
+                        true
+                ),
+                // Content Disposition
+                of("Should fail while uploading file to S3 using the content disposition starting with value different than the one set in the policy",
+                        createDefaultPostParamBuilder()
+                                .withContentDispositionStartingWith("inline")
+                                .build(),
+                        createFormDataPartsWithKeyCondition("Content-Disposition", "attachment"),
                         false
                 )
         );

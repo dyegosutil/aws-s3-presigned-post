@@ -21,4 +21,13 @@ public class ContentLengthRangeCondition extends Condition {
     public long getMaximumValue() {
         return maximumValue;
     }
+
+    @Override
+    public String[] asAwsPolicyCondition() {
+        return new String[]{
+                getConditionField().awsConditionName,
+                String.valueOf(getMinimumValue()),
+                String.valueOf(getMaximumValue())
+        };
+    }
 }

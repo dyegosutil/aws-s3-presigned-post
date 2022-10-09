@@ -188,6 +188,28 @@ public final class PostParams {
             return withStartingWithCondition(CONTENT_TYPE, value);
         }
 
+        /**
+         * Allows specifying which is the exact content disposition of the file being uploaded.
+         * Example: 'inline', 'attachment'
+         *
+         * @param value Content Disposition value to be added to the policy
+         * @return The {@link Builder} object
+         */
+        public Builder withContentDisposition(String value) {
+            return withCondition(CONTENT_DISPOSITION, value);
+        }
+
+        /**
+         * Allows specifying how should be the beginning of the content disposition for this upload.
+         * Example: 'inline', 'attachment'
+         *
+         * @param value Content Disposition to be added to the policy
+         * @return The {@link Builder} object
+         */
+        public Builder withContentDispositionStartingWith(String value) {
+            return withStartingWithCondition(CONTENT_DISPOSITION, value);
+        }
+
         // TODO
         // Matching Any Content
         // To configure the POST policy to allow any content within a form field, use starts-with with an empty value (""). This example allows any value for success_action_redirect:
