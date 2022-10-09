@@ -2,6 +2,7 @@ package mendes.sutil.dyego.awspresignedpost;
 
 import lombok.Getter;
 import mendes.sutil.dyego.awspresignedpost.domain.AmzExpirationDate;
+import mendes.sutil.dyego.awspresignedpost.domain.conditions.ConditionField;
 import mendes.sutil.dyego.awspresignedpost.domain.conditions.MatchCondition;
 import mendes.sutil.dyego.awspresignedpost.domain.conditions.Condition;
 import mendes.sutil.dyego.awspresignedpost.domain.conditions.ContentLengthRangeCondition;
@@ -9,12 +10,11 @@ import mendes.sutil.dyego.awspresignedpost.domain.conditions.key.KeyCondition;
 import software.amazon.awssdk.regions.Region;
 
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
-import static mendes.sutil.dyego.awspresignedpost.domain.conditions.ConditionField.CACHE_CONTROL;
+import static mendes.sutil.dyego.awspresignedpost.domain.conditions.ConditionField.*;
 import static mendes.sutil.dyego.awspresignedpost.domain.conditions.MatchCondition.Operator.EQ;
-import static mendes.sutil.dyego.awspresignedpost.domain.conditions.ConditionField.BUCKET;
 import static mendes.sutil.dyego.awspresignedpost.domain.conditions.MatchCondition.Operator.STARTS_WITH;
 
 /**
@@ -32,13 +32,13 @@ public final class PostParams {
     private final Region region;
 
     private final AmzExpirationDate amzExpirationDate;
-    private final List<Condition> conditions;
+    private final Set<Condition> conditions;
 
     private PostParams(
             String bucket,
             Region region,
             AmzExpirationDate amzExpirationDate,
-            List<Condition> conditions
+            Set<Condition> conditions
 //            String key // TODO is key mandatory?
     ){
         this.amzExpirationDate = amzExpirationDate;
@@ -70,7 +70,7 @@ public final class PostParams {
 
     public static final class Builder {
 
-        private final List<Condition> conditions = new ArrayList<>();
+        private final Set<Condition> conditions = new HashSet<>();
 
         private final String bucket;
         private final Region region;
@@ -90,6 +90,41 @@ public final class PostParams {
             // TODO Identify mandatory fields and prevent building it if they are missing?
             // TODO Make sure it is build only if it will work and nothing is missing - if possible
             return new PostParams(bucket, region, amzExpirationDate, conditions);
+        }
+
+        /**
+         * Makes sure that an exact ({@link MatchCondition.Operator#EQ}) mutually exclusive condition is not added with 
+         * a startsWith ({@link MatchCondition.Operator#STARTS_WITH}) condition.
+         *
+         * @param conditionField Condition type specified
+         * @param value          Specifiled value for this condition
+         * @return @return The {@link Builder} object
+         */
+        private Builder withCondition(ConditionField conditionField, String value) {
+            return assureUniquenessAndAdd(new MatchCondition(conditionField, EQ, value));
+        }
+
+        /**
+         * Makes sure that a startsWith ({@link MatchCondition.Operator#STARTS_WITH})mutually exclusive condition is not added with
+         * an exact ({@link MatchCondition.Operator#EQ}) condition.
+         *
+         * @param conditionField Condition type specified
+         * @param value          Specifiled value for this condition
+         * @return @return The {@link Builder} object
+         */
+        private Builder withStartingWithCondition(ConditionField conditionField, String value) {
+            return assureUniquenessAndAdd(new MatchCondition(conditionField, STARTS_WITH, value));
+        }
+
+        private Builder assureUniquenessAndAdd(MatchCondition matchCondition) {
+            if (conditions.contains(matchCondition))
+                throw new IllegalArgumentException(getInvalidConditionExceptionMessage(matchCondition.getConditionField()));
+            this.conditions.add(matchCondition);
+            return this;
+        }
+
+        private String getInvalidConditionExceptionMessage(ConditionField conditionField) {
+            return String.format("Only one %s condition can be used", conditionField.name());
         }
 
         /**
@@ -115,8 +150,7 @@ public final class PostParams {
          * @return The {@link Builder} object
          */
         public Builder withCacheControl(String value) {
-            this.conditions.add(new MatchCondition(CACHE_CONTROL, EQ, value));
-            return this;
+            return withCondition(CACHE_CONTROL, value);
         }
 
         /**
@@ -126,7 +160,11 @@ public final class PostParams {
          * @return The {@link Builder} object
          */
         public Builder withCacheControlStartingWith(String value) {
-            this.conditions.add(new MatchCondition(CACHE_CONTROL, STARTS_WITH, value));
+            return withStartingWithCondition(CACHE_CONTROL, value);
+        }
+
+        public Builder withContentType(String value) {
+            this.conditions.add(new MatchCondition(CONTENT_TYPE, EQ, value));
             return this;
         }
     }

@@ -93,7 +93,7 @@ public class S3PostSigner { // TODO rename?
 
 
     private List<String[]> buildConditions(
-            List<Condition> conditions,
+            Set<Condition> conditions,
             AmzDate xAmzDate,
             String credentials) { //TODO Two conditions? find a better name
         final List<String[]> result = new ArrayList<>();
