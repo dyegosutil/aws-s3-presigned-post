@@ -6,6 +6,7 @@ import mendes.sutil.dyego.awspresignedpost.domain.conditions.ConditionField;
 import mendes.sutil.dyego.awspresignedpost.domain.conditions.MatchCondition;
 import mendes.sutil.dyego.awspresignedpost.domain.conditions.Condition;
 import mendes.sutil.dyego.awspresignedpost.domain.conditions.ContentLengthRangeCondition;
+import mendes.sutil.dyego.awspresignedpost.domain.conditions.helper.KeyConditionHelper;
 import mendes.sutil.dyego.awspresignedpost.domain.conditions.key.KeyCondition;
 import software.amazon.awssdk.regions.Region;
 
@@ -163,9 +164,36 @@ public final class PostParams {
             return withStartingWithCondition(CACHE_CONTROL, value);
         }
 
+        /**
+         * Allows specifying which is the exact content type of the file being uploaded.
+         * Example: 'audio/aac', 'text/plain'. This can be seen in the metadata information in the s3 bucket.
+         * Not to be confused with file extension. To limit that use {@link KeyConditionHelper}
+         *
+         * @param value Content Type to be used
+         * @return @return The {@link Builder} object
+         */
         public Builder withContentType(String value) {
-            this.conditions.add(new MatchCondition(CONTENT_TYPE, EQ, value));
-            return this;
+            return withCondition(CONTENT_TYPE, value);
         }
+
+        /**
+         * Allows specifying how should be the beginning of the content type for this upload.
+         * Example: 'audio/aac', 'text/plain'. This can be seen in the metadata information in the s3 bucket.
+         * Not to be confused with file extension. To limit that use {@link KeyConditionHelper}
+         *
+         * @param value Content Type to be used
+         * @return @return The {@link Builder} object
+         */
+        public Builder withContentTypeStartingWith(String value) {
+            return withStartingWithCondition(CONTENT_TYPE, value);
+        }
+
+        // TODO
+        // Matching Any Content
+        // To configure the POST policy to allow any content within a form field, use starts-with with an empty value (""). This example allows any value for success_action_redirect:
+        // ["starts-with", "$success_action_redirect", ""]
+
+        // TODO
+        // Content-Types values for a starts-with condition that include commas are interpreted as lists. Each value in the list must meet the condition for the whole condition to pass.
     }
 }

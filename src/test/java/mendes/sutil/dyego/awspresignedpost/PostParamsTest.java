@@ -11,15 +11,17 @@ import java.time.ZonedDateTime;
 import java.util.stream.Stream;
 
 import static mendes.sutil.dyego.awspresignedpost.domain.conditions.ConditionField.CACHE_CONTROL;
+import static mendes.sutil.dyego.awspresignedpost.domain.conditions.ConditionField.CONTENT_TYPE;
 import static mendes.sutil.dyego.awspresignedpost.domain.conditions.helper.KeyConditionHelper.withAnyKey;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.params.provider.Arguments.of;
 
 class PostParamsTest {
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "{0}")
     @MethodSource("shouldAssertSingleMutuallyExclusiveConditionsTest")
     void shouldAssertSingleMutuallyExclusiveConditions(
+            String testName,
             ThrowableAssert.ThrowingCallable prohibitedDoubleConditionCall,
             String exceptionMessage
     ) {
@@ -31,6 +33,7 @@ class PostParamsTest {
     private static Stream<Arguments> shouldAssertSingleMutuallyExclusiveConditionsTest() {
         return Stream.of(
                 of(
+                        "Should assert that there is no conflicting STARTS_WITH and EQ CACHE_CONTROL conditions",
                         (ThrowableAssert.ThrowingCallable) () ->
                                 createBuilder()
                                         .withCacheControlStartingWith("test")
@@ -38,11 +41,28 @@ class PostParamsTest {
                         getExceptionMessage(CACHE_CONTROL)
                 ),
                 of(
+                        "Should assert that there is no conflicting EQ and STARTS_WITH CACHE_CONTROL conditions",
                         (ThrowableAssert.ThrowingCallable) () ->
                                 createBuilder()
                                         .withCacheControl("test")
                                         .withCacheControlStartingWith("test"),
                         getExceptionMessage(CACHE_CONTROL)
+                ),
+                of(
+                        "Should assert that there is no conflicting STARTS_WITH and EQ CONTENT_TYPE conditions",
+                        (ThrowableAssert.ThrowingCallable) () ->
+                                createBuilder()
+                                        .withContentTypeStartingWith("test")
+                                        .withContentType("test"),
+                        getExceptionMessage(CONTENT_TYPE)
+                ),
+                of(
+                        "Should assert that there is no conflicting EQ and STARTS_WITH CONTENT_TYPE conditions",
+                        (ThrowableAssert.ThrowingCallable) () ->
+                                createBuilder()
+                                        .withContentType("test")
+                                        .withContentTypeStartingWith("test"),
+                        getExceptionMessage(CONTENT_TYPE)
                 )
         );
     }

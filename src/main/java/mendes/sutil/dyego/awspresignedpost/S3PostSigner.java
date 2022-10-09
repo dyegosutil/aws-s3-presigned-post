@@ -116,8 +116,8 @@ public class S3PostSigner { // TODO rename?
                         String.valueOf(((ContentLengthRangeCondition) condition).getMinimumValue()),
                         String.valueOf(((ContentLengthRangeCondition) condition).getMaximumValue())
                 });
-                case CACHE_CONTROL -> result.add(new String[]{
-                        ((MatchCondition) condition).getConditionMatch().awsOperatorValue, // TODO perhaps change this to interfaces somehow object.getAwsOperatorValue
+                case CACHE_CONTROL, CONTENT_TYPE -> result.add(new String[]{
+                        ((MatchCondition) condition).getConditionMatch().awsOperatorValue, // TODO perhaps change this to interfaces somehow object.getAwsOperatorValue or condition.addItselfToBuiltConditions
                         condition.getConditionField().awsConditionName,
                         ((MatchCondition) condition).getValue()
                 });
