@@ -125,6 +125,20 @@ class PostParamsTest {
                                 .withContentEncoding("test"),
                         CONTENT_ENCODING,
                         EQ
+                ),
+                of(
+                        "Should assert that condition withExpiresStartingWith was added",
+                        (Supplier<PostParams.Builder>) () -> createBuilder()
+                                .withExpiresStartingWith("test"),
+                        EXPIRES,
+                        STARTS_WITH
+                ),
+                of(
+                        "Should assert that condition withExpires was added",
+                        (Supplier<PostParams.Builder>) () -> createBuilder()
+                                .withExpires("test"),
+                        EXPIRES,
+                        EQ
                 )
         );
     }
@@ -194,6 +208,22 @@ class PostParamsTest {
                                         .withContentEncoding("test")
                                         .withContentEncodingStartingWith("test"),
                         getExceptionMessage(CONTENT_ENCODING)
+                ),
+                of(
+                        "Should assert that there is no conflicting STARTS_WITH and EQ EXPIRES conditions",
+                        (ThrowableAssert.ThrowingCallable) () ->
+                                createBuilder()
+                                        .withExpiresStartingWith("test")
+                                        .withExpires("test"),
+                        getExceptionMessage(EXPIRES)
+                ),
+                of(
+                        "Should assert that there is no conflicting EQ and STARTS_WITH EXPIRES conditions",
+                        (ThrowableAssert.ThrowingCallable) () ->
+                                createBuilder()
+                                        .withExpires("test")
+                                        .withExpiresStartingWith("test"),
+                        getExceptionMessage(EXPIRES)
                 )
         );
     }

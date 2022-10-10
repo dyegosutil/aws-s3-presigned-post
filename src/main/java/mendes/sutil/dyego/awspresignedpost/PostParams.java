@@ -232,6 +232,28 @@ public final class PostParams {
             return withStartingWithCondition(CONTENT_ENCODING, value);
         }
 
+        /**
+         * Allows specifying which is the exact Expires condition of the file being uploaded.
+         * Example: Wed, 21 Oct 2015 07:28:00 GMT
+         *
+         * @param value Expires value to be added to the policy
+         * @return The {@link Builder} object
+         */
+        public Builder withExpires(String value) {
+            return withCondition(EXPIRES, value);
+        }
+
+        /**
+         * Allows specifying how should be the beginning of the Expires condition for this upload.
+         * Example: Wed,
+         *
+         * @param value Expires condition value to be added to the policy
+         * @return The {@link Builder} object
+         */
+        public Builder withExpiresStartingWith(String value) {
+            return withStartingWithCondition(EXPIRES, value);
+        }
+
         // TODO
         // Matching Any Content
         // To configure the POST policy to allow any content within a form field, use starts-with with an empty value (""). This example allows any value for success_action_redirect:
