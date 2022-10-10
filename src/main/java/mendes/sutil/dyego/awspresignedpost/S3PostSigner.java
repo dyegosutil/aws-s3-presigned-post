@@ -1,16 +1,15 @@
 package mendes.sutil.dyego.awspresignedpost;
 
-import java.nio.charset.StandardCharsets;
-import java.util.*;
-
 import com.google.gson.Gson;
 import com.google.gson.annotations.Expose;
 import mendes.sutil.dyego.awspresignedpost.domain.AmzDate;
-import mendes.sutil.dyego.awspresignedpost.domain.conditions.MatchCondition;
 import mendes.sutil.dyego.awspresignedpost.domain.conditions.Condition;
-import mendes.sutil.dyego.awspresignedpost.domain.conditions.ContentLengthRangeCondition;
 import software.amazon.awssdk.auth.credentials.AwsCredentials;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
+
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+
 import static mendes.sutil.dyego.awspresignedpost.domain.conditions.ConditionField.*;
 
 public class S3PostSigner { // TODO rename?
@@ -28,7 +27,7 @@ public class S3PostSigner { // TODO rename?
 
         String bucket = postParams.getBucket();
         String region = postParams.getRegion().id();
-        String url = "https://"+bucket+".s3."+region+".amazonaws.com";
+        String url = "https://"+bucket+".s3."+region+".amazonaws.com"; // TODO use string format
         String credentials = AwsSigner.buildCredentialField(awsCredentials, postParams.getRegion(), amzDate);
 
         Policy policy = new Policy(
@@ -57,40 +56,6 @@ public class S3PostSigner { // TODO rename?
                 url,credentials, amzDate.formatForPolicy(), signature, policyB64, "AWS4-HMAC-SHA256"
         );
     }
-
-    //        val bucket = s3Properties.kycZipBucket
-//        val key = "${personId.value}/$verificationId/kyc.zip"
-//        val region = Region.EU_CENTRAL_1
-//        String credentialsField = AwsSigner.buildCredentialField(awsCredentials, region, date)
-//    String credentialsField = "";
-
-
-//        val policy = Policy(
-//                expiration = DateTimeFormatter.ISO_INSTANT.format(getTwoDaysInTheFuture()),
-//                conditions = buildConditions(
-//                        date = date,
-//                        credentials = credentialsField,
-//                        key = key,
-//                        bucket = bucket,
-//                        sessionToken = sessionToken
-//                )
-//        )
-//        val policyJson = Gson().toJson(policy)
-//        logger.debug { "Police document: $policyJson" }
-//        val policyB64 = Base64.getEncoder().encodeToString(policyJson.toByteArray(StandardCharsets.UTF_8))
-//
-
-    //
-//        return PreSignedPostDetails(
-//                url = "https://$bucket.s3.eu-central-1.amazonaws.com",
-//                key = key,
-//                algorithm = "AWS4-HMAC-SHA256",
-//                credential = credentialsField,
-//                signature = signature,
-//                date = AMZ_DATE_FORMATTER.format(date),
-//                policy = policyB64
-//        )
-
 
     private List<String[]> buildConditions(
             Set<Condition> conditions,

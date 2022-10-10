@@ -73,3 +73,5 @@ If you want to allow the user upload any key use ```withAnyKey()``` and submit a
 
 TODO
 Add examples of how to use each one of the options, content type, range, etc.
+
+Check where info should not be null?
