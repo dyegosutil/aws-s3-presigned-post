@@ -249,6 +249,7 @@ class IntegrationTests {
                         createFormDataPartsWithKeyCondition("Content-Disposition", "attachment"),
                         false
                 ),
+                // Content Disposition
                 of("Should succeed while uploading file to S3 using the content disposition starting with value as set in the policy",
                         createDefaultPostParamBuilder()
                                 .withContentDispositionStartingWith("inli")
@@ -262,6 +263,39 @@ class IntegrationTests {
                                 .withContentDispositionStartingWith("inline")
                                 .build(),
                         createFormDataPartsWithKeyCondition("Content-Disposition", "attachment"),
+                        false
+                ),
+                // Content-Encoding
+                of("Should succeed while uploading file to S3 using the exact content encoding set in the policy",
+                        createDefaultPostParamBuilder()
+                                .withContentEncoding("compress")
+                                .build(),
+                        createFormDataPartsWithKeyCondition("Content-Encoding", "compress"),
+                        true
+                )
+                ,
+                // Content-Encoding
+                of("Should fail while uploading file to S3 not using the exact content encoding set in the policy",
+                        createDefaultPostParamBuilder()
+                                .withContentEncoding("compress")
+                                .build(),
+                        createFormDataPartsWithKeyCondition("Content-Encoding", "gzip"),
+                        false
+                ),
+                // Content-Encoding
+                of("Should succeed while uploading file to S3 using the content encoding starting with value as set in the policy",
+                        createDefaultPostParamBuilder()
+                                .withContentEncodingStartingWith("com")
+                                .build(),
+                        createFormDataPartsWithKeyCondition("Content-Encoding", "compress"),
+                        true
+                ),
+                // Content-Encoding
+                of("Should fail while uploading file to S3 using the content encoding starting with value different than the one set in the policy",
+                        createDefaultPostParamBuilder()
+                                .withContentEncodingStartingWith("com")
+                                .build(),
+                        createFormDataPartsWithKeyCondition("Content-Disposition", "abc"),
                         false
                 )
         );

@@ -210,6 +210,28 @@ public final class PostParams {
             return withStartingWithCondition(CONTENT_DISPOSITION, value);
         }
 
+        /**
+         * Allows specifying which is the exact content encoding of the file being uploaded.
+         * Examples: 'gzip', 'compress', etc
+         *
+         * @param value Content Encoding value to be added to the policy
+         * @return The {@link Builder} object
+         */
+        public Builder withContentEncoding(String value) {
+            return withCondition(CONTENT_ENCODING, value);
+        }
+
+        /**
+         * Allows specifying how should be the beginning of the content encoding for this upload.
+         * Example: 'gzi', 'compr'
+         *
+         * @param value Content Encoding to be added to the policy
+         * @return The {@link Builder} object
+         */
+        public Builder withContentEncodingStartingWith(String value) {
+            return withStartingWithCondition(CONTENT_ENCODING, value);
+        }
+
         // TODO
         // Matching Any Content
         // To configure the POST policy to allow any content within a form field, use starts-with with an empty value (""). This example allows any value for success_action_redirect:
