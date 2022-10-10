@@ -12,6 +12,7 @@ public enum ConditionField { // TODO move it
     CONTENT_TYPE("$Content-Type"),
     CONTENT_DISPOSITION("$Content-Disposition"),
     CONTENT_ENCODING("$Content-Encoding"),
+    EXPIRES("$Expires"),
     DATE("$x-amz-date"),
     BUCKET("$bucket"),
     CONTENT_LENGTH_RANGE("content-length-range");

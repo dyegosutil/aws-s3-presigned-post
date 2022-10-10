@@ -2,6 +2,7 @@ package mendes.sutil.dyego.awspresignedpost;
 
 import mendes.sutil.dyego.awspresignedpost.domain.conditions.key.KeyCondition;
 import okhttp3.*;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -44,6 +45,7 @@ class IntegrationTests {
      * @param formDataParts
      * @param expectedResult
      */
+    @Disabled
     @ParameterizedTest(name = "{0}")
     @MethodSource("getTestCasesMandatoryParams")
     void testWithMandatoryParams(
@@ -296,6 +298,39 @@ class IntegrationTests {
                                 .withContentEncodingStartingWith("com")
                                 .build(),
                         createFormDataPartsWithKeyCondition("Content-Disposition", "abc"),
+                        false
+                ),
+                // Expires
+                of("Should succeed while uploading file to S3 using the exact Expires condition set in the policy",
+                        createDefaultPostParamBuilder()
+                                .withExpires("Wed, 21 Oct 2015 07:28:00 GMT")
+                                .build(),
+                        createFormDataPartsWithKeyCondition("Expires", "Wed, 21 Oct 2015 07:28:00 GMT"), // TODO use Expires as a constant? So that it can be seen that this is how it should be passed in the browser params or postman?
+                        true
+                )
+                ,
+                // Expires
+                of("Should fail while uploading file to S3 not using the exact Expires condition set in the policy",
+                        createDefaultPostParamBuilder()
+                                .withExpires("Wed, 21 Oct 2015 07:28:00 GMT")
+                                .build(),
+                        createFormDataPartsWithKeyCondition("Expires", "Wed, 21 Oct 2015 07:29:00 GMT"),
+                        false
+                ),
+                // Expires
+                of("Should succeed while uploading file to S3 using the Expires condition starting with value as set in the policy",
+                        createDefaultPostParamBuilder()
+                                .withExpiresStartingWith("Wed,")
+                                .build(),
+                        createFormDataPartsWithKeyCondition("Expires", "Wed, 21 Oct 2015 07:29:00 GMT"),
+                        true
+                ),
+                // Expires
+                of("Should fail while uploading file to S3 using the Expires starting with value different than the one set in the policy",
+                        createDefaultPostParamBuilder()
+                                .withExpiresStartingWith("Wed,")
+                                .build(),
+                        createFormDataPartsWithKeyCondition("Expires", "Mon, 21 Oct 2015 07:29:00 GMT"),
                         false
                 )
         );
