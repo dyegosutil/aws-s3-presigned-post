@@ -53,7 +53,7 @@ class PostParamsTest {
                         .withContentLengthRange(10, 20)
                         .build()
                         .getConditions()
-        ).contains(new ContentLengthRangeCondition(10, 20));
+        ).contains(new ContentLengthRangeCondition(10, 20));  // TODO adding a 10, 21 here works. Perhaps change to override the hashcode and equals.
     }
 
     @ParameterizedTest(name = "{0}")
@@ -138,6 +138,20 @@ class PostParamsTest {
                         (Supplier<PostParams.Builder>) () -> createBuilder()
                                 .withExpires("test"),
                         EXPIRES,
+                        EQ
+                ),
+                of(
+                        "Should assert that condition withSuccessActionRedirectStartingWith was added",
+                        (Supplier<PostParams.Builder>) () -> createBuilder()
+                                .withSuccessActionRedirectStartingWith("test"),
+                        SUCCESS_ACTION_REDIRECT,
+                        STARTS_WITH
+                ),
+                of(
+                        "Should assert that condition withSuccessActionRedirect was added",
+                        (Supplier<PostParams.Builder>) () -> createBuilder()
+                                .withSuccessActionRedirect("test"),
+                        SUCCESS_ACTION_REDIRECT,
                         EQ
                 )
         );
@@ -224,6 +238,22 @@ class PostParamsTest {
                                         .withExpires("test")
                                         .withExpiresStartingWith("test"),
                         getExceptionMessage(EXPIRES)
+                ),
+                of(
+                        "Should assert that there is no conflicting STARTS_WITH and EQ SUCCESS_ACTION_REDIRECT conditions",
+                        (ThrowableAssert.ThrowingCallable) () ->
+                                createBuilder()
+                                        .withSuccessActionRedirectStartingWith("test")
+                                        .withSuccessActionRedirect("test"),
+                        getExceptionMessage(SUCCESS_ACTION_REDIRECT)
+                ),
+                of(
+                        "Should assert that there is no conflicting EQ and STARTS_WITH SUCCESS_ACTION_REDIRECT conditions",
+                        (ThrowableAssert.ThrowingCallable) () ->
+                                createBuilder()
+                                        .withSuccessActionRedirect("test")
+                                        .withSuccessActionRedirectStartingWith("test"),
+                        getExceptionMessage(SUCCESS_ACTION_REDIRECT)
                 )
         );
     }
