@@ -2,7 +2,6 @@ package mendes.sutil.dyego.awspresignedpost;
 
 import mendes.sutil.dyego.awspresignedpost.domain.conditions.key.KeyCondition;
 import okhttp3.*;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -45,7 +44,6 @@ class IntegrationTests {
      * @param formDataParts
      * @param expectedResult
      */
-    @Disabled
     @ParameterizedTest(name = "{0}")
     @MethodSource("getTestCasesMandatoryParams")
     void testWithMandatoryParams(
@@ -61,7 +59,7 @@ class IntegrationTests {
         //                                        .withToken
         //                                        ("FwoGZXIvYXdzEAMaDJnjMcCzZ05MxE5udCKzAd8acj8V3dKJfJbtEASA07VbfGfsSsd5MXSC4PnsBr8q4VXbseNaV6IXIeAknFF0w4+Vcy/2q2krRqxXYhaQBKrTqj0f/622MlaS+DCQc6rJm0JxG9p0Ws3ftDWC89Nm85bRoFmNucBpVIr1eakuzFknTIqtm5PuLlYiis6ybiTRrUQ8kXmEjy8u5BjSORKScjMVy5WQmcfcxTIodyonRVbyGr6tJo4URs7Iu2CKJL6LQgURKJOa8pUGMi0Hcs2nE/IEApn7izSTyUmgfTgzNcGJsTbBeeJHM49RNOaCcI8IVkRlZlJFE28=")
 
-        PostParams postParams = PostParams
+        PostParams postParams = PostParams // TODO perhaps this can come from the Arguments in the sourceTest method
                 .builder(
                         region,
                         expirationDate,
@@ -70,16 +68,7 @@ class IntegrationTests {
                 )
                 .build();
 
-        PresignedPost presignedPost = new S3PostSigner(getAmazonCredentialsProvider()).create(postParams);
-        System.out.println(presignedPost); // TODO Check about logging for tests, would be nice to know why it failed in GIT
-
-        Boolean wasUploadSuccessful = false;
-        try {
-            wasUploadSuccessful = uploadToAws(presignedPost, formDataParts);
-        } catch (Exception e) {
-            e.printStackTrace(); // TODO is this good?
-        }
-        assertThat(wasUploadSuccessful).isEqualTo(expectedResult);
+        createPreSignedPostAndUpload(postParams,formDataParts, expectedResult);
     }
 
     /**
@@ -98,15 +87,34 @@ class IntegrationTests {
             Map<String, String> formDataParts,
             Boolean expectedResult
     ) {
+        createPreSignedPostAndUpload(postParams,formDataParts, expectedResult);
+    }
+
+    private void createPreSignedPostAndUpload(PostParams postParams, Map<String, String> formDataParts, Boolean expectedResult) {
         PresignedPost presignedPost = new S3PostSigner(getAmazonCredentialsProvider()).create(postParams);
         System.out.println(presignedPost); // TODO Check about logging for tests, would be nice to know why it failed in GIT
+        Boolean wasUploadSuccessful = uploadToAws(presignedPost, formDataParts);
+        assertThat(wasUploadSuccessful).isEqualTo(expectedResult);
+    }
 
-        Boolean wasUploadSuccessful = false;
-        try {
-            wasUploadSuccessful = uploadToAws(presignedPost, formDataParts);
-        } catch (Exception e) {
-            e.printStackTrace(); // TODO is this good?
-        }
+    /**
+     * TODO
+     * @param testDescription
+     * @param postParams
+     * @param formDataParts
+     * @param expectedResult
+     */
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getTestCasesForWithSuccessActionRedirect")
+    void testWithSuccessActionRedirect(
+            String testDescription,
+            PostParams postParams,
+            Map<String, String> formDataParts,
+            Boolean expectedResult
+    ) {
+        PresignedPost presignedPost = new S3PostSigner(getAmazonCredentialsProvider()).create(postParams);
+        System.out.println(presignedPost); // TODO Check about logging for tests, would be nice to know why it failed in GIT
+        Boolean wasUploadSuccessful = uploadToAwsCheckingRedirect(presignedPost, formDataParts);
         assertThat(wasUploadSuccessful).isEqualTo(expectedResult);
     }
 
@@ -135,6 +143,55 @@ class IntegrationTests {
                         BUCKET,
                         withAnyKey()
                 );
+    }
+
+    public static Stream<Arguments> getTestCasesForWithSuccessActionRedirect() {
+        return Stream.of(
+                // success_action_redirect
+                of(
+                        "Should succeed while uploading file to S3 when using the same " +
+                                "success_action_redirect specified in the policy and having the correct return from the " +
+                                "http client",
+                        createDefaultPostParamBuilder()
+                                .withSuccessActionRedirect("https://www.google.com")
+                                .build(),
+                        createFormDataPartsWithKeyCondition("success_action_redirect", "https://www.google.com"),
+                        true
+                ),
+                // success_action_redirect
+                of(
+                        "Should fail while uploading file to S3 when using a different " +
+                                "success_action_redirect specified in the policy and having the unsuccessful return " +
+                                "from the http client",
+                        createDefaultPostParamBuilder()
+                                .withSuccessActionRedirect("https://www.google.com")
+                                .build(),
+                        createFormDataPartsWithKeyCondition("success_action_redirect", String.format("https://%s.s3.eu-central-1.amazonaws.com", BUCKET)),
+                        false
+                ),
+                // success_action_redirect
+                of(
+                        "Should succeed while uploading file to S3 when using the same initial string " +
+                                "success_action_redirect specified in the policy and having the correct return from the " +
+                                "http client",
+                        createDefaultPostParamBuilder()
+                                .withSuccessActionRedirectStartingWith("https://www.google.")
+                                .build(),
+                        createFormDataPartsWithKeyCondition("success_action_redirect", "https://www.google.com.br"),
+                        true
+                ),
+                // success_action_redirect
+                of(
+                        "Should fail while uploading file to S3 when using a different initial string" +
+                                "success_action_redirect than specified in the policy and having the unsuccessful return " +
+                                "from the http client",
+                        createDefaultPostParamBuilder()
+                                .withSuccessActionRedirectStartingWith("https://www.google")
+                                .build(),
+                        createFormDataPartsWithKeyCondition("success_action_redirect", String.format("https://%s.s3.eu-central-1.amazonaws.com", BUCKET)),
+                        false
+                )
+        );
     }
 
     private static Stream<Arguments> getTestCasesOptionalParams() {
@@ -447,11 +504,13 @@ class IntegrationTests {
      *
      * @param presignedPost
      * @return
-     * @throws IOException In case the upload is not successful
      */
-    private boolean uploadToAws(PresignedPost presignedPost, Map<String, String> formDataParts) throws IOException {
-        final OkHttpClient client = new OkHttpClient();
+    private boolean uploadToAws(PresignedPost presignedPost, Map<String, String> formDataParts) {
+        Request request = createRequest(presignedPost, formDataParts);
+        return performCallAndVerifySuccess(request);
+    }
 
+    private Request createRequest(PresignedPost presignedPost, Map<String, String> formDataParts) {
         MultipartBody.Builder builder = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 // below are all the parameters that are required for the upload to be successful. Apart from file that has to be the last one
@@ -469,13 +528,44 @@ class IntegrationTests {
 
         MultipartBody multipartBody = builder.build();
 
-        Request request = new Request.Builder().url(presignedPost.getUrl()).post(multipartBody).build();
-        try (Response response = client.newCall(request).execute()) {
-            if (!response.isSuccessful()) {
-                throw new IOException("Unexpected code " + response + response.message());
-            } else {
-                return true;
-            }
+        return new Request.Builder()
+                .url(presignedPost.getUrl())
+                .post(multipartBody).build();
+    }
+
+    private boolean uploadToAwsCheckingRedirect(PresignedPost presignedPost, Map<String, String> formDataParts) {
+        Request request = createRequest(presignedPost, formDataParts);
+        String successActionRedirect = formDataParts.get("success_action_redirect"); // TODO User constants?
+        return performCallAndVerifySuccess(request, successActionRedirect);
+    }
+
+    private boolean performCallAndVerifySuccess(Request request) {
+        try (Response response = new OkHttpClient().newCall(request).execute()) {
+            return checkSuccessAndPrintResponseIfError(response);
+        } catch (Exception e) {
+            System.err.println(e); // TODO fix
+            return false;
         }
+    }
+
+    private boolean performCallAndVerifySuccess(Request request, String successActionRedirect) {
+        try (Response response = new OkHttpClient().newCall(request).execute()) {
+            HttpUrl httpUrl = response.request().url();
+            String responseRedirectUrl = httpUrl.scheme()+"://"+httpUrl.host();
+            assertThat(responseRedirectUrl).isEqualTo(successActionRedirect);
+
+            return checkSuccessAndPrintResponseIfError(response);
+        } catch (Exception e) {
+            System.err.println(e); // TODO fix
+            return false;
+        }
+    }
+
+    private boolean checkSuccessAndPrintResponseIfError(Response response) {
+        if (!response.isSuccessful()) {
+            System.err.println(new IOException("Unexpected code " + response + response.message()));  // TODO change it
+            return false;
+        }
+        return true;
     }
 }

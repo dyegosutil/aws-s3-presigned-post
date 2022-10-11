@@ -254,6 +254,39 @@ public final class PostParams {
             return withStartingWithCondition(EXPIRES, value);
         }
 
+        /**
+         * Allows specifying which is the exact success_action_redirect condition of the file being uploaded.
+         * <p>
+         * This condition is used to redirect the user to another page after the upload. AWS will add query parameters
+         * into the end of the url such as
+         * https://www.mydomain.com/?bucket=mybucket&key=test.txt&etag=%2254b0c58c7ce9f2a8b551351102ee0938%22
+         * <p>
+         * Example: https://www.mydomain.com // TODO suppress
+         *
+         * @param value Expires value to be added to the policy
+         * @return The {@link Builder} object
+         */
+        public Builder withSuccessActionRedirect(String value) {
+            return withCondition(SUCCESS_ACTION_REDIRECT, value);
+        }
+
+        /**
+         * Allows specifying how should be the beginning of the success_action_redirect for this upload.
+         * This condition is used to redirect the user to another page after the upload
+         * <p>
+         * This condition is used to redirect the user to another page after the upload. AWS will add correspondent
+         * query parameters into the end of the url such as
+         * https://www.mydomain.com/?bucket=mybucket&key=test.txt&etag=%2254b0c58c7ce9f2a8b551351102ee0938%22
+         * <p>
+         * Example: https://www.mydomain. // TODO suppress
+         *
+         * @param value success_action_redirect condition value to be added to the policy
+         * @return The {@link Builder} object
+         */
+        public Builder withSuccessActionRedirectStartingWith(String value) {
+            return withStartingWithCondition(SUCCESS_ACTION_REDIRECT, value);
+        }
+
         // TODO
         // Matching Any Content
         // To configure the POST policy to allow any content within a form field, use starts-with with an empty value (""). This example allows any value for success_action_redirect:
