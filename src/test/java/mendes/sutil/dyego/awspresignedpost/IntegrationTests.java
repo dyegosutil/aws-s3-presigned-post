@@ -2,6 +2,7 @@ package mendes.sutil.dyego.awspresignedpost;
 
 import mendes.sutil.dyego.awspresignedpost.domain.conditions.key.KeyCondition;
 import okhttp3.*;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -24,6 +25,7 @@ import static mendes.sutil.dyego.awspresignedpost.domain.conditions.helper.KeyCo
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.params.provider.Arguments.of;
 
+@Disabled
 class IntegrationTests {
     private static final Region REGION = Region.of(System.getenv("AWS_REGION"));
     private static final ZonedDateTime EXPIRATION_DATE = Instant.now(Clock.systemUTC()) // TODO check if clock should be a parameter, check documentation to see how expiration time should be received, check what would happen if different zoneids are used for expiration aand for date in the policy

@@ -1,5 +1,5 @@
-name: Build 🏗️ & Test 🧪
-run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
+name: Build & Test 🏗️ 🧪
+#run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
 on: [push]
 
 concurrency:
