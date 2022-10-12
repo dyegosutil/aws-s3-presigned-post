@@ -20,6 +20,7 @@ import java.util.stream.Stream;
 import static mendes.sutil.dyego.awspresignedpost.domain.conditions.ConditionField.*;
 import static mendes.sutil.dyego.awspresignedpost.domain.conditions.MatchCondition.Operator.EQ;
 import static mendes.sutil.dyego.awspresignedpost.domain.conditions.MatchCondition.Operator.STARTS_WITH;
+import static mendes.sutil.dyego.awspresignedpost.PostParams.Builder.SuccessActionStatus;
 import static mendes.sutil.dyego.awspresignedpost.domain.conditions.helper.KeyConditionHelper.withAnyKey;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.params.provider.Arguments.of;
@@ -166,6 +167,13 @@ class PostParamsTest {
                         (Supplier<PostParams.Builder>) () -> createBuilder()
                                 .withRedirect("test"),
                         REDIRECT,
+                        EQ
+                ),
+                of(
+                        "Should assert that condition withSuccessActionStatus was added",
+                        (Supplier<PostParams.Builder>) () -> createBuilder()
+                                .withSuccessActionStatus(SuccessActionStatus.OK),
+                        SUCCESS_ACTION_STATUS,
                         EQ
                 )
         );

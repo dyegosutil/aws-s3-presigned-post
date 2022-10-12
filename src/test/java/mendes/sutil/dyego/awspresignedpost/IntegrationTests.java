@@ -21,6 +21,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import static mendes.sutil.dyego.awspresignedpost.PostParams.Builder.SuccessActionStatus;
+
 import static mendes.sutil.dyego.awspresignedpost.domain.conditions.helper.KeyConditionHelper.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.params.provider.Arguments.of;
@@ -70,7 +72,7 @@ class IntegrationTests {
                 )
                 .build();
 
-        createPreSignedPostAndUpload(postParams,formDataParts, expectedResult);
+        createPreSignedPostAndUpload(postParams, formDataParts, expectedResult);
     }
 
     /**
@@ -89,7 +91,7 @@ class IntegrationTests {
             Map<String, String> formDataParts,
             Boolean expectedResult
     ) {
-        createPreSignedPostAndUpload(postParams,formDataParts, expectedResult);
+        createPreSignedPostAndUpload(postParams, formDataParts, expectedResult);
     }
 
     private void createPreSignedPostAndUpload(PostParams postParams, Map<String, String> formDataParts, Boolean expectedResult) {
@@ -99,8 +101,24 @@ class IntegrationTests {
         assertThat(wasUploadSuccessful).isEqualTo(expectedResult);
     }
 
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getTestCasesForWithSuccessActionStatus")
+    void testWithSuccessActionStatus(
+            String testDescription,
+            PostParams postParams,
+            Map<String, String> formDataParts,
+            int expectedResponseCode,
+            Boolean expectedResult
+    ) {
+        PresignedPost presignedPost = new S3PostSigner(getAmazonCredentialsProvider()).create(postParams);
+        System.out.println(presignedPost);
+        Boolean wasUploadSuccessful = uploadToAwsCheckingSuccessActionStatus(presignedPost, formDataParts, expectedResponseCode);
+        assertThat(wasUploadSuccessful).isEqualTo(expectedResult);
+    }
+
     /**
      * TODO
+     *
      * @param testDescription
      * @param postParams
      * @param formDataParts
@@ -147,6 +165,51 @@ class IntegrationTests {
                         BUCKET,
                         withAnyKey()
                 );
+    }
+
+    public static Stream<Arguments> getTestCasesForWithSuccessActionStatus() {
+        return Stream.of(
+                of(
+                        "Should succeed while uploading file to S3 when the success_action_status specified is " +
+                                "the same as the one in the policy and status code returned in the response should be 200",
+                        createDefaultPostParamBuilder()
+                                .withSuccessActionStatus(SuccessActionStatus.OK)
+                                .build(),
+                        createFormDataPartsWithKeyCondition("success_action_status", "200"),
+                        200,
+                        true
+                ),
+                of(
+                        "Should succeed while uploading file to S3 when the success_action_status specified is " +
+                                "the same as the one in the policy and status code returned in the response should be 201",
+                        createDefaultPostParamBuilder()
+                                .withSuccessActionStatus(SuccessActionStatus.CREATED)
+                                .build(),
+                        createFormDataPartsWithKeyCondition("success_action_status", "201"),
+                        201,
+                        true
+                ),
+                of(
+                        "Should succeed while uploading file to S3 when the success_action_status specified is " +
+                                "the same as the one in the policy and status code returned in the response should be 204",
+                        createDefaultPostParamBuilder()
+                                .withSuccessActionStatus(SuccessActionStatus.NO_CONTENT)
+                                .build(),
+                        createFormDataPartsWithKeyCondition("success_action_status", "204"),
+                        204,
+                        true
+                ),
+                of(
+                        "Should fail while uploading file to S3 when the success_action_status specified is " +
+                                "different than the one in the policy and status code returned in the response should be 403",
+                        createDefaultPostParamBuilder()
+                                .withSuccessActionStatus(SuccessActionStatus.OK)
+                                .build(),
+                        createFormDataPartsWithKeyCondition("success_action_status", "299"),
+                        403,
+                        false
+                )
+        );
     }
 
     public static Stream<Arguments> getTestCasesForWithSuccessActionRedirect() {
@@ -563,7 +626,7 @@ class IntegrationTests {
      */
     private boolean uploadToAws(PresignedPost presignedPost, Map<String, String> formDataParts) {
         Request request = createRequest(presignedPost, formDataParts);
-        return performCallAndVerifySuccess(request);
+        return performCallAndVerifySuccessActionRedirect(request);
     }
 
     private Request createRequest(PresignedPost presignedPost, Map<String, String> formDataParts) {
@@ -592,10 +655,17 @@ class IntegrationTests {
     private boolean uploadToAwsCheckingRedirect(PresignedPost presignedPost, Map<String, String> formDataParts, String redirectHttpClientField) {
         Request request = createRequest(presignedPost, formDataParts);
         String successActionRedirect = formDataParts.get(redirectHttpClientField); // TODO User constants?
-        return performCallAndVerifySuccess(request, successActionRedirect);
+        return performCallAndVerifySuccessActionRedirect(request, successActionRedirect);
     }
 
-    private boolean performCallAndVerifySuccess(Request request) {
+    private boolean uploadToAwsCheckingSuccessActionStatus(
+            PresignedPost presignedPost, Map<String, String> formDataParts, int expectedResponseCode
+    ) {
+        Request request = createRequest(presignedPost, formDataParts);
+        return performCallAndVerifySuccessActionStatus(request, expectedResponseCode);
+    }
+
+    private boolean performCallAndVerifySuccessActionRedirect(Request request) {
         try (Response response = new OkHttpClient().newCall(request).execute()) {
             return checkSuccessAndPrintResponseIfError(response);
         } catch (Exception e) {
@@ -604,12 +674,22 @@ class IntegrationTests {
         }
     }
 
-    private boolean performCallAndVerifySuccess(Request request, String successActionRedirect) {
+    private boolean performCallAndVerifySuccessActionRedirect(Request request, String successActionRedirect) {
         try (Response response = new OkHttpClient().newCall(request).execute()) {
             HttpUrl httpUrl = response.request().url();
-            String responseRedirectUrl = httpUrl.scheme()+"://"+httpUrl.host();
+            String responseRedirectUrl = httpUrl.scheme() + "://" + httpUrl.host();
             assertThat(responseRedirectUrl).isEqualTo(successActionRedirect);
 
+            return checkSuccessAndPrintResponseIfError(response);
+        } catch (Exception e) {
+            System.err.println(e); // TODO fix
+            return false;
+        }
+    }
+
+    private boolean performCallAndVerifySuccessActionStatus(Request request, int expectedResponseCode) {
+        try (Response response = new OkHttpClient().newCall(request).execute()) {
+            assertThat(response.code()).isEqualTo(expectedResponseCode);
             return checkSuccessAndPrintResponseIfError(response);
         } catch (Exception e) {
             System.err.println(e); // TODO fix

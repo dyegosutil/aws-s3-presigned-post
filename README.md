@@ -75,3 +75,18 @@ TODO
 Add examples of how to use each one of the options, content type, range, etc.
 
 Check where info should not be null?
+
+how to make your library to be found by searches on google.
+
+TODO 
+Expalin that this is the return when you set 201 as response
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<PostResponse>
+    <Location>https://dyegosutil.s3.eu-central-1.amazonaws.com/pira.txt</Location>
+    <Bucket>dyegosutil</Bucket>
+    <Key>pira.txt</Key>
+    <ETag>"d41d8cd98f00b204e9800998ecf8427e"</ETag>
+</PostResponse>
+```
