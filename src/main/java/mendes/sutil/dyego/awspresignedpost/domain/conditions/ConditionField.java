@@ -13,6 +13,7 @@ public enum ConditionField { // TODO move it
     CONTENT_ENCODING("$Content-Encoding"),
     EXPIRES("$Expires"),
     SUCCESS_ACTION_REDIRECT("$success_action_redirect"),
+    REDIRECT("$redirect"),
     DATE("$x-amz-date"),
     BUCKET("$bucket"),
     CONTENT_LENGTH_RANGE("content-length-range");

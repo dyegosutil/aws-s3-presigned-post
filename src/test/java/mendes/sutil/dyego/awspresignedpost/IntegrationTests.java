@@ -29,7 +29,7 @@ import static org.junit.jupiter.params.provider.Arguments.of;
 class IntegrationTests {
     private static final Region REGION = Region.of(System.getenv("AWS_REGION"));
     private static final ZonedDateTime EXPIRATION_DATE = Instant.now(Clock.systemUTC()) // TODO check if clock should be a parameter, check documentation to see how expiration time should be received, check what would happen if different zoneids are used for expiration aand for date in the policy
-            .plus(10, ChronoUnit.MINUTES)
+            .plus(1, ChronoUnit.MINUTES)
             .atZone(ZoneOffset.UTC);
     private static final String BUCKET = System.getenv("AWS_BUCKET");
 
@@ -112,11 +112,13 @@ class IntegrationTests {
             String testDescription,
             PostParams postParams,
             Map<String, String> formDataParts,
+            String redirectHttpClientField,
             Boolean expectedResult
     ) {
         PresignedPost presignedPost = new S3PostSigner(getAmazonCredentialsProvider()).create(postParams);
         System.out.println(presignedPost); // TODO Check about logging for tests, would be nice to know why it failed in GIT
-        Boolean wasUploadSuccessful = uploadToAwsCheckingRedirect(presignedPost, formDataParts);
+        // TODO watch out while printing this info in github since someone could use it as a attack. Env local and not local for printing?
+        Boolean wasUploadSuccessful = uploadToAwsCheckingRedirect(presignedPost, formDataParts, redirectHttpClientField);
         assertThat(wasUploadSuccessful).isEqualTo(expectedResult);
     }
 
@@ -158,6 +160,7 @@ class IntegrationTests {
                                 .withSuccessActionRedirect("https://www.google.com")
                                 .build(),
                         createFormDataPartsWithKeyCondition("success_action_redirect", "https://www.google.com"),
+                        "success_action_redirect",
                         true
                 ),
                 // success_action_redirect
@@ -169,6 +172,7 @@ class IntegrationTests {
                                 .withSuccessActionRedirect("https://www.google.com")
                                 .build(),
                         createFormDataPartsWithKeyCondition("success_action_redirect", String.format("https://%s.s3.eu-central-1.amazonaws.com", BUCKET)),
+                        "success_action_redirect",
                         false
                 ),
                 // success_action_redirect
@@ -180,6 +184,7 @@ class IntegrationTests {
                                 .withSuccessActionRedirectStartingWith("https://www.google.")
                                 .build(),
                         createFormDataPartsWithKeyCondition("success_action_redirect", "https://www.google.com.br"),
+                        "success_action_redirect",
                         true
                 ),
                 // success_action_redirect
@@ -191,7 +196,56 @@ class IntegrationTests {
                                 .withSuccessActionRedirectStartingWith("https://www.google")
                                 .build(),
                         createFormDataPartsWithKeyCondition("success_action_redirect", String.format("https://%s.s3.eu-central-1.amazonaws.com", BUCKET)),
+                        "success_action_redirect",
                         false
+                ),
+                // redirect
+                of(
+                        "Should succeed while uploading file to S3 when using the same " +
+                                "redirect specified in the policy and having the correct return from the " +
+                                "http client",
+                        createDefaultPostParamBuilder()
+                                .withRedirect("https://www.google.com")
+                                .build(),
+                        createFormDataPartsWithKeyCondition("redirect", "https://www.google.com"),
+                        "redirect",
+                        true
+                ),
+                // redirect
+                of(
+                        "Should fail while uploading file to S3 when not using the same " +
+                                "redirect specified in the policy and having the correct return from the " +
+                                "http client",
+                        createDefaultPostParamBuilder()
+                                .withRedirect("https://www.google.com")
+                                .build(),
+                        createFormDataPartsWithKeyCondition("redirect", String.format("https://%s.s3.eu-central-1.amazonaws.com", BUCKET)),
+                        "redirect",
+                        false
+                ),
+                // redirect
+                of(
+                        "Should fail while uploading file to S3 when using a different initial string" +
+                                "redirect than specified in the policy and having the unsuccessful return " +
+                                "from the http client",
+                        createDefaultPostParamBuilder()
+                                .withRedirectStartingWith("https://www.google")
+                                .build(),
+                        createFormDataPartsWithKeyCondition("redirect", String.format("https://%s.s3.eu-central-1.amazonaws.com", BUCKET)),
+                        "redirect",
+                        false
+                ),
+                // redirect
+                of(
+                        "Should succeed while uploading file to S3 when using the same initial string" +
+                                "redirect than specified in the policy and having the unsuccessful return " +
+                                "from the http client",
+                        createDefaultPostParamBuilder()
+                                .withRedirectStartingWith("https://www.google")
+                                .build(),
+                        createFormDataPartsWithKeyCondition("redirect", "https://www.google.com"),
+                        "redirect",
+                        true
                 )
         );
     }
@@ -535,9 +589,9 @@ class IntegrationTests {
                 .post(multipartBody).build();
     }
 
-    private boolean uploadToAwsCheckingRedirect(PresignedPost presignedPost, Map<String, String> formDataParts) {
+    private boolean uploadToAwsCheckingRedirect(PresignedPost presignedPost, Map<String, String> formDataParts, String redirectHttpClientField) {
         Request request = createRequest(presignedPost, formDataParts);
-        String successActionRedirect = formDataParts.get("success_action_redirect"); // TODO User constants?
+        String successActionRedirect = formDataParts.get(redirectHttpClientField); // TODO User constants?
         return performCallAndVerifySuccess(request, successActionRedirect);
     }
 

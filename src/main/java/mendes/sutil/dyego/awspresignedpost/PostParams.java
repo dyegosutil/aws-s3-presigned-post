@@ -263,7 +263,7 @@ public final class PostParams {
          * <p>
          * Example: https://www.mydomain.com // TODO suppress
          *
-         * @param value Expires value to be added to the policy
+         * @param value success_action_redirect value to be added to the policy
          * @return The {@link Builder} object
          */
         public Builder withSuccessActionRedirect(String value) {
@@ -285,6 +285,39 @@ public final class PostParams {
          */
         public Builder withSuccessActionRedirectStartingWith(String value) {
             return withStartingWithCondition(SUCCESS_ACTION_REDIRECT, value);
+        }
+
+        /**
+         * Allows specifying which is the exact redirect condition of the file being uploaded.
+         * <p>
+         * This condition is used to redirect the user to another page after the upload. AWS will add query parameters
+         * into the end of the url such as
+         * https://www.mydomain.com/?bucket=mybucket&key=test.txt&etag=%2254b0c58c7ce9f2a8b551351102ee0938%22
+         * <p>
+         * Example: https://www.mydomain.com // TODO suppress
+         *
+         * @param value redirect value to be added to the policy
+         * @return The {@link Builder} object
+         */
+        public Builder withRedirect(String value) {
+            return withCondition(REDIRECT, value);
+        }
+
+        /**
+         * Allows specifying how should be the beginning of the redirect for this upload.
+         * This condition is used to redirect the user to another page after the upload
+         * <p>
+         * This condition is used to redirect the user to another page after the upload. AWS will add correspondent
+         * query parameters into the end of the url such as
+         * https://www.mydomain.com/?bucket=mybucket&key=test.txt&etag=%2254b0c58c7ce9f2a8b551351102ee0938%22
+         * <p>
+         * Example: https://www.mydomain. // TODO suppress
+         *
+         * @param value redirect condition value to be added to the policy
+         * @return The {@link Builder} object
+         */
+        public Builder withRedirectStartingWith(String value) {
+            return withStartingWithCondition(REDIRECT, value);
         }
 
         // TODO
