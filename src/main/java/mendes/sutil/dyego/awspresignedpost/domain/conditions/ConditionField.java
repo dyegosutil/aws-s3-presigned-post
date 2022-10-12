@@ -3,7 +3,6 @@ package mendes.sutil.dyego.awspresignedpost.domain.conditions;
 public enum ConditionField { // TODO move it
 
     KEY("$key"),
-    SUCCESS_ACTION_STATUS("$success_action_status"), // TODO Confirm if this is correct.
     ALGORITHM("$x-amz-algorithm"),
     CREDENTIAL("$x-amz-credential"),
     ACL(""),
@@ -14,6 +13,7 @@ public enum ConditionField { // TODO move it
     EXPIRES("$Expires"),
     SUCCESS_ACTION_REDIRECT("$success_action_redirect"),
     REDIRECT("$redirect"),
+    SUCCESS_ACTION_STATUS("$success_action_status"),
     DATE("$x-amz-date"),
     BUCKET("$bucket"),
     CONTENT_LENGTH_RANGE("content-length-range");

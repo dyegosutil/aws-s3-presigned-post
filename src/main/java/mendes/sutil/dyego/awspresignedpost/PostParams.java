@@ -144,6 +144,61 @@ public final class PostParams {
             return this;
         }
 
+        // TODO Rename AWS mentions in the lib to Amazon S3
+        /**
+         * Used to define how should be the response code returned by AWS when the upload is successful. The enum
+         * received as parameter here will be converted to 200, 201 or 204. Same values that should be used while using
+         * the pre-singed post to upload the file.
+         * <p>
+         * If the value is set to OK (200) or NO_CONTENT (204), Amazon S3 returns an empty document with a 200 or 204 status code.
+         * <p>
+         * If the value is set to CREATED (201), Amazon S3 returns an XML document with a 201 status code:
+         * <pre> {@code
+         * <?xml version="1.0" encoding="UTF-8"?>
+         * <PostResponse>
+         *     <Location>https://mybucket.s3.eu-central-1.amazonaws.com/myfile.txt</Location>
+         *     <Bucket>mybucket</Bucket>
+         *     <Key>myfile.txt</Key>
+         *     <ETag>"d41d8cd98f00b204e9800998ecf8427f"</ETag>
+         * </PostResponse>
+         * }
+         * </pre>
+         * <p>
+         * If you don't specify {@link PostParams.Builder#withSuccessActionRedirect(String)} or
+         * {@link PostParams.Builder#withSuccessActionRedirectStartingWith(String)}, the status code 204 is returned by
+         * default to the client when the upload succeeds.
+         * @param successActionStatus Http code to be returned when the upload is successful
+         * @return The {@link Builder} object
+         */
+        public Builder withSuccessActionStatus(SuccessActionStatus successActionStatus) {
+            return withCondition(SUCCESS_ACTION_STATUS, successActionStatus.getCode());
+        }
+
+        /**
+         *
+         */
+        public enum SuccessActionStatus {
+
+            OK(200),
+            CREATED(201),
+            NO_CONTENT(204);
+
+            private final String code;
+
+            SuccessActionStatus(int code) {
+                this.code = String.valueOf(code);
+            }
+
+            public String getCode() {
+                return this.code;
+            }
+        }
+
+//        enum SuccessActionStatus (
+////
+//            "fsf"
+//                    ),
+
         /**
          * Allows specifying the exact value to be used for the cache control condition
          *
@@ -299,6 +354,7 @@ public final class PostParams {
          * @param value redirect value to be added to the policy
          * @return The {@link Builder} object
          */
+        @Deprecated // TODO think about removing it
         public Builder withRedirect(String value) {
             return withCondition(REDIRECT, value);
         }
@@ -316,6 +372,7 @@ public final class PostParams {
          * @param value redirect condition value to be added to the policy
          * @return The {@link Builder} object
          */
+        @Deprecated // TODO think about removing it
         public Builder withRedirectStartingWith(String value) {
             return withStartingWithCondition(REDIRECT, value);
         }
