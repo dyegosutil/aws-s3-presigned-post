@@ -18,7 +18,7 @@ import static mendes.sutil.dyego.awspresignedpost.domain.conditions.MatchConditi
 public class S3PostSigner { // TODO rename?
     private final AwsCredentials awsCredentials;
 
-    S3PostSigner(AwsCredentialsProvider provider) { //TODO Perhaps change to not receive the params here but in the create part
+    public S3PostSigner(AwsCredentialsProvider provider) { //TODO Perhaps change to not receive the params here but in the create part
         this.awsCredentials = Objects.requireNonNull(
                 provider.resolveCredentials(),
                 "AwsCredentialsProvider must provide non-null AwsCredentials"
