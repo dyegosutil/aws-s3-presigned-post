@@ -78,6 +78,7 @@ class IntegrationTests {
         createPreSignedPostAndUpload(postParams, formDataParts, expectedResult);
     }
 
+    @Disabled
     @ParameterizedTest(name = "{0}")
     @MethodSource("getTestCasesWithAwsSessionCredentials")
     void testWithAwsSessionCredentials(
