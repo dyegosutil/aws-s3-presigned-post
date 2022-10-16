@@ -17,6 +17,7 @@ import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+import static mendes.sutil.dyego.awspresignedpost.PostParams.Builder.CannedAcl.PRIVATE;
 import static mendes.sutil.dyego.awspresignedpost.domain.conditions.ConditionField.*;
 import static mendes.sutil.dyego.awspresignedpost.domain.conditions.MatchCondition.Operator.EQ;
 import static mendes.sutil.dyego.awspresignedpost.domain.conditions.MatchCondition.Operator.STARTS_WITH;
@@ -175,6 +176,20 @@ class PostParamsTest {
                                 .withSuccessActionStatus(SuccessActionStatus.OK),
                         SUCCESS_ACTION_STATUS,
                         EQ
+                ),
+                of(
+                        "Should assert that condition withAclStartingWith was added",
+                        (Supplier<PostParams.Builder>) () -> createBuilder()
+                                .withAclStartingWith("test"),
+                        ACL,
+                        STARTS_WITH
+                ),
+                of(
+                        "Should assert that condition withAcl was added",
+                        (Supplier<PostParams.Builder>) () -> createBuilder()
+                                .withAcl(PRIVATE),
+                        ACL,
+                        EQ
                 )
         );
     }
@@ -292,6 +307,22 @@ class PostParamsTest {
                                         .withRedirect("test")
                                         .withRedirectStartingWith("test"),
                         getExceptionMessage(REDIRECT)
+                ),
+                of(
+                        "Should assert that there is no conflicting STARTS_WITH and EQ ACL conditions",
+                        (ThrowableAssert.ThrowingCallable) () ->
+                                createBuilder()
+                                        .withAclStartingWith("test")
+                                        .withAcl(PRIVATE),
+                        getExceptionMessage(ACL)
+                ),
+                of(
+                        "Should assert that there is no conflicting EQ and STARTS_WITH ACL conditions",
+                        (ThrowableAssert.ThrowingCallable) () ->
+                                createBuilder()
+                                        .withAcl(PRIVATE)
+                                        .withAclStartingWith("test"),
+                        getExceptionMessage(ACL)
                 )
         );
     }

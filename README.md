@@ -104,3 +104,12 @@ TODO check if a simple url can be sent instead of a object with all the data.
 
 Important notes:
 - Even if you you are not adding a withSessionToken, if the credentials are temporary, a condition ```x-amz-security-token``` will be adde dot the policy and you will have to add it to the request.
+
+Interesting resource
+http://s3.amazonaws.com/doc/s3-example-code/post/post_sample.html
+
+If while trying to use ACLs you receive the message 
+```
+<Message>The bucket does not allow ACLs</Message>
+```
+it is because you first have to enable ACL usage in the bucket before using it int he pre-signed post.

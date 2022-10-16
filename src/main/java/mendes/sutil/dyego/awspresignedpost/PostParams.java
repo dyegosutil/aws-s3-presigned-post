@@ -174,9 +174,6 @@ public final class PostParams {
             return withCondition(SUCCESS_ACTION_STATUS, successActionStatus.getCode());
         }
 
-        /**
-         *
-         */
         public enum SuccessActionStatus {
 
             OK(200),
@@ -194,10 +191,25 @@ public final class PostParams {
             }
         }
 
-//        enum SuccessActionStatus (
-////
-//            "fsf"
-//                    ),
+        public enum CannedAcl {
+            PRIVATE("private"),
+            PUBLIC_READ("public-read"),
+            PUBLIC_READ_WRITE("public-read-write"),
+            AWS_EXEC_READ("aws-exec-read"),
+            AUTHENTICATED_READ("authenticated-read"),
+            BUCKET_OWNER_READ("bucket-owner-read"),
+            BUCKET_OWNER_FULL_CONTROL("bucket-owner-full-control");
+
+            private final String cannedAcl;
+
+            CannedAcl(String cannedAcl) {
+                this.cannedAcl = cannedAcl;
+            }
+
+            public String getCannedAcl() {
+                return this.cannedAcl;
+            }
+        }
 
         /**
          * Allows specifying the exact value to be used for the cache control condition
@@ -375,6 +387,32 @@ public final class PostParams {
         @Deprecated // TODO think about removing it
         public Builder withRedirectStartingWith(String value) {
             return withStartingWithCondition(REDIRECT, value);
+        }
+
+        /**
+         * Warning: <a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/about-object-ownership.html">Aws
+         * recommends that you disable ACLs except in unusual circumstances where you need to control access for each object individually.</a>.
+         * <p>
+         * Allows specifying how should be the acl this object.
+         * <p>
+         * Check <a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/acl-overview.html">this</a> link to
+         * understand what each one of the canned acl permissions mean.
+         */
+        public Builder withAcl(CannedAcl cannedAcl) {
+            return withCondition(ACL, cannedAcl.cannedAcl);
+        }
+
+        /**
+         * Warning: <a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/about-object-ownership.html">Aws
+         * recommends that you disable ACLs except in unusual circumstances where you need to control access for each object individually.</a>.
+         * <p>
+         * Allows specifying how should be the begging of the value of the acl for this object.
+         * <p>
+         * Check <a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/acl-overview.html">this</a> link to
+         * understand what each one of the canned acl permissions mean.
+         */
+        public Builder withAclStartingWith(String value) {
+            return withStartingWithCondition(ACL, value);
         }
 
         // TODO
