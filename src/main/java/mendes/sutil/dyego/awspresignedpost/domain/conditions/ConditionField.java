@@ -6,7 +6,7 @@ public enum ConditionField { // TODO move it
     ALGORITHM("$x-amz-algorithm"),
     CREDENTIAL("$x-amz-credential"),
     SECURITY_TOKEN("$x-amz-security-token"),
-    ACL(""),
+    ACL("$acl"),
     CACHE_CONTROL("$Cache-Control"),
     CONTENT_TYPE("$Content-Type"),
     CONTENT_DISPOSITION("$Content-Disposition"),

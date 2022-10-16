@@ -9,6 +9,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import static mendes.sutil.dyego.awspresignedpost.PostParams.Builder.CannedAcl.PRIVATE;
 import static org.junit.jupiter.params.provider.Arguments.of;
 
 @Disabled
@@ -227,6 +228,41 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                                 .withExpiresStartingWith("Wed,")
                                 .build(),
                         createFormDataPartsWithKeyCondition("Expires", "Mon, 21 Oct 2015 07:29:00 GMT"),
+                        false
+                ),
+                // acl
+                of(
+                        "Should succeed while uploading file to S3 when the acl specified is the same as the one in the policy",
+                        createDefaultPostParamBuilder()
+                                .withAcl(PRIVATE)
+                                .build(),
+                        createFormDataPartsWithKeyCondition("acl", "private"),
+                        true
+                ),
+                // acl
+                of(
+                        "Should fail while uploading file to S3 when the acl specified is not the same as the one in the policy",
+                        createDefaultPostParamBuilder()
+                                .withAcl(PRIVATE)
+                                .build(),
+                        createFormDataPartsWithKeyCondition("acl", "wrongValue"),
+                        false
+                ),
+                // acl
+                of(
+                        "Should succeed while uploading file to S3 when the acl starts with value specified is the same as the one in the policy",
+                        createDefaultPostParamBuilder()
+                                .withAclStartingWith("pri")
+                                .build(),
+                        createFormDataPartsWithKeyCondition("acl", "private"),
+                        true
+                ),
+                of(
+                        "Should fail while uploading file to S3 when the acl starts with value specified is not the same as the one in the policy",
+                        createDefaultPostParamBuilder()
+                                .withAclStartingWith("abc")
+                                .build(),
+                        createFormDataPartsWithKeyCondition("acl", "private"),
                         false
                 )
         );
