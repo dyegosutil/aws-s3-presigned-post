@@ -58,8 +58,10 @@ AWS_KEY = Your AWS key such as AKIA...
 AWS_SECRET = your secret
 AWS_BUCKET = The bucket name where the test files must be uploaded to. Ex: 'testbucket'
 AWS_REGION = Ex: 'eu-central-1' any regition that can be used with Region.of(). This should be the region for the valid bucket your have configured to test the uploads.
-AWS_WRONG_REGION = This should be a bucket which is not the one you have configured the bucket for. Any value that can be used with Region.of() 
+AWS_WRONG_REGION = This should be a bucket which is not the one you have configured the bucket for. Any value that can be used with Region.of()
+AWS_SESSION_TOKEN ?  
 ```
+ TODO AWS_SESSION_TOKEN above
 
 Also is necessary to remove the @Disabled annotation from the test zzz
 
@@ -90,3 +92,15 @@ Expalin that this is the return when you set 201 as response
     <ETag>"d41d8cd98f00b204e9800998ecf8427e"</ETag>
 </PostResponse>
 ```
+
+does not provide support for amaazon devpay
+
+explain that if it is being used temporary credentials, it will be added automatically.
+
+## How to get a session token
+aws-vault exec default --duration=12h -- env | egrep '^AWS_(ACCESS_KEY_ID|SECRET_ACCESS_KEY|SESSION_TOKEN)'
+
+TODO check if a simple url can be sent instead of a object with all the data.
+
+Important notes:
+- Even if you you are not adding a withSessionToken, if the credentials are temporary, a condition ```x-amz-security-token``` will be adde dot the policy and you will have to add it to the request.

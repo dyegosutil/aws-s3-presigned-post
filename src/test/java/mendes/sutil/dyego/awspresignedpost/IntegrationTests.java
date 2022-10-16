@@ -8,6 +8,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.AwsSessionCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 
@@ -27,7 +28,12 @@ import static mendes.sutil.dyego.awspresignedpost.domain.conditions.helper.KeyCo
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.params.provider.Arguments.of;
 
-@Disabled
+/**
+ * TODO Check to use S3 local?
+ *
+ * // Reading credentials from ENV-variables
+ *         AwsCredentialsProvider awsCredentialsProvider = DefaultCredentialsProvider.builder().build();
+ */
 class IntegrationTests {
     private static final Region REGION = Region.of(System.getenv("AWS_REGION"));
     private static final ZonedDateTime EXPIRATION_DATE = Instant.now(Clock.systemUTC()) // TODO check if clock should be a parameter, check documentation to see how expiration time should be received, check what would happen if different zoneids are used for expiration aand for date in the policy
@@ -48,6 +54,7 @@ class IntegrationTests {
      * @param formDataParts
      * @param expectedResult
      */
+    @Disabled
     @ParameterizedTest(name = "{0}")
     @MethodSource("getTestCasesMandatoryParams")
     void testWithMandatoryParams(
@@ -59,10 +66,6 @@ class IntegrationTests {
             Map<String, String> formDataParts,
             Boolean expectedResult
     ) {
-        //TODO check about the token part
-        //                                        .withToken
-        //                                        ("FwoGZXIvYXdzEAMaDJnjMcCzZ05MxE5udCKzAd8acj8V3dKJfJbtEASA07VbfGfsSsd5MXSC4PnsBr8q4VXbseNaV6IXIeAknFF0w4+Vcy/2q2krRqxXYhaQBKrTqj0f/622MlaS+DCQc6rJm0JxG9p0Ws3ftDWC89Nm85bRoFmNucBpVIr1eakuzFknTIqtm5PuLlYiis6ybiTRrUQ8kXmEjy8u5BjSORKScjMVy5WQmcfcxTIodyonRVbyGr6tJo4URs7Iu2CKJL6LQgURKJOa8pUGMi0Hcs2nE/IEApn7izSTyUmgfTgzNcGJsTbBeeJHM49RNOaCcI8IVkRlZlJFE28=")
-
         PostParams postParams = PostParams // TODO perhaps this can come from the Arguments in the sourceTest method
                 .builder(
                         region,
@@ -75,6 +78,26 @@ class IntegrationTests {
         createPreSignedPostAndUpload(postParams, formDataParts, expectedResult);
     }
 
+    @Disabled
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getTestCasesWithAwsSessionCredentials")
+    void testWithAwsSessionCredentials(
+            String testDescription,
+            PostParams postParams,
+            Map<String, String> formDataParts,
+            Boolean expectedResult
+    ) {
+        // Arrange
+        PresignedPost presignedPost = new S3PostSigner(getAmazonCredentialsProviderWithAwsSessionCredentials()).create(postParams);
+        System.out.println(presignedPost); // TODO
+
+        // Act
+        Boolean wasUploadSuccessful = uploadToAws(presignedPost, formDataParts);
+
+        // Assert
+        assertThat(wasUploadSuccessful).isEqualTo(expectedResult);
+    }
+
     /**
      * Generates the pre-signed post using the mandatory params and also optional params performing the upload to S3.
      *
@@ -83,6 +106,7 @@ class IntegrationTests {
      * @param formDataParts
      * @param expectedResult
      */
+    @Disabled
     @ParameterizedTest(name = "{0}")
     @MethodSource("getTestCasesOptionalParams")
     void testWithOptionalParams(
@@ -94,13 +118,7 @@ class IntegrationTests {
         createPreSignedPostAndUpload(postParams, formDataParts, expectedResult);
     }
 
-    private void createPreSignedPostAndUpload(PostParams postParams, Map<String, String> formDataParts, Boolean expectedResult) {
-        PresignedPost presignedPost = new S3PostSigner(getAmazonCredentialsProvider()).create(postParams);
-        System.out.println(presignedPost); // TODO Check about logging for tests, would be nice to know why it failed in GIT
-        Boolean wasUploadSuccessful = uploadToAws(presignedPost, formDataParts);
-        assertThat(wasUploadSuccessful).isEqualTo(expectedResult);
-    }
-
+    @Disabled
     @ParameterizedTest(name = "{0}")
     @MethodSource("getTestCasesForWithSuccessActionStatus")
     void testWithSuccessActionStatus(
@@ -124,6 +142,7 @@ class IntegrationTests {
      * @param formDataParts
      * @param expectedResult
      */
+    @Disabled
     @ParameterizedTest(name = "{0}")
     @MethodSource("getTestCasesForWithSuccessActionRedirect")
     void testWithSuccessActionRedirect(
@@ -140,6 +159,13 @@ class IntegrationTests {
         assertThat(wasUploadSuccessful).isEqualTo(expectedResult);
     }
 
+    private void createPreSignedPostAndUpload(PostParams postParams, Map<String, String> formDataParts, Boolean expectedResult) {
+        PresignedPost presignedPost = new S3PostSigner(getAmazonCredentialsProvider()).create(postParams);
+        System.out.println(presignedPost); // TODO Check about logging for tests, would be nice to know why it failed in GIT
+        Boolean wasUploadSuccessful = uploadToAws(presignedPost, formDataParts);
+        assertThat(wasUploadSuccessful).isEqualTo(expectedResult);
+    }
+
     /**
      * TODO check if this is really necessary, if it could be just done using not aws lib code
      *
@@ -149,6 +175,13 @@ class IntegrationTests {
         return StaticCredentialsProvider.create(
                 AwsBasicCredentials.create(System.getenv("AWS_KEY"),
                         System.getenv("AWS_SECRET"))
+        );
+    }
+
+    private AwsCredentialsProvider getAmazonCredentialsProviderWithAwsSessionCredentials() {
+        return StaticCredentialsProvider.create(
+                AwsSessionCredentials.create(
+                        System.getenv("AWS_SESSION_KEY"), System.getenv("AWS_SESSION_SECRET"), System.getenv("AWS_SESSION_TOKEN"))
         );
     }
 
@@ -507,6 +540,25 @@ class IntegrationTests {
                                 .withExpiresStartingWith("Wed,")
                                 .build(),
                         createFormDataPartsWithKeyCondition("Expires", "Mon, 21 Oct 2015 07:29:00 GMT"),
+                        false
+                )
+        );
+    }
+
+    public static Stream<Arguments> getTestCasesWithAwsSessionCredentials() {
+        return Stream.of(
+                of(
+                        "Should succeed while uploading file to S3 using the same session token added in the policy",
+                        createDefaultPostParamBuilder()
+                                .build(),
+                        createFormDataPartsWithKeyCondition("x-amz-security-token",  System.getenv("AWS_SESSION_TOKEN")),
+                        true
+                ),
+                of(
+                        "Should fail while uploading file to S3 using a different session token added in the policy",
+                        createDefaultPostParamBuilder()
+                                .build(),
+                        createFormDataPartsWithKeyCondition("x-amz-security-token",  "thisTokenIsWrong"),
                         false
                 )
         );

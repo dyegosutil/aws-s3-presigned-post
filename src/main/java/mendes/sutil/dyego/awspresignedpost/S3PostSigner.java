@@ -4,36 +4,42 @@ import com.google.gson.Gson;
 import com.google.gson.annotations.Expose;
 import mendes.sutil.dyego.awspresignedpost.domain.AmzDate;
 import mendes.sutil.dyego.awspresignedpost.domain.conditions.Condition;
+import mendes.sutil.dyego.awspresignedpost.domain.conditions.MatchCondition;
 import software.amazon.awssdk.auth.credentials.AwsCredentials;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.AwsSessionCredentials;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 import static mendes.sutil.dyego.awspresignedpost.domain.conditions.ConditionField.*;
+import static mendes.sutil.dyego.awspresignedpost.domain.conditions.MatchCondition.Operator.EQ;
 
 public class S3PostSigner { // TODO rename?
     private final AwsCredentials awsCredentials;
 
-    S3PostSigner(AwsCredentialsProvider provider) {
+    S3PostSigner(AwsCredentialsProvider provider) { //TODO Perhaps change to not receive the params here but in the create part
         this.awsCredentials = Objects.requireNonNull(
                 provider.resolveCredentials(),
                 "AwsCredentialsProvider must provide non-null AwsCredentials"
         );
     }
 
+    // TODO rename to sign, or sign post??
     public PresignedPost create(PostParams postParams) {
         AmzDate amzDate = new AmzDate();
+        Set<Condition> conditions = new HashSet<>(postParams.getConditions());
+        addSessionToken(conditions);
 
         String bucket = postParams.getBucket();
         String region = postParams.getRegion().id();
-        String url = "https://"+bucket+".s3."+region+".amazonaws.com"; // TODO use string format
+        String url = "https://"+bucket+".s3."+region+".amazonaws.com"; //TODO use string format
         String credentials = AwsSigner.buildCredentialField(awsCredentials, postParams.getRegion(), amzDate);
 
         Policy policy = new Policy(
                 postParams.getAmzExpirationDate().formatForPolicy(),
                 buildConditions(
-                        postParams.getConditions(),
+                        conditions,
                         amzDate,
                         credentials
                 )
@@ -55,6 +61,12 @@ public class S3PostSigner { // TODO rename?
         return new PresignedPost(
                 url,credentials, amzDate.formatForPolicy(), signature, policyB64, "AWS4-HMAC-SHA256"
         );
+    }
+
+    private void addSessionToken(Set<Condition> conditions) {
+        if(awsCredentials instanceof AwsSessionCredentials) {
+            conditions.add(new MatchCondition(SECURITY_TOKEN, EQ, ((AwsSessionCredentials) awsCredentials).sessionToken()));
+        }
     }
 
     private List<String[]> buildConditions(

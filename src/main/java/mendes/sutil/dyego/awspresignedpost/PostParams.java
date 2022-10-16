@@ -11,6 +11,7 @@ import mendes.sutil.dyego.awspresignedpost.domain.conditions.key.KeyCondition;
 import software.amazon.awssdk.regions.Region;
 
 import java.time.ZonedDateTime;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -40,7 +41,6 @@ public final class PostParams {
             Region region,
             AmzExpirationDate amzExpirationDate,
             Set<Condition> conditions
-//            String key // TODO is key mandatory?
     ){
         this.amzExpirationDate = amzExpirationDate;
         this.bucket = bucket;
@@ -90,7 +90,7 @@ public final class PostParams {
         public PostParams build(){
             // TODO Identify mandatory fields and prevent building it if they are missing?
             // TODO Make sure it is build only if it will work and nothing is missing - if possible
-            return new PostParams(bucket, region, amzExpirationDate, conditions);
+            return new PostParams(bucket, region, amzExpirationDate, Collections.unmodifiableSet(conditions));
         }
 
         /**
