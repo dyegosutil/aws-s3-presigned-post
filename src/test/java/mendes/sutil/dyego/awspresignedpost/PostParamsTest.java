@@ -225,6 +225,13 @@ class PostParamsTest {
                                 .withStorageClass(STANDARD),
                         STORAGE_CLASS,
                         EQ
+                ),
+                of(
+                        "Should assert that condition withWebsiteRedirectLocation was added",
+                        (Supplier<PostParams.Builder>) () -> createBuilder()
+                                .withWebsiteRedirectLocation("test"),
+                        WEBSITE_REDIRECT_LOCATION,
+                        EQ
                 )
         );
     }
