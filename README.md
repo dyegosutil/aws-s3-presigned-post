@@ -121,3 +121,7 @@ Add tags validations:
 https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-tagging.html
 
 Check if all acccess modifiers are all right, private, protected, etc.
+
+Please Report any limitations that you found so that I can add validations.
+
+Use the annotation @NotNull
