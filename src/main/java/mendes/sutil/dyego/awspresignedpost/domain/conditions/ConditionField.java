@@ -20,6 +20,7 @@ public enum ConditionField { // TODO move it
     TAGGING("$tagging"),
     META("$x-amz-meta-"),
     STORAGE_CLASS("$x-amz-storage-class"),
+    WEBSITE_REDIRECT_LOCATION("$x-amz-website-redirect-location"),
     CONTENT_LENGTH_RANGE("content-length-range");
     
     public final String awsConditionName;

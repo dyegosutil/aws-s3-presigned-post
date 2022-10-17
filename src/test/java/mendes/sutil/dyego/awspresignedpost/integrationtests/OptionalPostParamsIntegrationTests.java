@@ -409,6 +409,33 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                                 .build(),
                         createFormDataPartsWithKeyCondition("x-amz-storage-class", "INTELLIGENT_TIERING"),
                         false
+                ),
+                // website-redirect-location
+                of(
+                        "Should succeed while uploading file to S3 when the website-redirect-location specified is the same as the one in the policy which redirects to a file in the same bucket",
+                        createDefaultPostParamBuilder()
+                                .withWebsiteRedirectLocation("/anotherPage.html")
+                                .build(),
+                        createFormDataPartsWithKeyCondition("x-amz-website-redirect-location", "/anotherPage.html"),
+                        true
+                ),
+                // website-redirect-location
+                of(
+                        "Should succeed while uploading file to S3 when the website-redirect-location specified is the same as the one in the policy which redirects to another website",
+                        createDefaultPostParamBuilder()
+                                .withWebsiteRedirectLocation("https://www.google.com")
+                                .build(),
+                        createFormDataPartsWithKeyCondition("x-amz-website-redirect-location", "https://www.google.com"),
+                        true
+                ),
+                // website-redirect-location
+                of(
+                        "Should fail while uploading file to S3 when the website-redirect-location specified is not the same as the one in the policy",
+                        createDefaultPostParamBuilder()
+                                .withWebsiteRedirectLocation("/anotherPage.html")
+                                .build(),
+                        createFormDataPartsWithKeyCondition("x-amz-website-redirect-location", "/yetAnotherPage.html"),
+                        false
                 )
         );
     }

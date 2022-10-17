@@ -542,12 +542,17 @@ public final class PostParams {
         }
 
         /**
-         * x-amz-website-redirect-location
-         * @return
+         * If the bucket is configured as a website, this condition allows specifying to redirect requests for this
+         * object to another object in the same bucket or to an external URL. Note that the value must be prefixed
+         * by /, http://, or https://. The length of the value is limited to 2 KB.
+         * For more information
+         * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/RESTObjectPOST.html">vide the aws documentation</a>
+         *
+         * @param value An object in the same bucket or website to redirect to. Ex: '/anotherPage.html', 'https://www.example.com/'
+         * @return The {@link Builder} object
          */
-        public Builder withWebsiteRedirectLocation() {
-            //TODO
-            return this;
+        public Builder withWebsiteRedirectLocation(String value) {
+            return withCondition(WEBSITE_REDIRECT_LOCATION, value);
         }
 
 //        AWSAccessKeyId ?
