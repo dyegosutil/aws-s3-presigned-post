@@ -19,6 +19,7 @@ public enum ConditionField { // TODO move it
     BUCKET("$bucket"),
     TAGGING("$tagging"),
     META("$x-amz-meta-"),
+    STORAGE_CLASS("$x-amz-storage-class"),
     CONTENT_LENGTH_RANGE("content-length-range");
     
     public final String awsConditionName;

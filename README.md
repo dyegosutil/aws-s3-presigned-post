@@ -125,3 +125,5 @@ Check if all acccess modifiers are all right, private, protected, etc.
 Please Report any limitations that you found so that I can add validations.
 
 Use the annotation @NotNull
+
+Think about removing jaxb

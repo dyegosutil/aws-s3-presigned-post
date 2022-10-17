@@ -1,9 +1,6 @@
 package mendes.sutil.dyego.awspresignedpost;
 
-import mendes.sutil.dyego.awspresignedpost.domain.conditions.Condition;
-import mendes.sutil.dyego.awspresignedpost.domain.conditions.ConditionField;
-import mendes.sutil.dyego.awspresignedpost.domain.conditions.ContentLengthRangeCondition;
-import mendes.sutil.dyego.awspresignedpost.domain.conditions.MatchCondition;
+import mendes.sutil.dyego.awspresignedpost.domain.conditions.*;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.Test;
@@ -18,6 +15,7 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import static mendes.sutil.dyego.awspresignedpost.PostParams.Builder.CannedAcl.PRIVATE;
+import static mendes.sutil.dyego.awspresignedpost.PostParams.Builder.StorageClass.STANDARD;
 import static mendes.sutil.dyego.awspresignedpost.domain.conditions.ConditionField.*;
 import static mendes.sutil.dyego.awspresignedpost.domain.conditions.MatchCondition.Operator.EQ;
 import static mendes.sutil.dyego.awspresignedpost.domain.conditions.MatchCondition.Operator.STARTS_WITH;
@@ -46,6 +44,22 @@ class PostParamsTest {
         // Assert
         Assertions.assertThat(conditions)
                 .contains(new MatchCondition(expectedConditionField, expectedOperator, "test"));
+    }
+
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("shouldTestIfMetaConditionWasAddedTestCases")
+    void shouldTestIfMetaConditionsWereAdded(
+            String testName,
+            Supplier<PostParams.Builder> builderSupplier,
+            MatchCondition.Operator expectedOperator
+
+    ) {
+        // Arrange & act
+        Set<Condition> conditions = builderSupplier.get().build().getConditions();
+
+        // Assert
+        Assertions.assertThat(conditions)
+                .contains(new MetaCondition(expectedOperator, "test", "test"));
     }
 
     @Test
@@ -204,6 +218,30 @@ class PostParamsTest {
                                 .withTag("key","value"),
                         TAGGING,
                         EQ
+                ),
+                of(
+                        "Should assert that condition withStorageClass was added",
+                        (Supplier<PostParams.Builder>) () -> createBuilder()
+                                .withStorageClass(STANDARD),
+                        STORAGE_CLASS,
+                        EQ
+                )
+        );
+    }
+
+    private static Stream<Arguments> shouldTestIfMetaConditionWasAddedTestCases() {
+        return Stream.of(
+                of(
+                        "Should assert that condition withMeta was added",
+                        (Supplier<PostParams.Builder>) () -> createBuilder()
+                                .withMeta("test", "test"),
+                        EQ
+                ),
+                of(
+                        "Should assert that condition withMetaStartingWith was added",
+                        (Supplier<PostParams.Builder>) () -> createBuilder()
+                                .withMetaStartingWith("test", "test"),
+                        STARTS_WITH
                 )
         );
     }
