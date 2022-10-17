@@ -2,23 +2,25 @@ package mendes.sutil.dyego.awspresignedpost;
 
 import lombok.Getter;
 import mendes.sutil.dyego.awspresignedpost.domain.AmzExpirationDate;
-import mendes.sutil.dyego.awspresignedpost.domain.conditions.ConditionField;
-import mendes.sutil.dyego.awspresignedpost.domain.conditions.MatchCondition;
 import mendes.sutil.dyego.awspresignedpost.domain.conditions.Condition;
+import mendes.sutil.dyego.awspresignedpost.domain.conditions.ConditionField;
 import mendes.sutil.dyego.awspresignedpost.domain.conditions.ContentLengthRangeCondition;
+import mendes.sutil.dyego.awspresignedpost.domain.conditions.MatchCondition;
 import mendes.sutil.dyego.awspresignedpost.domain.conditions.helper.KeyConditionHelper;
 import mendes.sutil.dyego.awspresignedpost.domain.conditions.key.KeyCondition;
+import mendes.sutil.dyego.awspresignedpost.domain.tagging.Tag;
+import mendes.sutil.dyego.awspresignedpost.domain.tagging.Tagging;
 import software.amazon.awssdk.regions.Region;
 
 import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import static mendes.sutil.dyego.awspresignedpost.domain.conditions.ConditionField.*;
 import static mendes.sutil.dyego.awspresignedpost.domain.conditions.MatchCondition.Operator.EQ;
 import static mendes.sutil.dyego.awspresignedpost.domain.conditions.MatchCondition.Operator.STARTS_WITH;
-
 /**
  * A pre-signed POST request that can be executed at a later time without requiring additional signing or
  * authentication.
@@ -72,6 +74,7 @@ public final class PostParams {
     public static final class Builder {
 
         private final Set<Condition> conditions = new HashSet<>();
+        private final Set<Tag> tags = new HashSet<>();
 
         private final String bucket;
         private final Region region;
@@ -90,7 +93,18 @@ public final class PostParams {
         public PostParams build(){
             // TODO Identify mandatory fields and prevent building it if they are missing?
             // TODO Make sure it is build only if it will work and nothing is missing - if possible
+            addTags();
             return new PostParams(bucket, region, amzExpirationDate, Collections.unmodifiableSet(conditions));
+        }
+
+        /**
+         * Add tags if the method {@link Builder#withTag(String, String)} was used
+         */
+        private void addTags() {
+            if(!tags.isEmpty()) {
+                String taggingXml = new Tagging(tags).toXml();
+                withTaggingCondition(taggingXml);
+            }
         }
 
         /**
@@ -102,7 +116,12 @@ public final class PostParams {
          * @return @return The {@link Builder} object
          */
         private Builder withCondition(ConditionField conditionField, String value) {
-            return assureUniquenessAndAdd(new MatchCondition(conditionField, EQ, value));
+            return assertUniquenessAndAdd(new MatchCondition(conditionField, EQ, value));
+        }
+
+        private Builder withTaggingCondition(String value) {
+            this.conditions.add(new MatchCondition(TAGGING, EQ, value));
+            return this;
         }
 
         /**
@@ -114,13 +133,28 @@ public final class PostParams {
          * @return @return The {@link Builder} object
          */
         private Builder withStartingWithCondition(ConditionField conditionField, String value) {
-            return assureUniquenessAndAdd(new MatchCondition(conditionField, STARTS_WITH, value));
+            return assertUniquenessAndAdd(new MatchCondition(conditionField, STARTS_WITH, value));
         }
 
-        private Builder assureUniquenessAndAdd(MatchCondition matchCondition) {
+        private Builder assertUniquenessAndAdd(MatchCondition matchCondition) {
             if (conditions.contains(matchCondition))
                 throw new IllegalArgumentException(getInvalidConditionExceptionMessage(matchCondition.getConditionField()));
             this.conditions.add(matchCondition);
+            return this;
+        }
+
+        private Builder assertUniquenessAndAddTagging(String value) {
+            if (!tags.isEmpty()) {
+                throw new IllegalArgumentException("Either the method withTag() or withTagging() can be used for adding tagging, not both");
+            }
+            return withTaggingCondition(value);
+        }
+
+        private Builder assertUniquenessAndAddTag(String key, String value) {
+            if (conditions.contains(new MatchCondition(TAGGING, EQ, ""))) { // TODO fix this
+                throw new IllegalArgumentException("Either the method withTag() or withTagging() can be used for adding tagging, not both");
+            }
+            tags.add(new Tag(key, value));
             return this;
         }
 
@@ -413,6 +447,45 @@ public final class PostParams {
          */
         public Builder withAclStartingWith(String value) {
             return withStartingWithCondition(ACL, value);
+        }
+
+        /**
+         * Allows specifying which tags should be added for the file being uploaded. If this method is used then the
+         * {@link Builder#withTag(String, String)} cannot.
+         * The value should be in the follow format:
+         *
+         * <pre> {@code
+         * <Tagging>
+         *     <TagSet>
+         *         <Tag>
+         *             <Key>MyTagName</Key>
+         *             <Value>MyTagValue</Value>
+         *         </Tag>
+         *     </TagSet>
+         * </Tagging>
+         * }
+         * </pre>
+         * @param value The xml containing the tags to be added
+         * @return @return The {@link Builder} object
+         */
+        public Builder withTagging(String value) {
+            Objects.requireNonNull(value);
+            //TODO adde isXml check
+            return assertUniquenessAndAddTagging(value);
+        }
+
+        /**
+         * Allows specifying a tag to be added for the file being uploaded. If this method is used then the
+         * {@link Builder#withTagging(String)} cannot.
+         *
+         * @param key The key for this tag. Ex: 'MyClassification'
+         * @param value The value for this tag. Ex: 'Confidential'
+         * @return @return The {@link Builder} object
+         */
+        public Builder withTag(String key, String value) {
+            Objects.requireNonNull(key, "Cannot add a S3 tag with a null key");
+            Objects.requireNonNull(value, "Cannot add a S3 tag with a null value");
+            return assertUniquenessAndAddTag(key, value);
         }
 
         // TODO

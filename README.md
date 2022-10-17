@@ -113,3 +113,11 @@ If while trying to use ACLs you receive the message
 <Message>The bucket does not allow ACLs</Message>
 ```
 it is because you first have to enable ACL usage in the bucket before using it int he pre-signed post.
+
+HEADERs not mapped
+AWSAccessKeyId
+
+Add tags validations:
+https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-tagging.html
+
+Check if all acccess modifiers are all right, private, protected, etc.

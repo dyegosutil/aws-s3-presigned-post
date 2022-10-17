@@ -35,9 +35,11 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
     }
 
     private static Stream<Arguments> getTestCasesOptionalParams() {
+        String tagging = "<Tagging><TagSet><Tag><Key>MyTestTag</Key><Value>MyTagValue</Value></Tag></TagSet></Tagging>";
         return Stream.of(
                 // content-length-range
-                of("Should succeed while uploading file to S3 when it's size is between the minimum and maximum specified values in the policy",
+                of(
+                        "Should succeed while uploading file to S3 when it's size is between the minimum and maximum specified values in the policy",
                         createDefaultPostParamBuilder()
                                 .withContentLengthRange(7, 20)
                                 .build(),
@@ -45,7 +47,8 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                         true
                 ),
                 // content-length-range
-                of("Should succeed while uploading file to S3 when it's size is of the exact size specified values in the policy",
+                of(
+                        "Should succeed while uploading file to S3 when it's size is of the exact size specified values in the policy",
                         createDefaultPostParamBuilder()
                                 .withContentLengthRange(14, 14)
                                 .build(),
@@ -53,7 +56,8 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                         true
                 ),
                 // content-length-range
-                of("Should fail while uploading file to S3 when it's size is over the maximum specified value in the policy",
+                of(
+                        "Should fail while uploading file to S3 when it's size is over the maximum specified value in the policy",
                         createDefaultPostParamBuilder()
                                 .withContentLengthRange(1, 2)
                                 .build(),
@@ -61,7 +65,8 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                         false
                 ),
                 // content-length-range
-                of("Should fail while uploading file to S3 when it's size is under the minimum specified value in the policy",
+                of(
+                        "Should fail while uploading file to S3 when it's size is under the minimum specified value in the policy",
                         createDefaultPostParamBuilder()
                                 .withContentLengthRange(15, 20)
                                 .build(),
@@ -69,7 +74,8 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                         false
                 ),
                 // Cache-Control
-                of("Should succeed while uploading file to S3 when the cache-control specified is the same as the one in the policy",
+                of(
+                        "Should succeed while uploading file to S3 when the cache-control specified is the same as the one in the policy",
                         createDefaultPostParamBuilder()
                                 .withCacheControl("public, max-age=7200")
                                 .build(),
@@ -77,7 +83,8 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                         true
                 ),
                 // Cache-Control
-                of("Should fail while uploading file to S3 when the cache-control specified is not the same as the one in the policy",
+                of(
+                        "Should fail while uploading file to S3 when the cache-control specified is not the same as the one in the policy",
                         createDefaultPostParamBuilder()
                                 .withCacheControl("public, max-age=7200")
                                 .build(),
@@ -85,7 +92,8 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                         false
                 ),
                 // Cache-Control
-                of("Should succeed while uploading file to S3 when the cache-control specified starts with the same value specified in the policy",
+                of(
+                        "Should succeed while uploading file to S3 when the cache-control specified starts with the same value specified in the policy",
                         createDefaultPostParamBuilder()
                                 .withCacheControlStartingWith("public,")
                                 .build(),
@@ -93,7 +101,8 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                         true
                 ),
                 // Cache-Control
-                of("Should fail while uploading file to S3 when the cache-control specified does not start with the same value specified in the policy",
+                of(
+                        "Should fail while uploading file to S3 when the cache-control specified does not start with the same value specified in the policy",
                         createDefaultPostParamBuilder()
                                 .withCacheControl("public, max-age=7200")
                                 .build(),
@@ -101,7 +110,8 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                         false
                 ),
                 // Content-Type
-                of("Should succeed while uploading file to S3 when the exact Content-Type specified is the same as the one in the policy",
+                of(
+                        "Should succeed while uploading file to S3 when the exact Content-Type specified is the same as the one in the policy",
                         createDefaultPostParamBuilder()
                                 .withContentType("text/plain")
                                 .build(),
@@ -109,7 +119,8 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                         true
                 ),
                 // Content-Type
-                of("Should fail while uploading file to S3 when the exact Content-Type specified is not the same as the one in the policy",
+                of(
+                        "Should fail while uploading file to S3 when the exact Content-Type specified is not the same as the one in the policy",
                         createDefaultPostParamBuilder()
                                 .withContentType("text/plain")
                                 .build(),
@@ -117,7 +128,8 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                         false
                 ),
                 // Content-Type
-                of("Should succeed while uploading file to S3 when the Content-Type specified starts with the same value specified in the policy",
+                of(
+                        "Should succeed while uploading file to S3 when the Content-Type specified starts with the same value specified in the policy",
                         createDefaultPostParamBuilder()
                                 .withContentTypeStartingWith("tex")
                                 .build(),
@@ -125,7 +137,8 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                         true
                 ),
                 // Content-Type
-                of("Should fail while uploading file to S3 when the Content-Type specified does not start with the same value specified in the policy",
+                of(
+                        "Should fail while uploading file to S3 when the Content-Type specified does not start with the same value specified in the policy",
                         createDefaultPostParamBuilder()
                                 .withContentTypeStartingWith("dex")
                                 .build(),
@@ -133,7 +146,8 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                         false
                 ),
                 // Content Disposition
-                of("Should succeed while uploading file to S3 using the exact content disposition set in the policy",
+                of(
+                        "Should succeed while uploading file to S3 using the exact content disposition set in the policy",
                         createDefaultPostParamBuilder()
                                 .withContentDisposition("inline")
                                 .build(),
@@ -141,7 +155,8 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                         true
                 ),
                 // Content Disposition
-                of("Should fail while uploading file to S3 not using the exact content disposition set in the policy",
+                of(
+                        "Should fail while uploading file to S3 not using the exact content disposition set in the policy",
                         createDefaultPostParamBuilder()
                                 .withContentDisposition("inline")
                                 .build(),
@@ -149,7 +164,8 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                         false
                 ),
                 // Content Disposition
-                of("Should succeed while uploading file to S3 using the content disposition starting with value as set in the policy",
+                of(
+                        "Should succeed while uploading file to S3 using the content disposition starting with value as set in the policy",
                         createDefaultPostParamBuilder()
                                 .withContentDispositionStartingWith("inli")
                                 .build(),
@@ -157,7 +173,8 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                         true
                 ),
                 // Content Disposition
-                of("Should fail while uploading file to S3 using the content disposition starting with value different than the one set in the policy",
+                of(
+                        "Should fail while uploading file to S3 using the content disposition starting with value different than the one set in the policy",
                         createDefaultPostParamBuilder()
                                 .withContentDispositionStartingWith("inline")
                                 .build(),
@@ -165,7 +182,8 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                         false
                 ),
                 // Content-Encoding
-                of("Should succeed while uploading file to S3 using the exact content encoding set in the policy",
+                of(
+                        "Should succeed while uploading file to S3 using the exact content encoding set in the policy",
                         createDefaultPostParamBuilder()
                                 .withContentEncoding("compress")
                                 .build(),
@@ -174,7 +192,8 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                 )
                 ,
                 // Content-Encoding
-                of("Should fail while uploading file to S3 not using the exact content encoding set in the policy",
+                of(
+                        "Should fail while uploading file to S3 not using the exact content encoding set in the policy",
                         createDefaultPostParamBuilder()
                                 .withContentEncoding("compress")
                                 .build(),
@@ -182,7 +201,8 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                         false
                 ),
                 // Content-Encoding
-                of("Should succeed while uploading file to S3 using the content encoding starting with value as set in the policy",
+                of(
+                        "Should succeed while uploading file to S3 using the content encoding starting with value as set in the policy",
                         createDefaultPostParamBuilder()
                                 .withContentEncodingStartingWith("com")
                                 .build(),
@@ -190,7 +210,8 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                         true
                 ),
                 // Content-Encoding
-                of("Should fail while uploading file to S3 using the content encoding starting with value different than the one set in the policy",
+                of(
+                        "Should fail while uploading file to S3 using the content encoding starting with value different than the one set in the policy",
                         createDefaultPostParamBuilder()
                                 .withContentEncodingStartingWith("com")
                                 .build(),
@@ -198,7 +219,8 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                         false
                 ),
                 // Expires
-                of("Should succeed while uploading file to S3 using the exact Expires condition set in the policy",
+                of(
+                        "Should succeed while uploading file to S3 using the exact Expires condition set in the policy",
                         createDefaultPostParamBuilder()
                                 .withExpires("Wed, 21 Oct 2015 07:28:00 GMT")
                                 .build(),
@@ -207,7 +229,8 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                 )
                 ,
                 // Expires
-                of("Should fail while uploading file to S3 not using the exact Expires condition set in the policy",
+                of(
+                        "Should fail while uploading file to S3 not using the exact Expires condition set in the policy",
                         createDefaultPostParamBuilder()
                                 .withExpires("Wed, 21 Oct 2015 07:28:00 GMT")
                                 .build(),
@@ -215,7 +238,8 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                         false
                 ),
                 // Expires
-                of("Should succeed while uploading file to S3 using the Expires condition starting with value as set in the policy",
+                of(
+                        "Should succeed while uploading file to S3 using the Expires condition starting with value as set in the policy",
                         createDefaultPostParamBuilder()
                                 .withExpiresStartingWith("Wed,")
                                 .build(),
@@ -223,7 +247,8 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                         true
                 ),
                 // Expires
-                of("Should fail while uploading file to S3 using the Expires starting with value different than the one set in the policy",
+                of(
+                        "Should fail while uploading file to S3 using the Expires starting with value different than the one set in the policy",
                         createDefaultPostParamBuilder()
                                 .withExpiresStartingWith("Wed,")
                                 .build(),
@@ -263,6 +288,44 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                                 .withAclStartingWith("abc")
                                 .build(),
                         createFormDataPartsWithKeyCondition("acl", "private"),
+                        false
+                ),
+                // tagging
+                of(
+                        "Should succeed while uploading file to S3 when it's free text tagging value is the same as the one specified in the policy",
+                        createDefaultPostParamBuilder()
+                                .withTagging(tagging)
+                                .build(),
+                        createFormDataPartsWithKeyCondition("tagging", tagging),
+                        true
+                ),
+                // tagging
+                of(
+                        "Should fail while uploading file to S3 when it's free text tagging is the same as the one specified in the policy",
+                        createDefaultPostParamBuilder()
+                                .withTagging(tagging)
+                                .build(),
+                        createFormDataPartsWithKeyCondition("tagging", "wrongValue"),
+                        false
+                ),
+                // tagging
+                of(
+                        "Should succeed while uploading file to S3 when it's tagging is the same as the one specified in the policy",
+                        createDefaultPostParamBuilder()
+                                .withTag("myTagKey", "myTagValue")
+                                .withTag("myTagKey2", "myTagValue2")
+                                .build(),
+                        createFormDataPartsWithKeyCondition("tagging", "<Tagging><TagSet><Tag><Key>myTagKey</Key><Value>myTagValue</Value></Tag><Tag><Key>myTagKey2</Key><Value>myTagValue2</Value></Tag></TagSet></Tagging>"),
+                        true
+                ),
+                // tagging
+                of(
+                        "Should fail while uploading file to S3 when it's tagging is the same as the one specified in the policy",
+                        createDefaultPostParamBuilder()
+                                .withTag("myTagKey", "myTagValue")
+                                .withTag("myTagKey2", "myTagValue2")
+                                .build(),
+                        createFormDataPartsWithKeyCondition("tagging", "wrongValue"),
                         false
                 )
         );

@@ -190,6 +190,20 @@ class PostParamsTest {
                                 .withAcl(PRIVATE),
                         ACL,
                         EQ
+                ),
+                of(
+                        "Should assert that condition withTagging was added",
+                        (Supplier<PostParams.Builder>) () -> createBuilder()
+                                .withTagging("test"),
+                        TAGGING,
+                        EQ
+                ),
+                of(
+                        "Should assert that condition withTag was added",
+                        (Supplier<PostParams.Builder>) () -> createBuilder()
+                                .withTag("key","value"),
+                        TAGGING,
+                        EQ
                 )
         );
     }
@@ -323,8 +337,28 @@ class PostParamsTest {
                                         .withAcl(PRIVATE)
                                         .withAclStartingWith("test"),
                         getExceptionMessage(ACL)
+                ),
+                of(
+                        "Should assert that there is no conflicting withTag and withTagging TAGGING conditions",
+                        (ThrowableAssert.ThrowingCallable) () ->
+                                createBuilder()
+                                        .withTagging("test")
+                                        .withTag("key", "value"),
+                        getTaggingExceptionMessage()
+                ),
+                of(
+                        "Should assert that there is no conflicting withTagging and withTag TAGGING conditions",
+                        (ThrowableAssert.ThrowingCallable) () ->
+                                createBuilder()
+                                        .withTag("key", "value")
+                                        .withTagging("test"),
+                        getTaggingExceptionMessage()
                 )
         );
+    }
+
+    private static String getTaggingExceptionMessage() {
+        return "Either the method withTag() or withTagging() can be used for adding tagging, not both";
     }
 
     private static String getExceptionMessage(ConditionField conditionField) {

@@ -1,4 +1,4 @@
-val jupiterVersion = "5.8.2"
+val jupiterVersion = "5.9.0"
 
 plugins {
     id("java")
@@ -14,10 +14,11 @@ repositories {
 }
 
 dependencies {
-    implementation(platform("software.amazon.awssdk:bom:2.17.276"))
+    implementation(platform("software.amazon.awssdk:bom:2.17.285"))
     implementation("software.amazon.awssdk:regions")
     implementation("software.amazon.awssdk:auth")
     implementation("com.google.code.gson:gson:2.9.0")
+    implementation("com.sun.xml.bind:jaxb-impl:4.0.1")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:$jupiterVersion") // TODO is it really needed?
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$jupiterVersion") // TODO is it really needed?
