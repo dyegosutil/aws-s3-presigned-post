@@ -327,6 +327,69 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                                 .build(),
                         createFormDataPartsWithKeyCondition("tagging", "wrongValue"),
                         false
+                ),
+                // meta
+                of(
+                        "Should succeed while uploading file to S3 when the 1 meta specified is the same as the one in the policy",
+                        createDefaultPostParamBuilder()
+                                .withMeta("my_meta_data", "value for my meta-data")
+                                .build(),
+                        createFormDataPartsWithKeyCondition(
+                                "x-amz-meta-my_meta_data",
+                                "value for my meta-data"
+                        ),
+                        true
+                ),
+                // meta
+                of(
+                        "Should succeed while uploading file to S3 when the 2 metas specified are the same as the ones in the policy",
+                        createDefaultPostParamBuilder()
+                                .withMeta("my_meta_data", "value for my meta-data")
+                                .withMeta("my_meta_data2", "value for my meta-data2")
+                                .build(),
+                        createFormDataPartsWithKeyCondition(
+                                "x-amz-meta-my_meta_data",
+                                "value for my meta-data",
+                                "x-amz-meta-my_meta_data2",
+                                "value for my meta-data2"
+                        ),
+                        true
+                ),
+                // meta
+                of(
+                        "Should fail while uploading file to S3 when the meta specified is the same as the one in the policy",
+                        createDefaultPostParamBuilder()
+                                .withMeta("my_meta_data", "value for my meta-data")
+                                .build(),
+                        createFormDataPartsWithKeyCondition(
+                                "x-amz-meta-my_meta_data",
+                                "not my meta"
+                        ),
+                        false
+                ),
+                // meta
+                of(
+                        "Should succeed while uploading file to S3 when the meta starting value is the same as the one in the policy",
+                        createDefaultPostParamBuilder()
+                                .withMetaStartingWith("my_meta_data", "abcde")
+                                .build(),
+                        createFormDataPartsWithKeyCondition(
+                                "x-amz-meta-my_meta_data",
+                                "abcdefg"
+                        ),
+                        true
+                ),
+                // meta
+                of(
+                        "Should fail while uploading file to S3 when the meta starting value is not the same as the one in the policy",
+                        createDefaultPostParamBuilder()
+                                .withMetaStartingWith("my_meta_data", "abcde")
+                                .build(),
+                        createFormDataPartsWithKeyCondition(
+                                "x-amz-meta-my_meta_data",
+                                "xyz"
+                        ),
+                        false
                 )
         );
     }

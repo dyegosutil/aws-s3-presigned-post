@@ -77,7 +77,7 @@ public class S3PostSigner { // TODO rename?
 
         conditions.forEach(condition -> result.add(condition.asAwsPolicyCondition()));
 
-        result.add(new String[]{"eq", ALGORITHM.awsConditionName, "AWS4-HMAC-SHA256"});
+        result.add(new String[]{"eq", ALGORITHM.awsConditionName, "AWS4-HMAC-SHA256"}); // TODO use EQ?
         result.add(new String[]{"eq", DATE.awsConditionName, xAmzDate.formatForPolicy()});
         result.add(new String[]{"eq", CREDENTIAL.awsConditionName, credentials});
 

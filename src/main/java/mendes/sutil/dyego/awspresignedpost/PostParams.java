@@ -2,10 +2,7 @@ package mendes.sutil.dyego.awspresignedpost;
 
 import lombok.Getter;
 import mendes.sutil.dyego.awspresignedpost.domain.AmzExpirationDate;
-import mendes.sutil.dyego.awspresignedpost.domain.conditions.Condition;
-import mendes.sutil.dyego.awspresignedpost.domain.conditions.ConditionField;
-import mendes.sutil.dyego.awspresignedpost.domain.conditions.ContentLengthRangeCondition;
-import mendes.sutil.dyego.awspresignedpost.domain.conditions.MatchCondition;
+import mendes.sutil.dyego.awspresignedpost.domain.conditions.*;
 import mendes.sutil.dyego.awspresignedpost.domain.conditions.helper.KeyConditionHelper;
 import mendes.sutil.dyego.awspresignedpost.domain.conditions.key.KeyCondition;
 import mendes.sutil.dyego.awspresignedpost.domain.tagging.Tag;
@@ -487,6 +484,56 @@ public final class PostParams {
             Objects.requireNonNull(value, "Cannot add a S3 tag with a null value");
             return assertUniquenessAndAddTag(key, value);
         }
+
+        /**
+         * Allows the user to specify freely their own meta-data for the file being uploaded. It can be used multiple
+         * times. Aws s3 does not validate any user meta-data. It stores user-defined metadata keys in lowercase.
+         * Find more information
+         * <a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingMetadata.html">here</a>
+         *
+         * @param metaName The name of this meta-data
+         * @param value The value for this meta-data
+         * @return @return The {@link Builder} object
+         */
+        public Builder withMeta(String metaName, String value) {
+            Objects.requireNonNull(metaName);
+            Objects.requireNonNull(value);
+            this.conditions.add(new MetaCondition(EQ, metaName, value));
+            return this;
+        }
+
+        /**
+         * Allows the user to specify freely their own meta-data and its starting value for the file being uploaded.
+         * It can be used multiple times. Aws s3 does not validate any user meta-data. It stores user-defined metadata
+         * keys in lowercase. Find more information
+         * <a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingMetadata.html">here</a>
+         *
+         * @param metaName The name of this meta-data
+         * @param startingValue The starting value for this meta-data
+         * @return @return The {@link Builder} object
+         */
+        public Builder withMetaStartingWith(String metaName, String startingValue) {
+            Objects.requireNonNull(metaName);
+            Objects.requireNonNull(startingValue);
+            this.conditions.add(new MetaCondition(STARTS_WITH, metaName, startingValue));
+            return this;
+        }
+
+        public Builder withStorageClass(String value) {
+            //TODO
+            return this;
+        }
+
+        /**
+         * x-amz-website-redirect-location
+         * @return
+         */
+        public Builder withWebsiteRedirectLocation() {
+            //TODO
+            return this;
+        }
+
+//        AWSAccessKeyId ?
 
         // TODO
         // Matching Any Content
