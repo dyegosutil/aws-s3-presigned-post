@@ -206,7 +206,6 @@ public final class PostParams {
         }
 
         public enum SuccessActionStatus {
-
             OK(200),
             CREATED(201),
             NO_CONTENT(204);
@@ -220,6 +219,17 @@ public final class PostParams {
             public String getCode() {
                 return this.code;
             }
+        }
+
+        public enum StorageClass {
+            STANDARD,
+            REDUCED_REDUNDANCY,
+            GLACIER,
+            GLACIER_IR,
+            STANDARD_IA,
+            ONEZONE_IA,
+            INTELLIGENT_TIERING,
+            DEEP_ARCHIVE
         }
 
         public enum CannedAcl {
@@ -463,7 +473,7 @@ public final class PostParams {
          * }
          * </pre>
          * @param value The xml containing the tags to be added
-         * @return @return The {@link Builder} object
+         * @return The {@link Builder} object
          */
         public Builder withTagging(String value) {
             Objects.requireNonNull(value);
@@ -477,7 +487,7 @@ public final class PostParams {
          *
          * @param key The key for this tag. Ex: 'MyClassification'
          * @param value The value for this tag. Ex: 'Confidential'
-         * @return @return The {@link Builder} object
+         * @return The {@link Builder} object
          */
         public Builder withTag(String key, String value) {
             Objects.requireNonNull(key, "Cannot add a S3 tag with a null key");
@@ -493,7 +503,7 @@ public final class PostParams {
          *
          * @param metaName The name of this meta-data
          * @param value The value for this meta-data
-         * @return @return The {@link Builder} object
+         * @return The {@link Builder} object
          */
         public Builder withMeta(String metaName, String value) {
             Objects.requireNonNull(metaName);
@@ -510,7 +520,7 @@ public final class PostParams {
          *
          * @param metaName The name of this meta-data
          * @param startingValue The starting value for this meta-data
-         * @return @return The {@link Builder} object
+         * @return The {@link Builder} object
          */
         public Builder withMetaStartingWith(String metaName, String startingValue) {
             Objects.requireNonNull(metaName);
@@ -519,9 +529,16 @@ public final class PostParams {
             return this;
         }
 
-        public Builder withStorageClass(String value) {
-            //TODO
-            return this;
+        /**
+         * Allows specifying which is the storage class to be used for the file being uploaded.
+         * Find more information about each one of the options
+         * <a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html">here</a>
+         *
+         * @param storageClass Store class to be used
+         * @return The {@link Builder} object
+         */
+        public Builder withStorageClass(StorageClass storageClass) {
+            return withCondition(STORAGE_CLASS, storageClass.name());
         }
 
         /**

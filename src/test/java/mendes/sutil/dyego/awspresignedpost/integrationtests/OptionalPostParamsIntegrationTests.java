@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import static mendes.sutil.dyego.awspresignedpost.PostParams.Builder.CannedAcl.PRIVATE;
+import static mendes.sutil.dyego.awspresignedpost.PostParams.Builder.StorageClass.STANDARD;
 import static org.junit.jupiter.params.provider.Arguments.of;
 
 @Disabled
@@ -389,6 +390,24 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                                 "x-amz-meta-my_meta_data",
                                 "xyz"
                         ),
+                        false
+                ),
+                // storage-class
+                of(
+                        "Should succeed while uploading file to S3 when the storage class specified is the same as the one in the policy",
+                        createDefaultPostParamBuilder()
+                                .withStorageClass(STANDARD)
+                                .build(),
+                        createFormDataPartsWithKeyCondition("x-amz-storage-class", "STANDARD"),
+                        true
+                ),
+                // storage-class
+                of(
+                        "Should fail while uploading file to S3 when the storage class specified is not the same as the one in the policy",
+                        createDefaultPostParamBuilder()
+                                .withStorageClass(STANDARD)
+                                .build(),
+                        createFormDataPartsWithKeyCondition("x-amz-storage-class", "INTELLIGENT_TIERING"),
                         false
                 )
         );
