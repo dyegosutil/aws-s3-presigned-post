@@ -555,6 +555,14 @@ public final class PostParams {
             return withCondition(WEBSITE_REDIRECT_LOCATION, value);
         }
 
+        public Builder withChecksumCrc32(String checksumCrc32Value) {
+            return withCondition(CHECKSUM_CRC32, checksumCrc32Value);
+        }
+
+        public Builder withChecksumSha256(String checksumSha256Value) {
+            return withCondition(CHECKSUM_SHA256, checksumSha256Value);
+        }
+
 //        AWSAccessKeyId ?
 
         // TODO

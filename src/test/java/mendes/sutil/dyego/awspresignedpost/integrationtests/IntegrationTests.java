@@ -10,6 +10,7 @@ import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;
@@ -17,6 +18,7 @@ import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import static mendes.sutil.dyego.awspresignedpost.domain.conditions.helper.KeyConditionHelper.withAnyKey;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -99,7 +101,13 @@ public class IntegrationTests {
 
     private boolean checkSuccessAndPrintResponseIfError(Response response) {
         if (!response.isSuccessful()) {
-            System.err.println(new IOException("Unexpected code " + response + response.message()));  // TODO change it
+            try {
+                String responseXml = new String(Objects.requireNonNull(response.body()).bytes(), StandardCharsets.UTF_8);
+                System.err.println(responseXml); // TODO add logger
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            System.err.println("Unexpected code " + response + response.message());  // TODO change it
             return false;
         }
         return true;
