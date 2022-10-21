@@ -426,14 +426,6 @@ class PostParamsTest {
                                         .withTag("key", "value")
                                         .withTagging("test"),
                         getTaggingExceptionMessage()
-                ),
-                of(
-                        "Should assert that there is no conflicting withTagging and withTag TAGGING conditions",
-                        (ThrowableAssert.ThrowingCallable) () ->
-                                createBuilder()
-                                        .withChecksumCrc32("value")
-                                        .withChecksumCrc32c("test"),
-                        getTaggingExceptionMessage()
                 )
         );
     }
