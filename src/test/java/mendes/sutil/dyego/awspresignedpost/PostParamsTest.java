@@ -232,6 +232,34 @@ class PostParamsTest {
                                 .withWebsiteRedirectLocation("test"),
                         WEBSITE_REDIRECT_LOCATION,
                         EQ
+                ),
+                of(
+                        "Should assert that condition withChecksumSha256 was added",
+                        (Supplier<PostParams.Builder>) () -> createBuilder()
+                                .withChecksumSha256("test"),
+                        CHECKSUM_SHA256,
+                        EQ
+                ),
+                of(
+                        "Should assert that condition withChecksumSha1 was added",
+                        (Supplier<PostParams.Builder>) () -> createBuilder()
+                                .withChecksumSha1("test"),
+                        CHECKSUM_SHA1,
+                        EQ
+                ),
+                of(
+                        "Should assert that condition withChecksumCrc32 was added",
+                        (Supplier<PostParams.Builder>) () -> createBuilder()
+                                .withChecksumCrc32("test"),
+                        CHECKSUM_CRC32,
+                        EQ
+                ),
+                of(
+                        "Should assert that condition withChecksumCrc32c was added",
+                        (Supplier<PostParams.Builder>) () -> createBuilder()
+                                .withChecksumCrc32c("test"),
+                        CHECKSUM_CRC32C,
+                        EQ
                 )
         );
     }
@@ -397,6 +425,14 @@ class PostParamsTest {
                                 createBuilder()
                                         .withTag("key", "value")
                                         .withTagging("test"),
+                        getTaggingExceptionMessage()
+                ),
+                of(
+                        "Should assert that there is no conflicting withTagging and withTag TAGGING conditions",
+                        (ThrowableAssert.ThrowingCallable) () ->
+                                createBuilder()
+                                        .withChecksumCrc32("value")
+                                        .withChecksumCrc32c("test"),
                         getTaggingExceptionMessage()
                 )
         );

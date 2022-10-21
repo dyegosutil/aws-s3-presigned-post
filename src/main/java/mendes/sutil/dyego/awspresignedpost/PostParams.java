@@ -555,12 +555,40 @@ public final class PostParams {
             return withCondition(WEBSITE_REDIRECT_LOCATION, value);
         }
 
+        /**
+         * Allows specifying the base64-encoded 32-bit CRC32 checksum for the file being uploaded.
+         *
+         * @return The {@link Builder} object
+         */
         public Builder withChecksumCrc32(String checksumCrc32Value) {
             return withCondition(CHECKSUM_CRC32, checksumCrc32Value);
         }
 
-        public Builder withChecksumSha256(String checksumSha256Value) {
-            return withCondition(CHECKSUM_SHA256, checksumSha256Value);
+        /**
+         * Allows specifying the base64-encoded 32-bit CRC32C checksum for the file being uploaded.
+         *
+         * @return The {@link Builder} object
+         */
+        public Builder withChecksumCrc32c(String checksumCrc32cValue) {
+            return withCondition(CHECKSUM_CRC32C, checksumCrc32cValue);
+        }
+
+        /**
+         * Allows specifying the base64-encoded 160-bit SHA-1 digest for the file being uploaded.
+         *
+         * @return The {@link Builder} object
+         */
+        public Builder withChecksumSha1(String checksumSha1Base64Encoded) {
+            return withCondition(CHECKSUM_SHA1, checksumSha1Base64Encoded);
+        }
+
+        /**
+         * Allows specifying the base64-encoded 256-bit SHA-256 digest for the file being uploaded.
+         *
+         * @return The {@link Builder} object
+         */
+        public Builder withChecksumSha256(String checksumSha256Base64Encoded) {
+            return withCondition(CHECKSUM_SHA256, checksumSha256Base64Encoded);
         }
 
 //        AWSAccessKeyId ?
