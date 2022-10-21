@@ -47,6 +47,22 @@ class PostParamsTest {
     }
 
     @ParameterizedTest(name = "{0}")
+    @MethodSource("shouldTestIfCheckConditionWasAddedTestCases")
+    void shouldTestIfCheckConditionsWereAdded(
+            String testName,
+            Supplier<PostParams.Builder> builderSupplier,
+            ConditionField expectedConditionField
+
+    ) {
+        // Arrange & act
+        Set<Condition> conditions = builderSupplier.get().build().getConditions();
+
+        // Assert
+        Assertions.assertThat(conditions)
+                .contains(new ChecksumCondition(expectedConditionField, "test"));
+    }
+
+    @ParameterizedTest(name = "{0}")
     @MethodSource("shouldTestIfMetaConditionWasAddedTestCases")
     void shouldTestIfMetaConditionsWereAdded(
             String testName,
@@ -84,6 +100,34 @@ class PostParamsTest {
                 .hasMessage(exceptionMessage);
     }
 
+    private static Stream<Arguments> shouldTestIfCheckConditionWasAddedTestCases() {
+        return Stream.of(
+                of(
+                        "Should assert that condition withChecksumSha256 was added",
+                        (Supplier<PostParams.Builder>) () -> createBuilder()
+                                .withChecksumSha256("test"),
+                        CHECKSUM_SHA256
+                ),
+                of(
+                        "Should assert that condition withChecksumSha1 was added",
+                        (Supplier<PostParams.Builder>) () -> createBuilder()
+                                .withChecksumSha1("test"),
+                        CHECKSUM_SHA1
+                ),
+                of(
+                        "Should assert that condition withChecksumCrc32 was added",
+                        (Supplier<PostParams.Builder>) () -> createBuilder()
+                                .withChecksumCrc32("test"),
+                        CHECKSUM_CRC32
+                ),
+                of(
+                        "Should assert that condition withChecksumCrc32c was added",
+                        (Supplier<PostParams.Builder>) () -> createBuilder()
+                                .withChecksumCrc32c("test"),
+                        CHECKSUM_CRC32C
+                )
+        );
+    }
     private static Stream<Arguments> shouldTestIfConditionWasAddedTestCases() {
         return Stream.of(
                 of(
@@ -231,34 +275,6 @@ class PostParamsTest {
                         (Supplier<PostParams.Builder>) () -> createBuilder()
                                 .withWebsiteRedirectLocation("test"),
                         WEBSITE_REDIRECT_LOCATION,
-                        EQ
-                ),
-                of(
-                        "Should assert that condition withChecksumSha256 was added",
-                        (Supplier<PostParams.Builder>) () -> createBuilder()
-                                .withChecksumSha256("test"),
-                        CHECKSUM_SHA256,
-                        EQ
-                ),
-                of(
-                        "Should assert that condition withChecksumSha1 was added",
-                        (Supplier<PostParams.Builder>) () -> createBuilder()
-                                .withChecksumSha1("test"),
-                        CHECKSUM_SHA1,
-                        EQ
-                ),
-                of(
-                        "Should assert that condition withChecksumCrc32 was added",
-                        (Supplier<PostParams.Builder>) () -> createBuilder()
-                                .withChecksumCrc32("test"),
-                        CHECKSUM_CRC32,
-                        EQ
-                ),
-                of(
-                        "Should assert that condition withChecksumCrc32c was added",
-                        (Supplier<PostParams.Builder>) () -> createBuilder()
-                                .withChecksumCrc32c("test"),
-                        CHECKSUM_CRC32C,
                         EQ
                 )
         );
@@ -426,12 +442,96 @@ class PostParamsTest {
                                         .withTag("key", "value")
                                         .withTagging("test"),
                         getTaggingExceptionMessage()
+                ),
+                of(
+                        "Should assert that there is no conflicting withChecksumCrc32 and withChecksumCrc32c checksum conditions",
+                        (ThrowableAssert.ThrowingCallable) () ->
+                                createBuilder()
+                                        .withChecksumCrc32( "test")
+                                        .withChecksumCrc32c("test"),
+                        getChecksumExceptionMessage()
+                ),
+                of(
+                        "Should assert that there is no conflicting withChecksumCrc32 and withChecksumSha1 checksum conditions",
+                        (ThrowableAssert.ThrowingCallable) () ->
+                                createBuilder()
+                                        .withChecksumCrc32( "test")
+                                        .withChecksumSha1("test"),
+                        getChecksumExceptionMessage()
+                ),
+                of(
+                        "Should assert that there is no conflicting withChecksumCrc32 and withChecksumSha256 checksum conditions",
+                        (ThrowableAssert.ThrowingCallable) () ->
+                                createBuilder()
+                                        .withChecksumCrc32( "test")
+                                        .withChecksumSha256("test"),
+                        getChecksumExceptionMessage()
+                ),
+                of(
+                        "Should assert that there is no conflicting withChecksumCrc32c and withChecksumSha1 checksum conditions",
+                        (ThrowableAssert.ThrowingCallable) () ->
+                                createBuilder()
+                                        .withChecksumCrc32c( "test")
+                                        .withChecksumSha1("test"),
+                        getChecksumExceptionMessage()
+                ),
+                of(
+                        "Should assert that there is no conflicting withChecksumCrc32c and withChecksumSha256 checksum conditions",
+                        (ThrowableAssert.ThrowingCallable) () ->
+                                createBuilder()
+                                        .withChecksumCrc32c( "test")
+                                        .withChecksumSha256("test"),
+                        getChecksumExceptionMessage()
+                ),
+                of(
+                        "Should assert that there is no conflicting withChecksumSha1 and withChecksumSha256 checksum conditions",
+                        (ThrowableAssert.ThrowingCallable) () ->
+                                createBuilder()
+                                        .withChecksumSha1( "test")
+                                        .withChecksumSha256("test"),
+                        getChecksumExceptionMessage()
+                ),
+                of(
+                        "Should assert that there is no conflicting withChecksumSha1 and withChecksumSha1 checksum conditions",
+                        (ThrowableAssert.ThrowingCallable) () ->
+                                createBuilder()
+                                        .withChecksumSha1( "test")
+                                        .withChecksumSha1("test"),
+                        getChecksumExceptionMessage()
+                ),
+                of(
+                        "Should assert that there is no conflicting withChecksumSha256 and withChecksumSha256 checksum conditions",
+                        (ThrowableAssert.ThrowingCallable) () ->
+                                createBuilder()
+                                        .withChecksumSha256( "test")
+                                        .withChecksumSha256("test"),
+                        getChecksumExceptionMessage()
+                ),
+                of(
+                        "Should assert that there is no conflicting withChecksumCrc32c and withChecksumCrc32c checksum conditions",
+                        (ThrowableAssert.ThrowingCallable) () ->
+                                createBuilder()
+                                        .withChecksumCrc32c( "test")
+                                        .withChecksumCrc32c("test"),
+                        getChecksumExceptionMessage()
+                ),
+                of(
+                        "Should assert that there is no conflicting withChecksumCrc32 and withChecksumCrc32 checksum conditions",
+                        (ThrowableAssert.ThrowingCallable) () ->
+                                createBuilder()
+                                        .withChecksumCrc32( "test")
+                                        .withChecksumCrc32("test"),
+                        getChecksumExceptionMessage()
                 )
         );
     }
 
     private static String getTaggingExceptionMessage() {
         return "Either the method withTag() or withTagging() can be used for adding tagging, not both";
+    }
+
+    private static String getChecksumExceptionMessage() {
+        return "Only one checksum condition CRC32, CRC32C, SHA1 or SHA256 can be added at the same time";
     }
 
     private static String getExceptionMessage(ConditionField conditionField) {
