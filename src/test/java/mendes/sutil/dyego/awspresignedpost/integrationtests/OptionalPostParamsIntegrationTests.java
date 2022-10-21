@@ -1,6 +1,7 @@
 package mendes.sutil.dyego.awspresignedpost.integrationtests;
 
 import mendes.sutil.dyego.awspresignedpost.PostParams;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
