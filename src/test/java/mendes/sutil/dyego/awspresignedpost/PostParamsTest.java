@@ -47,6 +47,22 @@ class PostParamsTest {
     }
 
     @ParameterizedTest(name = "{0}")
+    @MethodSource("shouldTestIfCheckConditionWasAddedTestCases")
+    void shouldTestIfCheckConditionsWereAdded(
+            String testName,
+            Supplier<PostParams.Builder> builderSupplier,
+            ConditionField expectedConditionField
+
+    ) {
+        // Arrange & act
+        Set<Condition> conditions = builderSupplier.get().build().getConditions();
+
+        // Assert
+        Assertions.assertThat(conditions)
+                .contains(new ChecksumCondition(expectedConditionField, "test"));
+    }
+
+    @ParameterizedTest(name = "{0}")
     @MethodSource("shouldTestIfMetaConditionWasAddedTestCases")
     void shouldTestIfMetaConditionsWereAdded(
             String testName,
@@ -84,6 +100,34 @@ class PostParamsTest {
                 .hasMessage(exceptionMessage);
     }
 
+    private static Stream<Arguments> shouldTestIfCheckConditionWasAddedTestCases() {
+        return Stream.of(
+                of(
+                        "Should assert that condition withChecksumSha256 was added",
+                        (Supplier<PostParams.Builder>) () -> createBuilder()
+                                .withChecksumSha256("test"),
+                        CHECKSUM_SHA256
+                ),
+                of(
+                        "Should assert that condition withChecksumSha1 was added",
+                        (Supplier<PostParams.Builder>) () -> createBuilder()
+                                .withChecksumSha1("test"),
+                        CHECKSUM_SHA1
+                ),
+                of(
+                        "Should assert that condition withChecksumCrc32 was added",
+                        (Supplier<PostParams.Builder>) () -> createBuilder()
+                                .withChecksumCrc32("test"),
+                        CHECKSUM_CRC32
+                ),
+                of(
+                        "Should assert that condition withChecksumCrc32c was added",
+                        (Supplier<PostParams.Builder>) () -> createBuilder()
+                                .withChecksumCrc32c("test"),
+                        CHECKSUM_CRC32C
+                )
+        );
+    }
     private static Stream<Arguments> shouldTestIfConditionWasAddedTestCases() {
         return Stream.of(
                 of(
@@ -231,34 +275,6 @@ class PostParamsTest {
                         (Supplier<PostParams.Builder>) () -> createBuilder()
                                 .withWebsiteRedirectLocation("test"),
                         WEBSITE_REDIRECT_LOCATION,
-                        EQ
-                ),
-                of(
-                        "Should assert that condition withChecksumSha256 was added",
-                        (Supplier<PostParams.Builder>) () -> createBuilder()
-                                .withChecksumSha256("test"),
-                        CHECKSUM_SHA256,
-                        EQ
-                ),
-                of(
-                        "Should assert that condition withChecksumSha1 was added",
-                        (Supplier<PostParams.Builder>) () -> createBuilder()
-                                .withChecksumSha1("test"),
-                        CHECKSUM_SHA1,
-                        EQ
-                ),
-                of(
-                        "Should assert that condition withChecksumCrc32 was added",
-                        (Supplier<PostParams.Builder>) () -> createBuilder()
-                                .withChecksumCrc32("test"),
-                        CHECKSUM_CRC32,
-                        EQ
-                ),
-                of(
-                        "Should assert that condition withChecksumCrc32c was added",
-                        (Supplier<PostParams.Builder>) () -> createBuilder()
-                                .withChecksumCrc32c("test"),
-                        CHECKSUM_CRC32C,
                         EQ
                 )
         );
