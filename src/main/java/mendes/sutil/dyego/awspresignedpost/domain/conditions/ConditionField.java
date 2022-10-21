@@ -21,6 +21,10 @@ public enum ConditionField { // TODO move it
     META("$x-amz-meta-"),
     STORAGE_CLASS("$x-amz-storage-class"),
     WEBSITE_REDIRECT_LOCATION("$x-amz-website-redirect-location"),
+    CHECKSUM_CRC32("$x-amz-checksum-crc32"),
+    CHECKSUM_CRC32C("$x-amz-checksum-crc32c"),
+    CHECKSUM_SHA256("$x-amz-checksum-sha256"),
+    CHECKSUM_SHA1("$x-amz-checksum-sha1"),
     CONTENT_LENGTH_RANGE("content-length-range");
     
     public final String awsConditionName;
