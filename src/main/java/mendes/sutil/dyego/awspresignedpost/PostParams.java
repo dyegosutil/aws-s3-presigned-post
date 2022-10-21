@@ -18,6 +18,7 @@ import java.util.Set;
 import static mendes.sutil.dyego.awspresignedpost.domain.conditions.ConditionField.*;
 import static mendes.sutil.dyego.awspresignedpost.domain.conditions.MatchCondition.Operator.EQ;
 import static mendes.sutil.dyego.awspresignedpost.domain.conditions.MatchCondition.Operator.STARTS_WITH;
+
 /**
  * A pre-signed POST request that can be executed at a later time without requiring additional signing or
  * authentication.
@@ -105,7 +106,7 @@ public final class PostParams {
         }
 
         /**
-         * Makes sure that an exact ({@link MatchCondition.Operator#EQ}) mutually exclusive condition is not added with 
+         * Makes sure that an exact ({@link MatchCondition.Operator#EQ}) mutually exclusive condition is not added with
          * a startsWith ({@link MatchCondition.Operator#STARTS_WITH}) condition.
          *
          * @param conditionField Condition type specified
@@ -137,6 +138,14 @@ public final class PostParams {
             if (conditions.contains(matchCondition))
                 throw new IllegalArgumentException(getInvalidConditionExceptionMessage(matchCondition.getConditionField()));
             this.conditions.add(matchCondition);
+            return this;
+        }
+
+        private Builder assertUniquenessAndAdd(ChecksumCondition checksumCondition) {
+            if (conditions.contains(checksumCondition)){
+                throw new IllegalArgumentException("Only one checksum condition CRC32, CRC32C, SHA1 or SHA256 can be added at the same time");
+            }
+            this.conditions.add(checksumCondition);
             return this;
         }
 
@@ -561,7 +570,7 @@ public final class PostParams {
          * @return The {@link Builder} object
          */
         public Builder withChecksumCrc32(String checksumCrc32Value) {
-            return withCondition(CHECKSUM_CRC32, checksumCrc32Value);
+            return assertUniquenessAndAdd(new ChecksumCondition(CHECKSUM_CRC32, checksumCrc32Value));
         }
 
         /**
@@ -570,7 +579,7 @@ public final class PostParams {
          * @return The {@link Builder} object
          */
         public Builder withChecksumCrc32c(String checksumCrc32cValue) {
-            return withCondition(CHECKSUM_CRC32C, checksumCrc32cValue);
+            return assertUniquenessAndAdd(new ChecksumCondition(CHECKSUM_CRC32C, checksumCrc32cValue));
         }
 
         /**
@@ -579,7 +588,7 @@ public final class PostParams {
          * @return The {@link Builder} object
          */
         public Builder withChecksumSha1(String checksumSha1Base64Encoded) {
-            return withCondition(CHECKSUM_SHA1, checksumSha1Base64Encoded);
+            return assertUniquenessAndAdd(new ChecksumCondition(CHECKSUM_SHA1, checksumSha1Base64Encoded));
         }
 
         /**
@@ -588,7 +597,7 @@ public final class PostParams {
          * @return The {@link Builder} object
          */
         public Builder withChecksumSha256(String checksumSha256Base64Encoded) {
-            return withCondition(CHECKSUM_SHA256, checksumSha256Base64Encoded);
+            return assertUniquenessAndAdd(new ChecksumCondition(CHECKSUM_SHA256, checksumSha256Base64Encoded));
         }
 
 //        AWSAccessKeyId ?
@@ -602,3 +611,4 @@ public final class PostParams {
         // Content-Types values for a starts-with condition that include commas are interpreted as lists. Each value in the list must meet the condition for the whole condition to pass.
     }
 }
+

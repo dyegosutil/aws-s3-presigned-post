@@ -426,12 +426,96 @@ class PostParamsTest {
                                         .withTag("key", "value")
                                         .withTagging("test"),
                         getTaggingExceptionMessage()
+                ),
+                of(
+                        "Should assert that there is no conflicting withChecksumCrc32 and withChecksumCrc32c checksum conditions",
+                        (ThrowableAssert.ThrowingCallable) () ->
+                                createBuilder()
+                                        .withChecksumCrc32( "test")
+                                        .withChecksumCrc32c("test"),
+                        getChecksumExceptionMessage()
+                ),
+                of(
+                        "Should assert that there is no conflicting withChecksumCrc32 and withChecksumSha1 checksum conditions",
+                        (ThrowableAssert.ThrowingCallable) () ->
+                                createBuilder()
+                                        .withChecksumCrc32( "test")
+                                        .withChecksumSha1("test"),
+                        getChecksumExceptionMessage()
+                ),
+                of(
+                        "Should assert that there is no conflicting withChecksumCrc32 and withChecksumSha256 checksum conditions",
+                        (ThrowableAssert.ThrowingCallable) () ->
+                                createBuilder()
+                                        .withChecksumCrc32( "test")
+                                        .withChecksumSha256("test"),
+                        getChecksumExceptionMessage()
+                ),
+                of(
+                        "Should assert that there is no conflicting withChecksumCrc32c and withChecksumSha1 checksum conditions",
+                        (ThrowableAssert.ThrowingCallable) () ->
+                                createBuilder()
+                                        .withChecksumCrc32c( "test")
+                                        .withChecksumSha1("test"),
+                        getChecksumExceptionMessage()
+                ),
+                of(
+                        "Should assert that there is no conflicting withChecksumCrc32c and withChecksumSha256 checksum conditions",
+                        (ThrowableAssert.ThrowingCallable) () ->
+                                createBuilder()
+                                        .withChecksumCrc32c( "test")
+                                        .withChecksumSha256("test"),
+                        getChecksumExceptionMessage()
+                ),
+                of(
+                        "Should assert that there is no conflicting withChecksumSha1 and withChecksumSha256 checksum conditions",
+                        (ThrowableAssert.ThrowingCallable) () ->
+                                createBuilder()
+                                        .withChecksumSha1( "test")
+                                        .withChecksumSha256("test"),
+                        getChecksumExceptionMessage()
+                ),
+                of(
+                        "Should assert that there is no conflicting withChecksumSha1 and withChecksumSha1 checksum conditions",
+                        (ThrowableAssert.ThrowingCallable) () ->
+                                createBuilder()
+                                        .withChecksumSha1( "test")
+                                        .withChecksumSha1("test"),
+                        getChecksumExceptionMessage()
+                ),
+                of(
+                        "Should assert that there is no conflicting withChecksumSha256 and withChecksumSha256 checksum conditions",
+                        (ThrowableAssert.ThrowingCallable) () ->
+                                createBuilder()
+                                        .withChecksumSha256( "test")
+                                        .withChecksumSha256("test"),
+                        getChecksumExceptionMessage()
+                ),
+                of(
+                        "Should assert that there is no conflicting withChecksumCrc32c and withChecksumCrc32c checksum conditions",
+                        (ThrowableAssert.ThrowingCallable) () ->
+                                createBuilder()
+                                        .withChecksumCrc32c( "test")
+                                        .withChecksumCrc32c("test"),
+                        getChecksumExceptionMessage()
+                ),
+                of(
+                        "Should assert that there is no conflicting withChecksumCrc32 and withChecksumCrc32 checksum conditions",
+                        (ThrowableAssert.ThrowingCallable) () ->
+                                createBuilder()
+                                        .withChecksumCrc32( "test")
+                                        .withChecksumCrc32("test"),
+                        getChecksumExceptionMessage()
                 )
         );
     }
 
     private static String getTaggingExceptionMessage() {
         return "Either the method withTag() or withTagging() can be used for adding tagging, not both";
+    }
+
+    private static String getChecksumExceptionMessage() {
+        return "Only one checksum condition CRC32, CRC32C, SHA1 or SHA256 can be added at the same time";
     }
 
     private static String getExceptionMessage(ConditionField conditionField) {
