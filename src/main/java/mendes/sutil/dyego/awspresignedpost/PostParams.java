@@ -10,10 +10,7 @@ import mendes.sutil.dyego.awspresignedpost.domain.tagging.Tagging;
 import software.amazon.awssdk.regions.Region;
 
 import java.time.ZonedDateTime;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 import static mendes.sutil.dyego.awspresignedpost.domain.conditions.ConditionField.*;
 import static mendes.sutil.dyego.awspresignedpost.domain.conditions.MatchCondition.Operator.EQ;
@@ -72,6 +69,7 @@ public final class PostParams {
     public static final class Builder {
 
         private final Set<Condition> conditions = new HashSet<>();
+        private final Map<ConditionField, Condition> conditionsMap = new HashMap<>();
         private final Set<Tag> tags = new HashSet<>();
 
         private final String bucket;
@@ -89,10 +87,23 @@ public final class PostParams {
         }
 
         public PostParams build(){
+            validateConditions();
             // TODO Identify mandatory fields and prevent building it if they are missing?
             // TODO Make sure it is build only if it will work and nothing is missing - if possible
             addTags();
             return new PostParams(bucket, region, amzExpirationDate, Collections.unmodifiableSet(conditions));
+        }
+
+        private void validateConditions() {
+            conditionsMap.keySet().forEach(
+                    conditionField -> conditionField.requiredConditionFields.forEach(requiredConditionField -> {
+                        if(!conditionsMap.containsKey(requiredConditionField)) {
+                            throw new IllegalArgumentException(
+                                    String.format("The condition %s requires the condition %s to be present", conditionField, requiredConditionField)
+                            );
+                        }
+                    })
+            );
         }
 
         /**
@@ -138,6 +149,7 @@ public final class PostParams {
             if (conditions.contains(matchCondition))
                 throw new IllegalArgumentException(getInvalidConditionExceptionMessage(matchCondition.getConditionField()));
             this.conditions.add(matchCondition);
+            this.conditionsMap.put(matchCondition.getConditionField(), matchCondition); // TODO Remove conditions and keep just the map?
             return this;
         }
 
@@ -214,6 +226,16 @@ public final class PostParams {
             return withCondition(SUCCESS_ACTION_STATUS, successActionStatus.getCode());
         }
 
+        public enum EncryptionAlgorithm {
+            AWS_KMS("aws:kms"),
+            AES256("AES256");
+
+            private final String value;
+
+            EncryptionAlgorithm(String value) {
+                this.value = value;
+            }
+        }
         public enum SuccessActionStatus {
             OK(200),
             CREATED(201),
@@ -598,6 +620,50 @@ public final class PostParams {
          */
         public Builder withChecksumSha256(String checksumSha256Base64Encoded) {
             return assertUniquenessAndAdd(new ChecksumCondition(CHECKSUM_SHA256, checksumSha256Base64Encoded));
+        }
+
+        /**
+         * Allows specifying which algorithm should be used for server-side encryption.
+         */
+        public Builder withServerSideEncryption(EncryptionAlgorithm encryptionAlgorithm) {
+            return withCondition(SERVER_SIDE_ENCRYPTION, encryptionAlgorithm.value);
+        }
+
+        /**
+         * Allows specifying the id of the AWS KMS KEY to be used to for server-side encryption
+         *
+         * @param awsKmsKeyId The value shold be in the format 'arn:aws:kms:region:acct-id:key/key-id'
+         * @return The {@link Builder} object
+         */
+        public Builder withServerSideEncryptionAwsKmsKeyId(String awsKmsKeyId) {
+            return withCondition(SERVER_SIDE_ENCRYPTION_AWS_KMS_KEY_ID, awsKmsKeyId);
+        }
+
+        /**
+         * Allows specifying the encryption context for this file upload. That is, and optional set of key-value pairs
+         * that can contain contextual information about the upload. It is used as ADD, that is, non-secret data that is
+         * provided to encryption and decryption operations to add an additional integrity and authenticity check on the
+         * encrypted data. For more information vide 'Encryption context' in the
+         * <a href="https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html">aws documentation.</a>
+         *
+         * @param awsKmsKeyId Base64 encoded json of key-value pairs
+         * @return The {@link Builder} object
+         */
+        public Builder withServerSideEncryptionContext(String awsKmsKeyId) {
+            return withCondition(SERVER_SIDE_ENCRYPTION_CONTEXT, awsKmsKeyId);
+        }
+
+        /**
+         * Allows specifying if Amazon S3 should use an S3 Bucket Key with SSE-KMS or not.
+         * When KMS encryption is used to encrypt new objects in this bucket, the bucket key reduces encryption costs by
+         * lowering calls to AWS KMS. More information
+         * <a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucket-key.html">here</a>.
+         *
+         * @param value true if S3 Bucket Key with SSE-KMS should be used, false if it should not.
+         * @return The {@link Builder} object
+         */
+        public Builder withServerSideEncryptionBucketKeyEnabled(boolean value) {
+            return withCondition(SERVER_SIDE_ENCRYPTION_BUCKET_KEY_ENABLED, String.valueOf(value));
         }
 
 //        AWSAccessKeyId ?

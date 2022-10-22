@@ -51,6 +51,11 @@ Add list of features
 
 ## Running locally
 
+The IT tests use AWS_KMS_S3_KEY to test the server-serid encryption.
+The best way to configure it is to run the IT xyz which will create a encription key
+it is does exist yet for s3. Go to KMS in AWS and copy the key from there. It should
+be in the following format: "arn:aws:kms:region:acct-id:key/key-id"
+
 To run the integration tests that uploads files so S3, the following environment variables need to be set:
 
 ```
@@ -127,3 +132,8 @@ Please Report any limitations that you found so that I can add validations.
 Use the annotation @NotNull
 
 Think about removing jaxb
+
+Check about license, and legal matters
+
+Check what does it mean to develop open source, what to expect, what is good,
+what is bad, what is expected from me, what is not expected.
