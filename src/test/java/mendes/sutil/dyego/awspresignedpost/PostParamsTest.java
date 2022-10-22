@@ -15,6 +15,7 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import static mendes.sutil.dyego.awspresignedpost.PostParams.Builder.CannedAcl.PRIVATE;
+import static mendes.sutil.dyego.awspresignedpost.PostParams.Builder.EncryptionAlgorithm.AWS_KMS;
 import static mendes.sutil.dyego.awspresignedpost.PostParams.Builder.StorageClass.STANDARD;
 import static mendes.sutil.dyego.awspresignedpost.domain.conditions.ConditionField.*;
 import static mendes.sutil.dyego.awspresignedpost.domain.conditions.MatchCondition.Operator.EQ;
@@ -44,6 +45,19 @@ class PostParamsTest {
         // Assert
         Assertions.assertThat(conditions)
                 .contains(new MatchCondition(expectedConditionField, expectedOperator, "test"));
+    }
+
+
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("shouldThrowAnErrorIfRequiredConditionsWereNotAdded")
+    void shouldThrowAnErrorIfRequiredConditionsWereNotAdded(
+            String testName,
+            ThrowableAssert.ThrowingCallable prohibitedDoubleConditionCall,
+            String exceptionMessage
+    ) {
+        assertThatThrownBy(prohibitedDoubleConditionCall)
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage(exceptionMessage);
     }
 
     @ParameterizedTest(name = "{0}")
@@ -276,6 +290,37 @@ class PostParamsTest {
                                 .withWebsiteRedirectLocation("test"),
                         WEBSITE_REDIRECT_LOCATION,
                         EQ
+                ),
+                of(
+                        "Should assert that condition withServerSideEncryption was added",
+                        (Supplier<PostParams.Builder>) () -> createBuilder()
+                                .withServerSideEncryption(AWS_KMS),
+                        SERVER_SIDE_ENCRYPTION,
+                        EQ
+                ),
+                of(
+                        "Should assert that condition withServerSideEncryptionAwsKmsKeyId was added",
+                        (Supplier<PostParams.Builder>) () -> createBuilder()
+                                .withServerSideEncryption(AWS_KMS)
+                                .withServerSideEncryptionAwsKmsKeyId("test"),
+                        SERVER_SIDE_ENCRYPTION_AWS_KMS_KEY_ID,
+                        EQ
+                ),
+                of(
+                        "Should assert that condition withServerSideEncryptionContext was added",
+                        (Supplier<PostParams.Builder>) () -> createBuilder()
+                                .withServerSideEncryption(AWS_KMS)
+                                .withServerSideEncryptionContext("test"),
+                        SERVER_SIDE_ENCRYPTION_CONTEXT,
+                        EQ
+                ),
+                of(
+                        "Should assert that condition withServerSideEncryptionBucketKeyEnabled was added",
+                        (Supplier<PostParams.Builder>) () -> createBuilder()
+                                .withServerSideEncryption(AWS_KMS)
+                                .withServerSideEncryptionBucketKeyEnabled(true),
+                        SERVER_SIDE_ENCRYPTION_BUCKET_KEY_ENABLED,
+                        EQ
                 )
         );
     }
@@ -293,6 +338,35 @@ class PostParamsTest {
                         (Supplier<PostParams.Builder>) () -> createBuilder()
                                 .withMetaStartingWith("test", "test"),
                         STARTS_WITH
+                )
+        );
+    }
+
+    private static Stream<Arguments> shouldThrowAnErrorIfRequiredConditionsWereNotAdded() {
+        return Stream.of(
+                of(
+                        "Should assert that withServerSideEncryptionAwsKmsKeyId is called with withServerSideEncryption",
+                        (ThrowableAssert.ThrowingCallable) () ->
+                                createBuilder()
+                                        .withServerSideEncryptionAwsKmsKeyId("test")
+                                                .build(),
+                        getEncryptionExceptionMessage(SERVER_SIDE_ENCRYPTION_AWS_KMS_KEY_ID, SERVER_SIDE_ENCRYPTION)
+                ),
+                of(
+                        "Should assert that withServerSideEncryptionContext is called with withServerSideEncryption",
+                        (ThrowableAssert.ThrowingCallable) () ->
+                                createBuilder()
+                                        .withServerSideEncryptionContext("test")
+                                        .build(),
+                        getEncryptionExceptionMessage(SERVER_SIDE_ENCRYPTION_CONTEXT, SERVER_SIDE_ENCRYPTION)
+                ),
+                of(
+                        "Should assert that withServerSideEncryptionBucketKeyEnabled is called with withServerSideEncryption",
+                        (ThrowableAssert.ThrowingCallable) () ->
+                                createBuilder()
+                                        .withServerSideEncryptionBucketKeyEnabled(true)
+                                        .build(),
+                        getEncryptionExceptionMessage(SERVER_SIDE_ENCRYPTION_BUCKET_KEY_ENABLED, SERVER_SIDE_ENCRYPTION)
                 )
         );
     }
@@ -536,6 +610,10 @@ class PostParamsTest {
 
     private static String getExceptionMessage(ConditionField conditionField) {
         return String.format("Only one %s condition can be used", conditionField.name());
+    }
+
+    private static String getEncryptionExceptionMessage(ConditionField conditionField, ConditionField requiredConditionField) {
+        return String.format("The condition %s requires the condition %s to be present", conditionField, requiredConditionField);
     }
 
     private static PostParams.Builder createBuilder() {

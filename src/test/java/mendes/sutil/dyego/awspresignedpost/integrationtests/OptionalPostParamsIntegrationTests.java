@@ -574,6 +574,157 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                                 .build(),
                         createFormDataPartsWithKeyCondition("x-amz-checksum-crc32c", "wrongChecksum"),
                         false
+                ),
+                // x-amz-server-side-encryption
+                of(
+                        "Should succeed while uploading file to S3 when the server-side-encryption specified is AWS_KMS and is the same as the one in the policy",
+                        createDefaultPostParamBuilder()
+                                .withServerSideEncryption(PostParams.Builder.EncryptionAlgorithm.AWS_KMS)
+                                .build(),
+                        createFormDataPartsWithKeyCondition("x-amz-server-side-encryption", "aws:kms"),
+                        true
+                )
+                ,
+                // x-amz-server-side-encryption
+                of(
+                        "Should succeed while uploading file to S3 when the server-side-encryption specified is AES256 and is the same as the one in the policy",
+                        createDefaultPostParamBuilder()
+                                .withServerSideEncryption(PostParams.Builder.EncryptionAlgorithm.AES256)
+                                .build(),
+                        createFormDataPartsWithKeyCondition("x-amz-server-side-encryption", "AES256"),
+                        true
+                ),
+                // x-amz-server-side-encryption
+                of(
+                        "Should fail while uploading file to S3 when the server-side-encryption specified is not the same as the one in the policy",
+                        createDefaultPostParamBuilder()
+                                .withServerSideEncryption(PostParams.Builder.EncryptionAlgorithm.AWS_KMS)
+                                .build(),
+                        createFormDataPartsWithKeyCondition("x-amz-server-side-encryption", "AES256"),
+                        false
+                ),
+                // server-side-encryption-aws-kms-key-id
+                of(
+                        "Should succeed while uploading file to S3 when the server-side-encryption-aws-kms-key-id specified is the same as the one in the policy",
+                        createDefaultPostParamBuilder()
+                                .withServerSideEncryption(PostParams.Builder.EncryptionAlgorithm.AWS_KMS)
+                                .withServerSideEncryptionAwsKmsKeyId(System.getenv("AWS_KMS_S3_KEY"))
+                                .build(),
+                        createFormDataPartsWithKeyCondition(
+                                "x-amz-server-side-encryption",
+                                "aws:kms",
+                                "x-amz-server-side-encryption-aws-kms-key-id",
+                                System.getenv("AWS_KMS_S3_KEY")
+                        ),
+                        true
+                ),
+                // server-side-encryption-aws-kms-key-id
+                of(
+                        "Should fail while uploading file to S3 when the server-side-encryption-aws-kms-key-id specified is not the same as the one in the policy",
+                        createDefaultPostParamBuilder()
+                                .withServerSideEncryption(PostParams.Builder.EncryptionAlgorithm.AWS_KMS)
+                                .withServerSideEncryptionAwsKmsKeyId(System.getenv("AWS_KMS_S3_KEY"))
+                                .build(),
+                        createFormDataPartsWithKeyCondition(
+                                "x-amz-server-side-encryption",
+                                "aws:kms",
+                                "x-amz-server-side-encryption-aws-kms-key-id",
+                                "wrongKmsKeyValue"
+                        ),
+                        false
+                ),
+                // server-side-encryption-context
+                of(
+                        "Should succeed while uploading file to S3 when the base64 encoded json " +
+                                "server-side-encryption-context specified is the same as the one in the policy",
+                        createDefaultPostParamBuilder()
+                                .withServerSideEncryption(PostParams.Builder.EncryptionAlgorithm.AWS_KMS)
+                                .withServerSideEncryptionContext("ewogICJ0ZXN0IjogInRlc3QiCn0=")
+                                .build(),
+                        createFormDataPartsWithKeyCondition(
+                                "x-amz-server-side-encryption",
+                                "aws:kms",
+                                "x-amz-server-side-encryption-context",
+                                "ewogICJ0ZXN0IjogInRlc3QiCn0="
+                        ),
+                        true
+                ),
+                // server-side-encryption-context
+                of(
+                        "Should fail while uploading file to S3 when the base64 encoded json " +
+                                "server-side-encryption-context specified is not the same as the one in the policy",
+                        createDefaultPostParamBuilder()
+                                .withServerSideEncryption(PostParams.Builder.EncryptionAlgorithm.AWS_KMS)
+                                .withServerSideEncryptionContext("ewogICJ0ZXN0IjogInRlc3QiCn0=")
+                                .build(),
+                        createFormDataPartsWithKeyCondition(
+                                "x-amz-server-side-encryption",
+                                "aws:kms",
+                                "x-amz-server-side-encryption-context",
+                                "abcdeICJ0ZXN0IjogInRlc3QiCn0="
+                        ),
+                        false
+                ),
+                // server-side-encryption-context
+                of(
+                        "Should fail while uploading file to S3 when the base64 encoded json " +
+                                "server-side-encryption-context specified is not a json",
+                        createDefaultPostParamBuilder()
+                                .withServerSideEncryption(PostParams.Builder.EncryptionAlgorithm.AWS_KMS)
+                                .withServerSideEncryptionContext("dGhpcyBpcyBhIHRlc3Q=")
+                                .build(),
+                        createFormDataPartsWithKeyCondition(
+                                "x-amz-server-side-encryption",
+                                "aws:kms",
+                                "x-amz-server-side-encryption-context",
+                                "dGhpcyBpcyBhIHRlc3Q="
+                        ),
+                        false
+                ),
+                // server-side-encryption-bucket-key-enabled
+                of(
+                        "Should succeed while uploading file to S3 when the server-side-encryption-bucket-key-enabled set as true specified is the same as the one in the policy",
+                        createDefaultPostParamBuilder()
+                                .withServerSideEncryption(PostParams.Builder.EncryptionAlgorithm.AWS_KMS)
+                                .withServerSideEncryptionBucketKeyEnabled(true)
+                                .build(),
+                        createFormDataPartsWithKeyCondition(
+                                "x-amz-server-side-encryption",
+                                "aws:kms",
+                                "x-amz-server-side-encryption-bucket-key-enabled",
+                                "true"
+                        ),
+                        true
+                ),
+                // server-side-encryption-bucket-key-enabled
+                of(
+                        "Should succeed while uploading file to S3 when the server-side-encryption-bucket-key-enabled set as false specified is the same as the one in the policy",
+                        createDefaultPostParamBuilder()
+                                .withServerSideEncryption(PostParams.Builder.EncryptionAlgorithm.AWS_KMS)
+                                .withServerSideEncryptionBucketKeyEnabled(false)
+                                .build(),
+                        createFormDataPartsWithKeyCondition(
+                                "x-amz-server-side-encryption",
+                                "aws:kms",
+                                "x-amz-server-side-encryption-bucket-key-enabled",
+                                "false"
+                        ),
+                        true
+                ),
+                // server-side-encryption-bucket-key-enabled
+                of(
+                        "Should fail while uploading file to S3 when the server-side-encryption-bucket-key-enabled specified is not the same as the one in the policy",
+                        createDefaultPostParamBuilder()
+                                .withServerSideEncryption(PostParams.Builder.EncryptionAlgorithm.AWS_KMS)
+                                .withServerSideEncryptionBucketKeyEnabled(true)
+                                .build(),
+                        createFormDataPartsWithKeyCondition(
+                                "x-amz-server-side-encryption",
+                                "aws:kms",
+                                "x-amz-server-side-encryption-bucket-key-enabled",
+                                "false"
+                        ),
+                        false
                 )
         );
     }
