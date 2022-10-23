@@ -39,12 +39,32 @@ class PostParamsTest {
             MatchCondition.Operator expectedOperator
 
     ) {
-        // Arrange & act
+        // Arrange & Act
         Set<Condition> conditions = builderSupplier.get().build().getConditions();
 
         // Assert
         Assertions.assertThat(conditions)
                 .contains(new MatchCondition(expectedConditionField, expectedOperator, "test"));
+    }
+
+    @Test
+    void shouldTestIfConditionsWereAddedForConditionsServerSideEncryptionCustomer() {
+        // Arrange
+        PostParams postParams = createBuilder()
+                .withServerSideEncryptionCustomerAlgorithmAES256()
+                .withServerSideEncryptionCustomerKey("test")
+                .withServerSideEncryptionCustomerKeyMD5("test")
+                .build();
+
+        // Act
+        Set<Condition> conditions = postParams.getConditions();
+
+        // Assert
+        Assertions.assertThat(conditions).contains(
+                new MatchCondition(SERVER_SIDE_ENCRYPTION_CUSTOMER_ALGORITHM, EQ, "AES256"),
+                new MatchCondition(SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY, EQ, "test"),
+                new MatchCondition(SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY_MD5, EQ, "test")
+        );
     }
 
 
@@ -318,7 +338,7 @@ class PostParamsTest {
                         "Should assert that condition withServerSideEncryptionBucketKeyEnabled was added",
                         (Supplier<PostParams.Builder>) () -> createBuilder()
                                 .withServerSideEncryption(AWS_KMS)
-                                .withServerSideEncryptionBucketKeyEnabled(true),
+                                .withServerSideEncryptionBucketKeyEnabled(),
                         SERVER_SIDE_ENCRYPTION_BUCKET_KEY_ENABLED,
                         EQ
                 )
@@ -345,28 +365,52 @@ class PostParamsTest {
     private static Stream<Arguments> shouldThrowAnErrorIfRequiredConditionsWereNotAdded() {
         return Stream.of(
                 of(
-                        "Should assert that withServerSideEncryptionAwsKmsKeyId is called with withServerSideEncryption",
+                        "Should assert that withServerSideEncryptionCustomerAlgorithmAES256 is called with required conditions",
+                        (ThrowableAssert.ThrowingCallable) () ->
+                                createBuilder()
+                                        .withServerSideEncryptionCustomerAlgorithmAES256()
+                                        .build(),
+                        "The condition SERVER_SIDE_ENCRYPTION_CUSTOMER_ALGORITHM requires the condition(s) [SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY, SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY_MD5] to be present"
+                ),
+                of(
+                        "Should assert that withServerSideEncryptionCustomerKey is called with required conditions",
+                        (ThrowableAssert.ThrowingCallable) () ->
+                                createBuilder()
+                                        .withServerSideEncryptionCustomerKey("test")
+                                        .build(),
+                        "The condition SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY requires the condition(s) [SERVER_SIDE_ENCRYPTION_CUSTOMER_ALGORITHM, SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY_MD5] to be present"
+                ),
+                of(
+                        "Should assert that withServerSideEncryptionCustomerKeyMD5 is called with required conditions",
+                        (ThrowableAssert.ThrowingCallable) () ->
+                                createBuilder()
+                                        .withServerSideEncryptionCustomerKeyMD5("test")
+                                        .build(),
+                        "The condition SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY_MD5 requires the condition(s) [SERVER_SIDE_ENCRYPTION_CUSTOMER_ALGORITHM, SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY] to be present"
+                ),
+                of(
+                        "Should assert that withServerSideEncryptionAwsKmsKeyId is called with required conditions",
                         (ThrowableAssert.ThrowingCallable) () ->
                                 createBuilder()
                                         .withServerSideEncryptionAwsKmsKeyId("test")
-                                                .build(),
-                        getEncryptionExceptionMessage(SERVER_SIDE_ENCRYPTION_AWS_KMS_KEY_ID, SERVER_SIDE_ENCRYPTION)
+                                        .build(),
+                        "The condition SERVER_SIDE_ENCRYPTION_AWS_KMS_KEY_ID requires the condition(s) [SERVER_SIDE_ENCRYPTION] to be present"
                 ),
                 of(
-                        "Should assert that withServerSideEncryptionContext is called with withServerSideEncryption",
+                        "Should assert that withServerSideEncryptionContext is called with required conditions",
                         (ThrowableAssert.ThrowingCallable) () ->
                                 createBuilder()
                                         .withServerSideEncryptionContext("test")
                                         .build(),
-                        getEncryptionExceptionMessage(SERVER_SIDE_ENCRYPTION_CONTEXT, SERVER_SIDE_ENCRYPTION)
+                        "The condition SERVER_SIDE_ENCRYPTION_CONTEXT requires the condition(s) [SERVER_SIDE_ENCRYPTION] to be present"
                 ),
                 of(
-                        "Should assert that withServerSideEncryptionBucketKeyEnabled is called with withServerSideEncryption",
+                        "Should assert that withServerSideEncryptionBucketKeyEnabled is called with required conditions",
                         (ThrowableAssert.ThrowingCallable) () ->
                                 createBuilder()
-                                        .withServerSideEncryptionBucketKeyEnabled(true)
+                                        .withServerSideEncryptionBucketKeyEnabled()
                                         .build(),
-                        getEncryptionExceptionMessage(SERVER_SIDE_ENCRYPTION_BUCKET_KEY_ENABLED, SERVER_SIDE_ENCRYPTION)
+                        "The condition SERVER_SIDE_ENCRYPTION_BUCKET_KEY_ENABLED requires the condition(s) [SERVER_SIDE_ENCRYPTION] to be present"
                 )
         );
     }

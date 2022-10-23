@@ -1,10 +1,5 @@
 package mendes.sutil.dyego.awspresignedpost.domain.conditions;
 
-import java.util.Collections;
-import java.util.Set;
-
-import static java.util.Collections.emptySet;
-
 public enum ConditionField { // TODO move it
 
     KEY("$key"),
@@ -31,34 +26,17 @@ public enum ConditionField { // TODO move it
     CHECKSUM_SHA256("$x-amz-checksum-sha256"),
     CHECKSUM_SHA1("$x-amz-checksum-sha1"),
     SERVER_SIDE_ENCRYPTION("$x-amz-server-side-encryption"),
-    SERVER_SIDE_ENCRYPTION_AWS_KMS_KEY_ID(
-            "$x-amz-server-side-encryption-aws-kms-key-id",
-            SERVER_SIDE_ENCRYPTION
-    ),
-    SERVER_SIDE_ENCRYPTION_CONTEXT(
-            "$x-amz-server-side-encryption-context",
-            SERVER_SIDE_ENCRYPTION
-    ),
-    SERVER_SIDE_ENCRYPTION_BUCKET_KEY_ENABLED(
-            "$x-amz-server-side-encryption-bucket-key-enabled",
-            SERVER_SIDE_ENCRYPTION
-    ),
+    SERVER_SIDE_ENCRYPTION_AWS_KMS_KEY_ID("$x-amz-server-side-encryption-aws-kms-key-id"),
+    SERVER_SIDE_ENCRYPTION_CONTEXT("$x-amz-server-side-encryption-context"),
+    SERVER_SIDE_ENCRYPTION_BUCKET_KEY_ENABLED("$x-amz-server-side-encryption-bucket-key-enabled"),
+    SERVER_SIDE_ENCRYPTION_CUSTOMER_ALGORITHM("$x-amz-server-side-encryption-customer-algorithm"),
+    SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY("$x-amz-server-side-encryption-customer-key"),
+    SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY_MD5("$x-amz-server-side-encryption-customer-key-MD5"),
     CONTENT_LENGTH_RANGE("content-length-range");
     
     public final String awsConditionName;
-    public final Set<ConditionField> requiredConditionFields;
 
     ConditionField(String awsConditionName) {
         this.awsConditionName = awsConditionName;
-        this.requiredConditionFields = emptySet();
-    }
-
-    /**
-     * @param requiredConditionField The {@link ConditionField} which must also be present in the policy for the upload
-     *                               to be successful.
-     */
-    ConditionField(String awsConditionName, ConditionField requiredConditionField) {
-        this.awsConditionName = awsConditionName;
-        this.requiredConditionFields = Collections.singleton(requiredConditionField);
     }
 }
