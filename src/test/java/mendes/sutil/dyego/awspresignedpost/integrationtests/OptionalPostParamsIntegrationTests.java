@@ -9,6 +9,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
@@ -43,6 +44,7 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
 
     private static Stream<Arguments> getTestCasesOptionalParams() {
         String tagging = "<Tagging><TagSet><Tag><Key>MyTestTag</Key><Value>MyTagValue</Value></Tag></TagSet></Tagging>";
+        String encryptionKey256bits = "PcI54Y7WIu8aU1fSoEN&34mS#$*S21%3";
         return Stream.of(
                 // content-length-range
                 of(
@@ -686,7 +688,7 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                         "Should succeed while uploading file to S3 when the server-side-encryption-bucket-key-enabled set as true specified is the same as the one in the policy",
                         createDefaultPostParamBuilder()
                                 .withServerSideEncryption(PostParams.Builder.EncryptionAlgorithm.AWS_KMS)
-                                .withServerSideEncryptionBucketKeyEnabled(true)
+                                .withServerSideEncryptionBucketKeyEnabled()
                                 .build(),
                         createFormDataPartsWithKeyCondition(
                                 "x-amz-server-side-encryption",
@@ -698,10 +700,10 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                 ),
                 // server-side-encryption-bucket-key-enabled
                 of(
-                        "Should succeed while uploading file to S3 when the server-side-encryption-bucket-key-enabled set as false specified is the same as the one in the policy",
+                        "Should fail while uploading file to S3 when the server-side-encryption-bucket-key-enabled specified is not the same as the one in the policy",
                         createDefaultPostParamBuilder()
                                 .withServerSideEncryption(PostParams.Builder.EncryptionAlgorithm.AWS_KMS)
-                                .withServerSideEncryptionBucketKeyEnabled(false)
+                                .withServerSideEncryptionBucketKeyEnabled()
                                 .build(),
                         createFormDataPartsWithKeyCondition(
                                 "x-amz-server-side-encryption",
@@ -709,20 +711,56 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                                 "x-amz-server-side-encryption-bucket-key-enabled",
                                 "false"
                         ),
-                        true
+                        false
                 ),
-                // server-side-encryption-bucket-key-enabled
+                // x-amz-server-side-encryption-customer-algorithm
+                // x-amz-server-side-encryption-customer-key
+                // x-amz-server-side-encryption-customer-key-MD5
                 of(
-                        "Should fail while uploading file to S3 when the server-side-encryption-bucket-key-enabled specified is not the same as the one in the policy",
+                        "Should succeed while uploading file to S3 when customer-provided encryption conditions specified are the same as the ones in the policy",
                         createDefaultPostParamBuilder()
-                                .withServerSideEncryption(PostParams.Builder.EncryptionAlgorithm.AWS_KMS)
-                                .withServerSideEncryptionBucketKeyEnabled(true)
+                                .withServerSideEncryptionCustomerAlgorithmAES256()
+                                .withServerSideEncryptionCustomerKey(encodeToBase64(encryptionKey256bits))
+                                .withServerSideEncryptionCustomerKeyMD5(generateEncryptionKeyMD5DigestAsBase64(encryptionKey256bits))
                                 .build(),
                         createFormDataPartsWithKeyCondition(
-                                "x-amz-server-side-encryption",
-                                "aws:kms",
-                                "x-amz-server-side-encryption-bucket-key-enabled",
-                                "false"
+                                "x-amz-server-side-encryption-customer-algorithm", "AES256",
+                                "x-amz-server-side-encryption-customer-key", encodeToBase64(encryptionKey256bits),
+                                "x-amz-server-side-encryption-customer-key-MD5", generateEncryptionKeyMD5DigestAsBase64(encryptionKey256bits)
+                        ),
+                        true
+                ),
+                // x-amz-server-side-encryption-customer-algorithm
+                // x-amz-server-side-encryption-customer-key
+                // x-amz-server-side-encryption-customer-key-MD5
+                of(
+                        "Should fail while uploading file to S3 when customer-provided encryption key condition= specified is not the same as the one in the policy",
+                        createDefaultPostParamBuilder()
+                                .withServerSideEncryptionCustomerAlgorithmAES256()
+                                .withServerSideEncryptionCustomerKey(encodeToBase64(encryptionKey256bits))
+                                .withServerSideEncryptionCustomerKeyMD5(generateEncryptionKeyMD5DigestAsBase64(encryptionKey256bits))
+                                .build(),
+                        createFormDataPartsWithKeyCondition(
+                                "x-amz-server-side-encryption-customer-algorithm", "AES256",
+                                "x-amz-server-side-encryption-customer-key", "wrongBase64value",
+                                "x-amz-server-side-encryption-customer-key-MD5", generateEncryptionKeyMD5DigestAsBase64(encryptionKey256bits)
+                        ),
+                        false
+                ),
+                // x-amz-server-side-encryption-customer-algorithm
+                // x-amz-server-side-encryption-customer-key
+                // x-amz-server-side-encryption-customer-key-MD5
+                of(
+                        "Should succeed while uploading file to S3 when customer-provided encryption conditions specified are the same as the ones in the policy",
+                        createDefaultPostParamBuilder()
+                                .withServerSideEncryptionCustomerAlgorithmAES256()
+                                .withServerSideEncryptionCustomerKey(encodeToBase64(encryptionKey256bits))
+                                .withServerSideEncryptionCustomerKeyMD5(generateEncryptionKeyMD5DigestAsBase64(encryptionKey256bits))
+                                .build(),
+                        createFormDataPartsWithKeyCondition(
+                                "x-amz-server-side-encryption-customer-algorithm", "AES256",
+                                "x-amz-server-side-encryption-customer-key", encodeToBase64(encryptionKey256bits),
+                                "x-amz-server-side-encryption-customer-key-MD5", "wrongBase64EncryptionKeyMD5Digest"
                         ),
                         false
                 )
@@ -745,6 +783,16 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
         return generateChecksumBase64Encoded("SHA-256");
     }
 
+    private static String generateEncryptionKeyMD5DigestAsBase64(String encryptionKey) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            md.update(encryptionKey.getBytes());
+            return encodeToBase64(md.digest());
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e); // TODO add log error
+        }
+    }
+
     private static String generateChecksumSha1Base64Encoded() {
         return generateChecksumBase64Encoded("SHA-1");
     }
@@ -752,12 +800,20 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
     private static String generateChecksumBase64Encoded(String algorithm) {
         try {
             File file = new File("src/test/resources/test.txt");   //TODO shold be configuration?
-            MessageDigest shaDigest = MessageDigest.getInstance(algorithm);
-            byte[] shaChecksum = generateFileChecksum(shaDigest, file);
+            MessageDigest messageDigest = MessageDigest.getInstance(algorithm);
+            byte[] shaChecksum = generateFileChecksum(messageDigest, file);
             return Base64.getEncoder().encodeToString(shaChecksum);
         } catch (NoSuchAlgorithmException | IOException e) {
             // TODO add log.error
             throw new RuntimeException(e);
         }
+    }
+
+    private static String encodeToBase64(byte[] valueToBeBase64Encoded) {
+        return Base64.getEncoder().encodeToString(valueToBeBase64Encoded);
+    }
+
+    private static String encodeToBase64(String valueToBeBase64Encoded) {
+        return Base64.getEncoder().encodeToString(valueToBeBase64Encoded.getBytes(StandardCharsets.UTF_8));
     }
 }

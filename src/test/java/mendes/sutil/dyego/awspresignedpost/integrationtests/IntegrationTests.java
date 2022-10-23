@@ -141,10 +141,27 @@ public class IntegrationTests {
         return formDataParts;
     }
 
+    // TODO make this better, repeated code here
     protected static Map<String, String> createFormDataPartsWithKeyCondition(String key, String value, String key2, String value2) {
         Map<String, String> formDataParts = new HashMap<>();
         formDataParts.put(key, value);
         formDataParts.put(key2, value2);
+        formDataParts.put("key", "${filename}");
+        return formDataParts;
+    }
+
+    protected static Map<String, String> createFormDataPartsWithKeyCondition(
+            String key,
+            String value,
+            String key2,
+            String value2,
+            String key3,
+            String value3
+    ) {
+        Map<String, String> formDataParts = new HashMap<>();
+        formDataParts.put(key, value);
+        formDataParts.put(key2, value2);
+        formDataParts.put(key3, value3);
         formDataParts.put("key", "${filename}");
         return formDataParts;
     }

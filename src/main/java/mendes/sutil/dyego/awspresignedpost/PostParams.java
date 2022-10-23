@@ -67,7 +67,6 @@ public final class PostParams {
     }
 
     public static final class Builder {
-
         private final Set<Condition> conditions = new HashSet<>();
         private final Map<ConditionField, Condition> conditionsMap = new HashMap<>();
         private final Set<Tag> tags = new HashSet<>();
@@ -76,6 +75,35 @@ public final class PostParams {
         private final Region region;
 
         private final AmzExpirationDate amzExpirationDate;
+        private final Map<ConditionField,TreeSet<ConditionField>> dependentConditionFields;
+
+        {
+            dependentConditionFields = new HashMap<>();
+            dependentConditionFields.put(
+                    SERVER_SIDE_ENCRYPTION_AWS_KMS_KEY_ID,
+                    new TreeSet<>(List.of(SERVER_SIDE_ENCRYPTION))
+            );
+            dependentConditionFields.put(
+                    SERVER_SIDE_ENCRYPTION_CONTEXT,
+                    new TreeSet<>(List.of(SERVER_SIDE_ENCRYPTION))
+            );
+            dependentConditionFields.put(
+                    SERVER_SIDE_ENCRYPTION_BUCKET_KEY_ENABLED,
+                    new TreeSet<>(List.of(SERVER_SIDE_ENCRYPTION))
+            );
+            dependentConditionFields.put(
+                    SERVER_SIDE_ENCRYPTION_CUSTOMER_ALGORITHM,
+                    new TreeSet<>(List.of(SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY, SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY_MD5))
+            );
+            dependentConditionFields.put(
+                    SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY,
+                    new TreeSet<>(List.of(SERVER_SIDE_ENCRYPTION_CUSTOMER_ALGORITHM, SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY_MD5))
+            );
+            dependentConditionFields.put(
+                    SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY_MD5,
+                    new TreeSet<>(List.of(SERVER_SIDE_ENCRYPTION_CUSTOMER_ALGORITHM, SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY))
+            );
+        }
 
         private Builder(Region region, AmzExpirationDate amzExpirationDate, KeyCondition keyCondition, String bucket) {
             // TODO add validation for expiration date?
@@ -96,13 +124,22 @@ public final class PostParams {
 
         private void validateConditions() {
             conditionsMap.keySet().forEach(
-                    conditionField -> conditionField.requiredConditionFields.forEach(requiredConditionField -> {
-                        if(!conditionsMap.containsKey(requiredConditionField)) {
-                            throw new IllegalArgumentException(
-                                    String.format("The condition %s requires the condition %s to be present", conditionField, requiredConditionField)
-                            );
+                    conditionField -> {
+                        Set<ConditionField> requiredConditions = dependentConditionFields.get(conditionField);
+                        if(requiredConditions != null) {
+                            requiredConditions.forEach(requiredConditionField -> {
+                                if (!conditionsMap.containsKey(requiredConditionField)) {
+                                    throw new IllegalArgumentException(
+                                            String.format(
+                                                    "The condition %s requires the condition(s) %s to be present",
+                                                    conditionField,
+                                                    requiredConditions
+                                            )
+                                    );
+                                }
+                            });
                         }
-                    })
+                    }
             );
         }
 
@@ -659,11 +696,42 @@ public final class PostParams {
          * lowering calls to AWS KMS. More information
          * <a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucket-key.html">here</a>.
          *
-         * @param value true if S3 Bucket Key with SSE-KMS should be used, false if it should not.
          * @return The {@link Builder} object
          */
-        public Builder withServerSideEncryptionBucketKeyEnabled(boolean value) {
-            return withCondition(SERVER_SIDE_ENCRYPTION_BUCKET_KEY_ENABLED, String.valueOf(value));
+        public Builder withServerSideEncryptionBucketKeyEnabled() {
+            return withCondition(SERVER_SIDE_ENCRYPTION_BUCKET_KEY_ENABLED, "true");
+        }
+
+
+        // TODO check if this conditions conflict with the 4 earlier ones
+        /**
+         * Specifies the algorithm to use to when encrypting the object.
+         * @return The {@link Builder} object
+         */
+        public Builder withServerSideEncryptionCustomerAlgorithmAES256() {
+            return withCondition(SERVER_SIDE_ENCRYPTION_CUSTOMER_ALGORITHM, "AES256");
+        }
+
+        /**
+         * Allows specifying the base64 encoded encryption key to be used for this file upload. The key must be
+         * appropriate for use with the algorithm specified. For example, using a 265 bit encryption key for AES256
+         *
+         * @param encryptionKeyDigestAsBase64 base64 encoded encryption key.
+         * @return The {@link Builder} object
+         */
+        public Builder withServerSideEncryptionCustomerKey(String encryptionKeyDigestAsBase64) {
+            return withCondition(SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY, encryptionKeyDigestAsBase64);
+        }
+
+        /**
+         * Allows specifying the base64 encoded 128-bit MD5 digest of the encryption key. Amazon S3 uses this header for
+         * a message integrity check to ensure that the encryption key was transmitted without error.
+         *
+         * @param encryptionKeyDigestAsBase64 base64 encoded 128-bit MD5 digest of the encryption key
+         * @return The {@link Builder} object
+         */
+        public Builder withServerSideEncryptionCustomerKeyMD5(String encryptionKeyDigestAsBase64) {
+            return withCondition(SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY_MD5, encryptionKeyDigestAsBase64);
         }
 
 //        AWSAccessKeyId ?
