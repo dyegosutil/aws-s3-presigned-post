@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 
 import java.time.Clock;
 import java.time.ZoneOffset;
@@ -92,9 +93,10 @@ public class FreeTextConditionIntegrationTest extends IntegrationTests{
     @MethodSource("freeTextConditionSessionTokenTestCases")
     void freeTextConditionSessionTokenTest(
             FreeTextPostParams freeTextPostParams,
-            Map<String, String> formDataParts
+            Map<String, String> formDataParts,
+            AwsCredentialsProvider awsCredentialsProvider
     ) {
-        PresignedPost2 preSignedPost = new S3PostSigner(getAmazonCredentialsProviderWithAwsSessionCredentials()).create(freeTextPostParams); // TODO this could be a static method so that you don't have to call new
+        PresignedPost2 preSignedPost = new S3PostSigner(awsCredentialsProvider).create(freeTextPostParams); // TODO this could be a static method so that you don't have to call new
         System.out.println(preSignedPost); // TODO
 
         formDataParts.put("x-amz-signature", preSignedPost.getXAmzSignature().getValue());
@@ -169,7 +171,8 @@ public class FreeTextConditionIntegrationTest extends IntegrationTests{
                                 DATE,
                                 getMandatoryConditions()
                         ),
-                        getMandatoryFormDataParts()
+                        getMandatoryFormDataParts(),
+                        getAmazonCredentialsProvider()
                 )
                 ,
                 of(
@@ -179,7 +182,8 @@ public class FreeTextConditionIntegrationTest extends IntegrationTests{
                                 DATE,
                                 getConditionsForAwsSts()
                         ),
-                        getMandatoryFormDataPartsAwsSts()
+                        getMandatoryFormDataPartsAwsSts(),
+                        getAmazonCredentialsProviderWithAwsSessionCredentials()
                 )
         );
     }
