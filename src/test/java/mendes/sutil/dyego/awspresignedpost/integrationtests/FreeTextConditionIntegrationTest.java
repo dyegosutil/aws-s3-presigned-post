@@ -90,7 +90,7 @@ public class FreeTextConditionIntegrationTest extends IntegrationTests {
     private static FreeTextPostParams getFreeTextPostParams(Set<String[]> conditions) {
         return new FreeTextPostParams(
                 REGION, // TODO Is this inverted?, check if it is the same order as other PostParam
-                new AmzExpirationDate(EXPIRATION_DATE), // TODO create of() ?
+                EXPIRATION_DATE,
                 DATE,
                 conditions
         );

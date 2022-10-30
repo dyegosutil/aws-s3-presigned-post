@@ -166,3 +166,5 @@ The AWS Access Key Id you provided does not exist in our records
 - Make sure you are not mixing AWS_KEY and AWS_SECRET with session credentials 
 - ASIAUNVUIU7WKO5WTRO2
 creating non offical libraries, what to take care, can aws sue me, naming, should I say it is non official, etc
+
+Add warn when date is too long
