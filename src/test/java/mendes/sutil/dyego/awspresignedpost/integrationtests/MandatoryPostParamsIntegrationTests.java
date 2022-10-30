@@ -19,6 +19,7 @@ import java.util.stream.Stream;
 import static mendes.sutil.dyego.awspresignedpost.domain.conditions.helper.KeyConditionHelper.*;
 import static org.junit.jupiter.params.provider.Arguments.of;
 
+@Disabled
 public class MandatoryPostParamsIntegrationTests extends IntegrationTests {
 
     /**
