@@ -4,12 +4,11 @@ import mendes.sutil.dyego.awspresignedpost.domain.AmzExpirationDate;
 import software.amazon.awssdk.regions.Region;
 
 import java.time.ZonedDateTime;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Stream;
 
-public final class FreeTextPostParams extends PostParmsParent{
+public final class FreeTextPostParams extends PostParmsParent{  // TODO perhaps chose a better name?
 
     private final Set<String[]> conditions;
     private final ZonedDateTime date;

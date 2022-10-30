@@ -10,7 +10,7 @@ import java.util.AbstractMap;
 @Getter
 @Setter
 // TODO add remaining fields
-public class PresignedPost2 {
+public class PresignedPost2 { // TODO Definitely chose a better name
     private Pair xAmzSignature; // TODO Find a patter for all of them, putting the x in front or not
     private Pair policy; // policyB64
 

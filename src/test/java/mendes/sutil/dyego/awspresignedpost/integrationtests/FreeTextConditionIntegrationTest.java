@@ -8,11 +8,9 @@ import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.Request;
 import okhttp3.RequestBody;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 
 import java.time.Clock;
 import java.time.ZoneOffset;
@@ -24,7 +22,7 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.params.provider.Arguments.of;
 
-public class FreeTextConditionIntegrationTest extends IntegrationTests{
+public class FreeTextConditionIntegrationTest extends IntegrationTests {
 
     private static final ZonedDateTime DATE = ZonedDateTime.now(Clock.systemUTC());
     private static final DateTimeFormatter YYYYMMDD_DATE_FORMATTER = getYyyyMmDdDateFormatter();
@@ -36,139 +34,93 @@ public class FreeTextConditionIntegrationTest extends IntegrationTests{
     @MethodSource("freeTextConditionSessionTokenTestCases")
     void freeTextConditionSessionTokenTest(
             String testDescription,
-            FreeTextPostParams freeTextPostParams,
-            Map<String, String> formDataParts,
-            AwsCredentialsProvider awsCredentialsProvider
+            Map<String, String> formDataParts
     ) {
-        PresignedPost2 preSignedPost = new S3PostSigner(awsCredentialsProvider).create(freeTextPostParams); // TODO this could be a static method so that you don't have to call new
-        System.out.println(preSignedPost); // TODO
-
-        formDataParts.put("x-amz-signature", preSignedPost.getXAmzSignature().getValue());
-        formDataParts.put("policy", preSignedPost.getPolicy().getValue());
-
-        Boolean wasUploadSuccessful = uploadToAws(
-                formDataParts,
-                getUrl()
-        );
-        assertThat(wasUploadSuccessful).isEqualTo(true);
+        assertThat(
+                uploadToAws(formDataParts, getUrl())
+        ).isEqualTo(true);
     }
 
     private static Stream<Arguments> freeTextConditionSessionTokenTestCases() {
         return Stream.of(
-                // Simple test using mandatory params
-                of(
-                        "Should upload file using free text post params where mandatory params are used. This is the simplest upload condition possible",
-                        new FreeTextPostParams(
-                                REGION, // TODO Is this inverted?, check if it is the same order as other PostParam
-                                new AmzExpirationDate(EXPIRATION_DATE), // TODO create of() ?
-                                DATE,
-                                getMandatoryConditions()
-                        ),
-                        getMandatoryFormDataParts(),
-                        getAmazonCredentialsProvider()
-                ),
-                // Test using aws sts token
-                of(
-                        "Should upload file using free text post params where aws sts token is used",
-                        new FreeTextPostParams(
-                                REGION,
-                                new AmzExpirationDate(EXPIRATION_DATE),
-                                DATE,
-                                getConditionsForAwsSts()
-                        ),
-                        getMandatoryFormDataPartsAwsSts(),
-                        getAmazonCredentialsProviderWithAwsSessionCredentials()
-                ),
-                // Test using file encryption with customer key
-                of(
-                        "Should upload file using free text post params where file encryption is used with key specified by the user. One of the most complex cases",
-                        new FreeTextPostParams(
-                                REGION,
-                                new AmzExpirationDate(EXPIRATION_DATE), // TODO Looks strange
-                                DATE,
-                                getConditionsForUploadWithCustomerEncryptionKey()
-                        ),
-                        getFormDataPartsForUploadWithCustomerEncryptionKey(),
-                        getAmazonCredentialsProvider()
-                )
+                getSimpleUploadTestCase(),
+                getAwsStsTokenTestCase(),
+                getEncryptionWithCustomerKeyTestCase()
+        );
+    }
+
+    private static Arguments getEncryptionWithCustomerKeyTestCase() {
+        FreeTextPostParams freeTextPostParams = getFreeTextPostParams(getConditionsForUploadWithCustomerEncryptionKey());
+        PresignedPost2 preSignedPost = new S3PostSigner(getAmazonCredentialsProvider()).create(freeTextPostParams); // TODO this could be a static method so that you don't have to call new
+        return of(
+                "Should upload file using free text post params where file encryption is used with key specified by the user. One of the most complex cases",
+                getFormData(preSignedPost, getFormDataPartsForUploadWithCustomerEncryptionKey())
+        );
+    }
+
+    private static Arguments getAwsStsTokenTestCase() {
+        FreeTextPostParams freeTextPostParams = getFreeTextPostParams(getConditionsForAwsSts());
+        PresignedPost2 preSignedPost = new S3PostSigner(getAmazonCredentialsProviderWithAwsSessionCredentials()).create(freeTextPostParams);
+        return of(
+                "Should upload file using free text post params where aws sts token is used",
+                getFormData(preSignedPost, getFormDataPartsAwsSts())
+        );
+    }
+
+    private static Map<String, String> getFormData(PresignedPost2 preSignedPost, Map<String, String> formDataParts) {
+        formDataParts.put("x-amz-signature", preSignedPost.getXAmzSignature().getValue());
+        formDataParts.put("policy", preSignedPost.getPolicy().getValue());
+        return formDataParts;
+    }
+
+    /**
+     * @return Simple test using mandatory params
+     */
+    private static Arguments getSimpleUploadTestCase() {
+        FreeTextPostParams freeTextPostParams = getFreeTextPostParams(getMandatoryConditions());
+        PresignedPost2 preSignedPost = new S3PostSigner(getAmazonCredentialsProvider()).create(freeTextPostParams); // TODO this could be a static method so that you don't have to call new
+        return of(
+                "Should upload file using free text post params where mandatory params are used. This is the simplest upload condition possible",
+                getFormData(preSignedPost, getMandatoryFormDataParts())
+        );
+    }
+
+    private static FreeTextPostParams getFreeTextPostParams(Set<String[]> conditions) {
+        return new FreeTextPostParams(
+                REGION, // TODO Is this inverted?, check if it is the same order as other PostParam
+                new AmzExpirationDate(EXPIRATION_DATE), // TODO create of() ?
+                DATE,
+                conditions
         );
     }
 
     private static Set<String[]> getMandatoryConditions() {
         Set<String[]> conditions = getCommonConditions();
-        conditions.add(
-                new String[]{
-                        "eq",
-                        "$x-amz-credential",
-                        CREDENTIAL
-                }
-        );
+        conditions.add(new String[]{"eq", "$x-amz-credential", CREDENTIAL});
         return conditions;
     }
 
     private static Set<String[]> getConditionsForUploadWithCustomerEncryptionKey() { // TODO have a general look in the free text part to see if there is anything else (code, functionality) that should be extracted out of it, meaning that otherwise it would not work for certainc ases
         Set<String[]> conditions = getMandatoryConditions();
-        conditions.add(
-                new String[]{
-                        "eq",
-                        "$x-amz-server-side-encryption-customer-algorithm",
-                        "AES256"
-                }
-        );
-        conditions.add(
-                new String[]{
-                        "eq",
-                        "$x-amz-server-side-encryption-customer-key",
-                        encodeToBase64(encryptionKey256bits)
-                }
-        );
-        conditions.add(
-                new String[]{
-                        "eq",
-                        "$x-amz-server-side-encryption-customer-key-MD5",
-                        generateEncryptionKeyMD5DigestAsBase64(encryptionKey256bits)
-                }
-        );
+        conditions.add(new String[]{"eq", "$x-amz-server-side-encryption-customer-algorithm", "AES256"});
+        conditions.add(new String[]{"eq", "$x-amz-server-side-encryption-customer-key", encodeToBase64(encryptionKey256bits)});
+        conditions.add(new String[]{"eq", "$x-amz-server-side-encryption-customer-key-MD5", generateEncryptionKeyMD5DigestAsBase64(encryptionKey256bits)});
         return conditions;
     }
 
     private static Set<String[]> getConditionsForAwsSts() {
         Set<String[]> conditions = getCommonConditions();
-        conditions.add(
-                new String[]{
-                        "eq",
-                        "$x-amz-credential",
-                        getSessionCredential()
-                }
-        );
-        conditions.add(
-                new String[]{
-                        "eq",
-                        "$x-amz-security-token",
-                        System.getenv("AWS_SESSION_TOKEN")
-                }
-        );
+        conditions.add(new String[]{"eq", "$x-amz-credential", getSessionCredential()});
+        conditions.add(new String[]{"eq", "$x-amz-security-token", System.getenv("AWS_SESSION_TOKEN")});
         return conditions;
     }
 
     private static Set<String[]> getCommonConditions() {
         Set<String[]> conditions = new HashSet<>();
-        conditions.add(
-                new String[]{"eq","$key","test.txt"}
-        );
-        conditions.add(
-                new String[]{"eq", "$x-amz-algorithm", "AWS4-HMAC-SHA256"}
-        );
+        conditions.add(new String[]{"eq", "$key", "test.txt"});
+        conditions.add(new String[]{"eq", "$x-amz-algorithm", "AWS4-HMAC-SHA256"});
         conditions.add(new String[]{"eq", "$x-amz-date", DATE_FOR_POLICY});
-        conditions.add(
-                new String[]{"eq", "$bucket", BUCKET}
-        );
-        return conditions;
-    }
-
-    private static Set<String[]> getMandatoryConditions( String[] condition) {
-        Set<String[]> conditions = getMandatoryConditions();
-        conditions.add(condition);
+        conditions.add(new String[]{"eq", "$bucket", BUCKET});
         return conditions;
     }
 
@@ -194,7 +146,7 @@ public class FreeTextConditionIntegrationTest extends IntegrationTests{
         return formDataParts;
     }
 
-    private static Object getMandatoryFormDataPartsAwsSts() {
+    private static Map<String, String> getFormDataPartsAwsSts() {
         Map<String, String> formDataParts = new HashMap<>();
         formDataParts.put("key", "test.txt");
         formDataParts.put("x-amz-credential", getSessionCredential());
@@ -212,18 +164,14 @@ public class FreeTextConditionIntegrationTest extends IntegrationTests{
     private Request createRequest(Map<String, String> formDataParts, String url) {
         MultipartBody.Builder builder = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM);
-
-        // Parameters specific for the test
         formDataParts.forEach(builder::addFormDataPart);
-
         // file has to be the last parameter according to aws
         builder.addFormDataPart("file", "test.txt", RequestBody.create("this is a test".getBytes(), MediaType.parse("text/plain")));
-
         MultipartBody multipartBody = builder.build();
-
         return new Request.Builder()
                 .url(url)
-                .post(multipartBody).build();
+                .post(multipartBody)
+                .build();
     }
 
     private static DateTimeFormatter getYyyyMmDdDateFormatter() {
