@@ -137,3 +137,32 @@ Check about license, and legal matters
 
 Check what does it mean to develop open source, what to expect, what is good,
 what is bad, what is expected from me, what is not expected.
+
+List capabilities of the lib/pre-signed post
+
+try to remove dependencies, amazon, etc
+
+search about what to think when doing a lib, how should be the methods for the person using it, 
+the construcutor, the builder, and any other things to take in consideration  code wise.
+
+See if I can watch the pages of doc from amazon in case they change something.
+
+check if I should remove UTC and go for the default system time zone
+
+
+FreeTextPostParam
+- gives total freedom for adding conditions and params used
+
+## AWS erros and solutions
+
+```aidl
+The provided token is malformed or otherwise invalid.
+```
+or
+```aidl
+The AWS Access Key Id you provided does not exist in our records
+```
+- Double check the AWS_SESSION_TOKEN, AWS_SESSION_SECRET and AWS_SESSION_TOKEN, one or more values might be wrong
+- Make sure you are not mixing AWS_KEY and AWS_SECRET with session credentials 
+- ASIAUNVUIU7WKO5WTRO2
+creating non offical libraries, what to take care, can aws sue me, naming, should I say it is non official, etc

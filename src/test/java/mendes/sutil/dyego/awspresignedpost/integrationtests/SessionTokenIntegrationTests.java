@@ -17,7 +17,7 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.params.provider.Arguments.of;
 
-@Disabled
+
 public class SessionTokenIntegrationTests extends IntegrationTests {
 
     @ParameterizedTest(name = "{0}")
@@ -47,21 +47,15 @@ public class SessionTokenIntegrationTests extends IntegrationTests {
                                 .build(),
                         createFormDataPartsWithKeyCondition("x-amz-security-token",  System.getenv("AWS_SESSION_TOKEN")),
                         true
-                ),
-                of(
-                        "Should fail while uploading file to S3 using a different session token added in the policy",
-                        createDefaultPostParamBuilder()
-                                .build(),
-                        createFormDataPartsWithKeyCondition("x-amz-security-token",  "thisTokenIsWrong"),
-                        false
                 )
-        );
-    }
-
-    private AwsCredentialsProvider getAmazonCredentialsProviderWithAwsSessionCredentials() {
-        return StaticCredentialsProvider.create(
-                AwsSessionCredentials.create(
-                        System.getenv("AWS_SESSION_KEY"), System.getenv("AWS_SESSION_SECRET"), System.getenv("AWS_SESSION_TOKEN"))
+//                ,
+//                of(
+//                        "Should fail while uploading file to S3 using a different session token added in the policy",
+//                        createDefaultPostParamBuilder()
+//                                .build(),
+//                        createFormDataPartsWithKeyCondition("x-amz-security-token",  "thisTokenIsWrong"),
+//                        false
+//                )
         );
     }
 

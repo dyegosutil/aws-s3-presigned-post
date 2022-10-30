@@ -3,9 +3,11 @@ package mendes.sutil.dyego.awspresignedpost.integrationtests;
 import mendes.sutil.dyego.awspresignedpost.PostParams;
 import mendes.sutil.dyego.awspresignedpost.PresignedPost;
 import mendes.sutil.dyego.awspresignedpost.S3PostSigner;
+import mendes.sutil.dyego.awspresignedpost.domain.response.PresignedPost2;
 import okhttp3.*;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.AwsSessionCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 
@@ -21,6 +23,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import static mendes.sutil.dyego.awspresignedpost.domain.conditions.helper.KeyConditionHelper.withAnyKey;
+import static mendes.sutil.dyego.awspresignedpost.domain.conditions.helper.KeyConditionHelper.withKey;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -31,9 +34,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class IntegrationTests {
 
     protected static final Region REGION = Region.of(System.getenv("AWS_REGION"));
-    protected static final ZonedDateTime EXPIRATION_DATE = Instant.now(Clock.systemUTC()) // TODO check if clock should be a parameter, check documentation to see how expiration time should be received, check what would happen if different zoneids are used for expiration aand for date in the policy
-            .plus(1, ChronoUnit.MINUTES)
-            .atZone(ZoneOffset.UTC);
+//    protected static final ZonedDateTime EXPIRATION_DATE = Instant.now(Clock.systemUTC()) // TODO check if clock should be a parameter, check documentation to see how expiration time should be received, check what would happen if different zoneids are used for expiration aand for date in the policy
+//            .plus(10, ChronoUnit.MINUTES)
+//            .atZone(ZoneOffset.UTC);
+
+    protected static final ZonedDateTime EXPIRATION_DATE = ZonedDateTime.of(2022,11,5, 7, 1, 1, 1, ZoneOffset.UTC);
     protected static final String BUCKET = System.getenv("AWS_BUCKET");
 
     protected void createPreSignedPostAndUpload(PostParams postParams, Map<String, String> formDataParts, Boolean expectedResult) {
@@ -67,7 +72,7 @@ public class IntegrationTests {
         return performCallAndVerifySuccessActionRedirect(request);
     }
 
-    private boolean performCallAndVerifySuccessActionRedirect(Request request) {
+    boolean performCallAndVerifySuccessActionRedirect(Request request) {
         try (Response response = new OkHttpClient().newCall(request).execute()) {
             return checkSuccessAndPrintResponseIfError(response);
         } catch (Exception e) {
@@ -130,14 +135,14 @@ public class IntegrationTests {
                         REGION,
                         EXPIRATION_DATE,
                         BUCKET,
-                        withAnyKey()
+                        withKey("test.txt")
                 );
     }
 
     protected static Map<String, String> createFormDataPartsWithKeyCondition(String key, String value) {
         Map<String, String> formDataParts = new HashMap<>();
         formDataParts.put(key, value);
-        formDataParts.put("key", "${filename}");
+        formDataParts.put("key", "test.txt");
         return formDataParts;
     }
 
@@ -200,5 +205,12 @@ public class IntegrationTests {
             System.err.println(e); // TODO fix
             return false;
         }
+    }
+
+    protected AwsCredentialsProvider getAmazonCredentialsProviderWithAwsSessionCredentials() {
+        return StaticCredentialsProvider.create(
+                AwsSessionCredentials.create(
+                        System.getenv("AWS_SESSION_KEY"), System.getenv("AWS_SESSION_SECRET"), System.getenv("AWS_SESSION_TOKEN"))
+        );
     }
 }

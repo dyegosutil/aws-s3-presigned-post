@@ -5,12 +5,17 @@ import com.google.gson.annotations.Expose;
 import mendes.sutil.dyego.awspresignedpost.domain.AmzDate;
 import mendes.sutil.dyego.awspresignedpost.domain.conditions.Condition;
 import mendes.sutil.dyego.awspresignedpost.domain.conditions.MatchCondition;
+import mendes.sutil.dyego.awspresignedpost.domain.response.PresignedPost2;
 import software.amazon.awssdk.auth.credentials.AwsCredentials;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.AwsSessionCredentials;
+import software.amazon.awssdk.regions.Region;
 
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.Base64;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 
 import static mendes.sutil.dyego.awspresignedpost.domain.conditions.ConditionField.*;
 import static mendes.sutil.dyego.awspresignedpost.domain.conditions.MatchCondition.Operator.EQ;
@@ -33,7 +38,7 @@ public class S3PostSigner { // TODO rename?
 
         String bucket = postParams.getBucket();
         String region = postParams.getRegion().id();
-        String url = "https://"+bucket+".s3."+region+".amazonaws.com"; //TODO use string format
+        String url = "https://" + bucket + ".s3." + region + ".amazonaws.com"; //TODO use string format
         String credentials = AwsSigner.buildCredentialField(awsCredentials, postParams.getRegion(), amzDate);
 
         Policy policy = new Policy(
@@ -46,34 +51,52 @@ public class S3PostSigner { // TODO rename?
         );
         final String policyJson = new Gson().toJson(policy);
         final String policyB64 = Base64.getEncoder().encodeToString(policyJson.getBytes(StandardCharsets.UTF_8));
+        String signature = produceSignature(postParams.getRegion(), amzDate, policyB64);
 
-        String signature = AwsSigner.hexDump(
+        return new PresignedPost(
+                url, credentials, amzDate.formatForPolicy(), signature, policyB64, "AWS4-HMAC-SHA256" // Shoul it be a constant? but it is used only once
+        );
+    }
+
+    public PresignedPost2 create(FreeTextPostParams params) {
+        AmzDate amzDate = new AmzDate(params.getDate());
+
+        Policy policy = new Policy(
+                params.getAmzExpirationDate().formatForPolicy(),
+                params.getConditions()
+        );
+        final String policyJson = new Gson().toJson(policy);
+        final String policyB64 = Base64.getEncoder().encodeToString(policyJson.getBytes(StandardCharsets.UTF_8));
+        String signature = produceSignature(params.getRegion(), amzDate, policyB64);
+
+//        System.out.println(params.getConditions());
+        return new PresignedPost2(signature, amzDate.formatForPolicy(), policyB64);
+    }
+
+    private String produceSignature(Region region, AmzDate amzDate, String policyB64) {
+        return AwsSigner.hexDump(
                 AwsSigner.signMac(
                         AwsSigner.generateSigningKey(
                                 awsCredentials.secretAccessKey(),
-                                postParams.getRegion(),
+                                region,
                                 amzDate
                         ),
                         policyB64.getBytes(StandardCharsets.UTF_8)
                 )
         );
-
-        return new PresignedPost(
-                url,credentials, amzDate.formatForPolicy(), signature, policyB64, "AWS4-HMAC-SHA256"
-        );
     }
 
     private void addSessionToken(Set<Condition> conditions) {
-        if(awsCredentials instanceof AwsSessionCredentials) {
+        if (awsCredentials instanceof AwsSessionCredentials) {
             conditions.add(new MatchCondition(SECURITY_TOKEN, EQ, ((AwsSessionCredentials) awsCredentials).sessionToken()));
         }
     }
 
-    private List<String[]> buildConditions(
+    private Set<String[]> buildConditions(
             Set<Condition> conditions,
             AmzDate xAmzDate,
             String credentials) { //TODO Two conditions? find a better name
-        final List<String[]> result = new ArrayList<>();
+        final Set<String[]> result = new HashSet<>();
 
         conditions.forEach(condition -> result.add(condition.asAwsPolicyCondition()));
 
@@ -84,7 +107,7 @@ public class S3PostSigner { // TODO rename?
         return result;
     }
 
-
-//    @RequiredArgsConstructor
-    private record Policy(@Expose String expiration, @Expose List<String[]> conditions) { }
+    //    @RequiredArgsConstructor
+    private record Policy(@Expose String expiration, @Expose Set<String[]> conditions) {
+    } // TODO should not this be a set
 }
