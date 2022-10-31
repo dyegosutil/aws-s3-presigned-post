@@ -21,10 +21,10 @@ public final class FreeTextPostParams {
             Set<String[]> conditions
     ){
         if (Stream.of(region, expirationDate, date, conditions).anyMatch(Objects::isNull)) {
-            throw new IllegalArgumentException("There should be no null arguments passed to "+getClass().getName()+" constructor"); // ADD test
+            throw new IllegalArgumentException("There should be no null arguments passed to "+getClass().getSimpleName()+" constructor");
         }
         if(conditions.isEmpty()) {
-            throw new IllegalArgumentException("The conditions for FreeTextPostParams should not be empty");
+            throw new IllegalArgumentException("The conditions for "+getClass().getSimpleName()+" should not be empty");
         }
         this.region = region;
         this.amzExpirationDate = new AmzExpirationDate(expirationDate);
