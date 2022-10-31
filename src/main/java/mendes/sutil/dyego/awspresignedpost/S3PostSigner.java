@@ -5,7 +5,7 @@ import com.google.gson.annotations.Expose;
 import mendes.sutil.dyego.awspresignedpost.domain.AmzDate;
 import mendes.sutil.dyego.awspresignedpost.domain.conditions.Condition;
 import mendes.sutil.dyego.awspresignedpost.domain.conditions.MatchCondition;
-import mendes.sutil.dyego.awspresignedpost.domain.response.PresignedPost2;
+import mendes.sutil.dyego.awspresignedpost.domain.response.FreeTextPresignedPost;
 import software.amazon.awssdk.auth.credentials.AwsCredentials;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.AwsSessionCredentials;
@@ -62,7 +62,7 @@ public class S3PostSigner { // TODO rename?
         );
     }
 
-    public PresignedPost2 create(FreeTextPostParams params) {
+    public FreeTextPresignedPost create(FreeTextPostParams params) {
         AmzDate amzDate = new AmzDate(params.getDate());
 
         Policy policy = new Policy(
@@ -73,7 +73,7 @@ public class S3PostSigner { // TODO rename?
         final String policyB64 = Base64.getEncoder().encodeToString(policyJson.getBytes(StandardCharsets.UTF_8));
         String signature = produceSignature(params.getRegion(), amzDate, policyB64);
 
-        return new PresignedPost2(signature, policyB64);
+        return new FreeTextPresignedPost(signature, policyB64);
     }
 
     private String produceSignature(Region region, AmzDate amzDate, String policyB64) {

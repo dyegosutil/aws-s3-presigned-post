@@ -2,13 +2,11 @@ package mendes.sutil.dyego.awspresignedpost.integrationtests;
 
 import mendes.sutil.dyego.awspresignedpost.FreeTextPostParams;
 import mendes.sutil.dyego.awspresignedpost.S3PostSigner;
-import mendes.sutil.dyego.awspresignedpost.domain.AmzExpirationDate;
-import mendes.sutil.dyego.awspresignedpost.domain.response.PresignedPost2;
+import mendes.sutil.dyego.awspresignedpost.domain.response.FreeTextPresignedPost;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.Request;
 import okhttp3.RequestBody;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -53,7 +51,7 @@ public class FreeTextConditionIntegrationTest extends IntegrationTests {
 
     private static Arguments getEncryptionWithCustomerKeyTestCase() {
         FreeTextPostParams freeTextPostParams = getFreeTextPostParams(getConditionsForUploadWithCustomerEncryptionKey());
-        PresignedPost2 preSignedPost = new S3PostSigner(getAmazonCredentialsProvider()).create(freeTextPostParams); // TODO this could be a static method so that you don't have to call new
+        FreeTextPresignedPost preSignedPost = new S3PostSigner(getAmazonCredentialsProvider()).create(freeTextPostParams); // TODO this could be a static method so that you don't have to call new
         return of(
                 "Should upload file using free text post params where file encryption is used with key specified by the user. One of the most complex cases",
                 getFormData(preSignedPost, getFormDataPartsForUploadWithCustomerEncryptionKey())
@@ -62,15 +60,15 @@ public class FreeTextConditionIntegrationTest extends IntegrationTests {
 
     private static Arguments getAwsStsTokenTestCase() {
         FreeTextPostParams freeTextPostParams = getFreeTextPostParams(getConditionsForAwsSts());
-        PresignedPost2 preSignedPost = new S3PostSigner(getAmazonCredentialsProviderWithAwsSessionCredentials()).create(freeTextPostParams);
+        FreeTextPresignedPost preSignedPost = new S3PostSigner(getAmazonCredentialsProviderWithAwsSessionCredentials()).create(freeTextPostParams);
         return of(
                 "Should upload file using free text post params where aws sts token is used",
                 getFormData(preSignedPost, getFormDataPartsAwsSts())
         );
     }
 
-    private static Map<String, String> getFormData(PresignedPost2 preSignedPost, Map<String, String> formDataParts) {
-        formDataParts.put("x-amz-signature", preSignedPost.getXAmzSignature().getValue());
+    private static Map<String, String> getFormData(FreeTextPresignedPost preSignedPost, Map<String, String> formDataParts) {
+        formDataParts.put("x-amz-signature", preSignedPost.getxAmzSignature().getValue());
         formDataParts.put("policy", preSignedPost.getPolicy().getValue());
         return formDataParts;
     }
@@ -80,7 +78,7 @@ public class FreeTextConditionIntegrationTest extends IntegrationTests {
      */
     private static Arguments getSimpleUploadTestCase() {
         FreeTextPostParams freeTextPostParams = getFreeTextPostParams(getMandatoryConditions());
-        PresignedPost2 preSignedPost = new S3PostSigner(getAmazonCredentialsProvider()).create(freeTextPostParams); // TODO this could be a static method so that you don't have to call new
+        FreeTextPresignedPost preSignedPost = new S3PostSigner(getAmazonCredentialsProvider()).create(freeTextPostParams); // TODO this could be a static method so that you don't have to call new
         return of(
                 "Should upload file using free text post params where mandatory params are used. This is the simplest upload condition possible",
                 getFormData(preSignedPost, getMandatoryFormDataParts())
