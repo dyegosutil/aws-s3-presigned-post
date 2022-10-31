@@ -54,7 +54,11 @@ public class S3PostSigner { // TODO rename?
         String signature = produceSignature(postParams.getRegion(), amzDate, policyB64);
 
         return new PresignedPost(
-                url, credentials, amzDate.formatForPolicy(), signature, policyB64, "AWS4-HMAC-SHA256" // Shoul it be a constant? but it is used only once
+                url,
+                credentials,
+                amzDate.formatForPolicy(),
+                signature,
+                policyB64, "AWS4-HMAC-SHA256" // Shoul it be a constant? but it is used only once
         );
     }
 
@@ -69,8 +73,7 @@ public class S3PostSigner { // TODO rename?
         final String policyB64 = Base64.getEncoder().encodeToString(policyJson.getBytes(StandardCharsets.UTF_8));
         String signature = produceSignature(params.getRegion(), amzDate, policyB64);
 
-//        System.out.println(params.getConditions());
-        return new PresignedPost2(signature, amzDate.formatForPolicy(), policyB64);
+        return new PresignedPost2(signature, policyB64);
     }
 
     private String produceSignature(Region region, AmzDate amzDate, String policyB64) {

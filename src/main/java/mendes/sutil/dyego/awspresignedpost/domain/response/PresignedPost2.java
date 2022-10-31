@@ -13,15 +13,8 @@ import java.util.AbstractMap;
 public class PresignedPost2 { // TODO Definitely chose a better name
     private Pair xAmzSignature; // TODO Find a patter for all of them, putting the x in front or not
     private Pair policy; // policyB64
-
-    private PresignedPost.Pair credential; // credentialsField;
-
-    private PresignedPost.Pair date; // AMZ_DATE_FORMATTER.format(date),
-
-    public PresignedPost2(String signature, String date, String policy) {
+    public PresignedPost2(String signature, String policy) {
         this.xAmzSignature = new Pair("x-amz-signature", signature);
-//        this.credential = new PresignedPost.Pair("x-amz-credential", credential);
-        this.date = new PresignedPost.Pair("x-amz-date", date);
         this.policy = new Pair("policy", policy);
     }
 
@@ -55,8 +48,6 @@ public class PresignedPost2 { // TODO Definitely chose a better name
     public String toString() {
         return "PresignedPost2{" +
                 "\nxAmzSignature=" + xAmzSignature +
-                "\n, credential=" + credential +
-                "\n, date=" + date +
                 "\n, policy=" + policy +
                 '}';
     }
