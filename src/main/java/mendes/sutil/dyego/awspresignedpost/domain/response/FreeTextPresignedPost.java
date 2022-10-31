@@ -5,6 +5,7 @@ import java.util.AbstractMap;
 public class FreeTextPresignedPost {
     private final Pair xAmzSignature; // TODO Find a patter for all of them, putting the x in front or not
     private final Pair policy;
+
     public FreeTextPresignedPost(String signature, String policy) {
         this.xAmzSignature = new Pair("x-amz-signature", signature);
         this.policy = new Pair("policy", policy);
