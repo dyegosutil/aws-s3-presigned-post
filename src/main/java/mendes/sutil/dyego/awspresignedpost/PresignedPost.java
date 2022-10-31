@@ -8,6 +8,7 @@ import java.util.AbstractMap;
 
 @Getter
 @Setter
+// TODO add remaining fields
 public class PresignedPost {
     private String url; //"https://$bucket.s3.eu-central-1.amazonaws.com", //         https://dev-de.fourthline-zip-upload.scalable.s3.eu-central-1.amazonaws.com"
     private Pair algorithm; // "AWS4-HMAC-SHA256";

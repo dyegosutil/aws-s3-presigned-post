@@ -33,7 +33,7 @@ public class KeyConditionHelper {
 
     /**
      * Allow any key to be specified by the pre-signed post user.
-     * If the value provided by the user is for the param 'key' is ${filename}, the name of the file being uploaded will
+     * If the value provided by the user for the param 'key' is ${filename}, the name of the file being uploaded will
      * be used.
      * @return {@link KeyStartsWithCondition}
      */

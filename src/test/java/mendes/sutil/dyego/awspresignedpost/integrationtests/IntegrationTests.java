@@ -6,16 +6,20 @@ import mendes.sutil.dyego.awspresignedpost.S3PostSigner;
 import okhttp3.*;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.AwsSessionCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -34,7 +38,9 @@ public class IntegrationTests {
     protected static final ZonedDateTime EXPIRATION_DATE = Instant.now(Clock.systemUTC()) // TODO check if clock should be a parameter, check documentation to see how expiration time should be received, check what would happen if different zoneids are used for expiration aand for date in the policy
             .plus(1, ChronoUnit.MINUTES)
             .atZone(ZoneOffset.UTC);
+
     protected static final String BUCKET = System.getenv("AWS_BUCKET");
+    protected static final String encryptionKey256bits = "PcI54Y7WIu8aU1fSoEN&34mS#$*S21%3";
 
     protected void createPreSignedPostAndUpload(PostParams postParams, Map<String, String> formDataParts, Boolean expectedResult) {
         PresignedPost presignedPost = new S3PostSigner(getAmazonCredentialsProvider()).create(postParams);
@@ -48,7 +54,7 @@ public class IntegrationTests {
      *
      * @return The AwsCredentialsProvider to be used to create the pre-signed post
      */
-    protected AwsCredentialsProvider getAmazonCredentialsProvider() {
+    protected static AwsCredentialsProvider getAmazonCredentialsProvider() {
         return StaticCredentialsProvider.create(
                 AwsBasicCredentials.create(System.getenv("AWS_KEY"),
                         System.getenv("AWS_SECRET"))
@@ -67,7 +73,7 @@ public class IntegrationTests {
         return performCallAndVerifySuccessActionRedirect(request);
     }
 
-    private boolean performCallAndVerifySuccessActionRedirect(Request request) {
+    boolean performCallAndVerifySuccessActionRedirect(Request request) {
         try (Response response = new OkHttpClient().newCall(request).execute()) {
             return checkSuccessAndPrintResponseIfError(response);
         } catch (Exception e) {
@@ -199,6 +205,31 @@ public class IntegrationTests {
         } catch (Exception e) {
             System.err.println(e); // TODO fix
             return false;
+        }
+    }
+
+    protected static AwsCredentialsProvider getAmazonCredentialsProviderWithAwsSessionCredentials() {
+        return StaticCredentialsProvider.create(
+                AwsSessionCredentials.create(
+                        System.getenv("AWS_SESSION_KEY"), System.getenv("AWS_SESSION_SECRET"), System.getenv("AWS_SESSION_TOKEN"))
+        );
+    }
+
+    protected static String encodeToBase64(String valueToBeBase64Encoded) { // TODO insert notNull annotation?
+        return Base64.getEncoder().encodeToString(valueToBeBase64Encoded.getBytes(StandardCharsets.UTF_8));
+    }
+
+    private static String encodeToBase64(byte[] valueToBeBase64Encoded) {
+        return Base64.getEncoder().encodeToString(valueToBeBase64Encoded);
+    }
+
+    protected static String generateEncryptionKeyMD5DigestAsBase64(String encryptionKey) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            md.update(encryptionKey.getBytes());
+            return encodeToBase64(md.digest());
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e); // TODO add log error
         }
     }
 }

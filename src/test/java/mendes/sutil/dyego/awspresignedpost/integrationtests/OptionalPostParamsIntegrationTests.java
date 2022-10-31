@@ -9,7 +9,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
@@ -44,7 +43,6 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
 
     private static Stream<Arguments> getTestCasesOptionalParams() {
         String tagging = "<Tagging><TagSet><Tag><Key>MyTestTag</Key><Value>MyTagValue</Value></Tag></TagSet></Tagging>";
-        String encryptionKey256bits = "PcI54Y7WIu8aU1fSoEN&34mS#$*S21%3";
         return Stream.of(
                 // content-length-range
                 of(
@@ -783,16 +781,6 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
         return generateChecksumBase64Encoded("SHA-256");
     }
 
-    private static String generateEncryptionKeyMD5DigestAsBase64(String encryptionKey) {
-        try {
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            md.update(encryptionKey.getBytes());
-            return encodeToBase64(md.digest());
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e); // TODO add log error
-        }
-    }
-
     private static String generateChecksumSha1Base64Encoded() {
         return generateChecksumBase64Encoded("SHA-1");
     }
@@ -807,13 +795,5 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
             // TODO add log.error
             throw new RuntimeException(e);
         }
-    }
-
-    private static String encodeToBase64(byte[] valueToBeBase64Encoded) {
-        return Base64.getEncoder().encodeToString(valueToBeBase64Encoded);
-    }
-
-    private static String encodeToBase64(String valueToBeBase64Encoded) {
-        return Base64.getEncoder().encodeToString(valueToBeBase64Encoded.getBytes(StandardCharsets.UTF_8));
     }
 }

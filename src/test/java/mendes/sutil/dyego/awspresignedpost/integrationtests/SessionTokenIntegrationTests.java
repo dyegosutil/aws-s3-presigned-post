@@ -58,11 +58,4 @@ public class SessionTokenIntegrationTests extends IntegrationTests {
         );
     }
 
-    private AwsCredentialsProvider getAmazonCredentialsProviderWithAwsSessionCredentials() {
-        return StaticCredentialsProvider.create(
-                AwsSessionCredentials.create(
-                        System.getenv("AWS_SESSION_KEY"), System.getenv("AWS_SESSION_SECRET"), System.getenv("AWS_SESSION_TOKEN"))
-        );
-    }
-
 }
