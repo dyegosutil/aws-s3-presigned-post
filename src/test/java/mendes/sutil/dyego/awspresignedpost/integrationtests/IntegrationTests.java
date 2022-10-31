@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import static mendes.sutil.dyego.awspresignedpost.domain.conditions.helper.KeyConditionHelper.withKey;
+import static mendes.sutil.dyego.awspresignedpost.domain.conditions.helper.KeyConditionHelper.withAnyKey;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -36,7 +36,7 @@ public class IntegrationTests {
 
     protected static final Region REGION = Region.of(System.getenv("AWS_REGION"));
     protected static final ZonedDateTime EXPIRATION_DATE = Instant.now(Clock.systemUTC()) // TODO check if clock should be a parameter, check documentation to see how expiration time should be received, check what would happen if different zoneids are used for expiration aand for date in the policy
-            .plus(10, ChronoUnit.MINUTES)
+            .plus(1, ChronoUnit.MINUTES)
             .atZone(ZoneOffset.UTC);
 
     protected static final String BUCKET = System.getenv("AWS_BUCKET");
@@ -136,14 +136,14 @@ public class IntegrationTests {
                         REGION,
                         EXPIRATION_DATE,
                         BUCKET,
-                        withKey("test.txt")
+                        withAnyKey()
                 );
     }
 
     protected static Map<String, String> createFormDataPartsWithKeyCondition(String key, String value) {
         Map<String, String> formDataParts = new HashMap<>();
         formDataParts.put(key, value);
-        formDataParts.put("key", "test.txt");
+        formDataParts.put("key", "${filename}");
         return formDataParts;
     }
 
