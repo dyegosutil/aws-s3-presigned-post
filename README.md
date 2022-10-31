@@ -168,3 +168,5 @@ The AWS Access Key Id you provided does not exist in our records
 creating non offical libraries, what to take care, can aws sue me, naming, should I say it is non official, etc
 
 Add warn when date is too long
+
+try to remove aws dependencies?
