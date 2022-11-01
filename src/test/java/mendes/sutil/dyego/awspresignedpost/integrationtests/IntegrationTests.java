@@ -44,8 +44,14 @@ public class IntegrationTests {
 
     protected void createPreSignedPostAndUpload(PostParams postParams, Map<String, String> formDataParts, Boolean expectedResult) {
         PresignedPost presignedPost = new S3PostSigner(getAmazonCredentialsProvider()).create(postParams);
+        Map<String, String> completeFormData = fillFormData(presignedPost, formDataParts);
+        System.out.println(presignedPost); // TODO Check about logging for tests, would be nice to know why it failed in GIT
+        Boolean wasUploadSuccessful = uploadToAws(presignedPost, completeFormData);
+        assertThat(wasUploadSuccessful).isEqualTo(expectedResult);
+    }
 
-        if(Objects.isNull(formDataParts)) {
+    protected Map<String, String> fillFormData(PresignedPost presignedPost, Map<String, String> formDataParts) {
+        if (Objects.isNull(formDataParts)) {
             formDataParts = new HashMap<>();
             formDataParts.put(
                     presignedPost.getKey().getKey(),
@@ -53,10 +59,7 @@ public class IntegrationTests {
             );
             formDataParts.putAll(presignedPost.getConditions());
         }
-
-        System.out.println(presignedPost); // TODO Check about logging for tests, would be nice to know why it failed in GIT
-        Boolean wasUploadSuccessful = uploadToAws(presignedPost, formDataParts);
-        assertThat(wasUploadSuccessful).isEqualTo(expectedResult);
+        return formDataParts;
     }
 
     /**
