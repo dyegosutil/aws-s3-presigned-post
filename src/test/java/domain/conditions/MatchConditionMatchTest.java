@@ -1,10 +1,11 @@
-package mendes.sutil.dyego.awspresignedpost.domain.conditions;
+package domain.conditions;
 
+import mendes.sutil.dyego.awspresignedpost.domain.conditions.MatchCondition;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class OperatorConditionTest {
+class OperatorTest {
 
     @Test
     void toStringTest() {

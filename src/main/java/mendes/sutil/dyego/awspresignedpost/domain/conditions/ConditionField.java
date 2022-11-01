@@ -34,9 +34,11 @@ public enum ConditionField { // TODO move it
     SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY_MD5("$x-amz-server-side-encryption-customer-key-MD5"),
     CONTENT_LENGTH_RANGE("content-length-range");
     
-    public final String awsConditionName;
+    public final String valueForAwsPolicy;
+    public final String valueForApiCall;
 
-    ConditionField(String awsConditionName) {
-        this.awsConditionName = awsConditionName;
+    ConditionField(String valueForAwsPolicy) {
+        this.valueForAwsPolicy = valueForAwsPolicy;
+        this.valueForApiCall = valueForAwsPolicy.replace("$",""); // TODO add comment
     }
 }

@@ -1,12 +1,7 @@
 package mendes.sutil.dyego.awspresignedpost.domain.conditions;
 
-import mendes.sutil.dyego.awspresignedpost.S3PostSigner;
-
 import java.util.Objects;
 
-/**
- * Contains the common fields for all the conditions
- */
 public abstract class Condition {
 
     protected final ConditionField conditionField;
@@ -21,7 +16,7 @@ public abstract class Condition {
 
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof Condition && ((Condition) obj).getConditionField() == this.conditionField;
+        return obj instanceof MatchCondition && ((MatchCondition) obj).getConditionField() == this.conditionField;
     }
 
     @Override
@@ -34,4 +29,5 @@ public abstract class Condition {
      * @return
      */
     public abstract String[] asAwsPolicyCondition();
+
 }

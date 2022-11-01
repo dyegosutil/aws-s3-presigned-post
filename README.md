@@ -3,6 +3,14 @@
 Generating S3 post data for uploading files into public access s3 buckets is not included in this library since it is pretty straight forward. 
 That is, the only parameters necessary are the ```key``` and ```file```.
 
+# How to use
+
+## Notes
+
+When ```content-length-range``` is used, it is not necessary to specify this condition while using the pre signed post,
+even though it is in the policy. Note that this is the only exception, all other valuedConditions should be passed to aws 
+otherwise it will return an error
+
 # Features to be added
 
 - Add a way to pass string params and make the lib compatible with any new fields aws might start supporting
@@ -71,7 +79,7 @@ AWS_SESSION_TOKEN ?
 Also is necessary to remove the @Disabled annotation from the test zzz
 
 TODO
-Add good logging and documentation for it so that if they want to set the conditions
+Add good logging and documentation for it so that if they want to set the valuedConditions
 them selves they can know what is wrong? Well they can use postman, but put some errors or warnings if possible
 
 TODO
@@ -151,7 +159,7 @@ check if I should remove UTC and go for the default system time zone
 
 
 FreeTextPostParam
-- gives total freedom for adding conditions and params used
+- gives total freedom for adding valuedConditions and params used
 
 ## AWS erros and solutions
 
@@ -170,3 +178,12 @@ creating non offical libraries, what to take care, can aws sue me, naming, shoul
 Add warn when date is too long
 
 try to remove aws dependencies?
+
+HAVE A look in well know libraries souce code to see what they are using
+lombok? @nonull? etc
+
+Where I stopped:
+
+- I fixed one test in Mandatory IT, using the info from PreSignedPost object
+- Now other tests should be fixed, as well as possibly adding asserts that evertyting is comming
+- And map should be returned for the caller

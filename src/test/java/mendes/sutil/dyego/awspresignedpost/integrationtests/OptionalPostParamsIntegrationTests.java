@@ -1,7 +1,6 @@
 package mendes.sutil.dyego.awspresignedpost.integrationtests;
 
 import mendes.sutil.dyego.awspresignedpost.PostParams;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -38,19 +37,20 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
             Map<String, String> formDataParts,
             Boolean expectedResult
     ) {
-        createPreSignedPostAndUpload(postParams, formDataParts, expectedResult);
+            createPreSignedPostAndUpload(postParams, formDataParts, expectedResult);
     }
 
     private static Stream<Arguments> getTestCasesOptionalParams() {
         String tagging = "<Tagging><TagSet><Tag><Key>MyTestTag</Key><Value>MyTagValue</Value></Tag></TagSet></Tagging>";
         return Stream.of(
                 // content-length-range
+                // TODO can content-length-range be handled by free text input?
                 of(
                         "Should succeed while uploading file to S3 when it's size is between the minimum and maximum specified values in the policy",
                         createDefaultPostParamBuilder()
                                 .withContentLengthRange(7, 20)
                                 .build(),
-                        createFormDataParts("key", "${filename}"),
+                        null,
                         true
                 ),
                 // content-length-range
@@ -59,7 +59,7 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                         createDefaultPostParamBuilder()
                                 .withContentLengthRange(14, 14)
                                 .build(),
-                        createFormDataParts("key", "${filename}"),
+                        null,
                         true
                 ),
                 // content-length-range
@@ -86,7 +86,7 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                         createDefaultPostParamBuilder()
                                 .withCacheControl("public, max-age=7200")
                                 .build(),
-                        createFormDataPartsWithKeyCondition("Cache-Control", "public, max-age=7200"),
+                        null,
                         true
                 ),
                 // Cache-Control
@@ -122,7 +122,7 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                         createDefaultPostParamBuilder()
                                 .withContentType("text/plain")
                                 .build(),
-                        createFormDataPartsWithKeyCondition("Content-Type", "text/plain"),
+                        null,
                         true
                 ),
                 // Content-Type
@@ -158,7 +158,7 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                         createDefaultPostParamBuilder()
                                 .withContentDisposition("inline")
                                 .build(),
-                        createFormDataPartsWithKeyCondition("Content-Disposition", "inline"),
+                        null,
                         true
                 ),
                 // Content Disposition
@@ -194,7 +194,7 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                         createDefaultPostParamBuilder()
                                 .withContentEncoding("compress")
                                 .build(),
-                        createFormDataPartsWithKeyCondition("Content-Encoding", "compress"),
+                        null,
                         true
                 )
                 ,
@@ -231,7 +231,8 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                         createDefaultPostParamBuilder()
                                 .withExpires("Wed, 21 Oct 2015 07:28:00 GMT")
                                 .build(),
-                        createFormDataPartsWithKeyCondition("Expires", "Wed, 21 Oct 2015 07:28:00 GMT"), // TODO use Expires as a constant? So that it can be seen that this is how it should be passed in the browser params or postman?
+                        null,
+                        // TODO use Expires as a constant? So that it can be seen that this is how it should be passed in the browser params or postman? // Value for what thi comment is for createFormDataPartsWithKeyCondition("Expires", "Wed, 21 Oct 2015 07:28:00 GMT"),
                         true
                 )
                 ,
@@ -268,7 +269,7 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                         createDefaultPostParamBuilder()
                                 .withAcl(PRIVATE)
                                 .build(),
-                        createFormDataPartsWithKeyCondition("acl", "private"),
+                        null,
                         true
                 ),
                 // acl
@@ -303,7 +304,7 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                         createDefaultPostParamBuilder()
                                 .withTagging(tagging)
                                 .build(),
-                        createFormDataPartsWithKeyCondition("tagging", tagging),
+                        null,
                         true
                 ),
                 // tagging
@@ -322,7 +323,7 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                                 .withTag("myTagKey", "myTagValue")
                                 .withTag("myTagKey2", "myTagValue2")
                                 .build(),
-                        createFormDataPartsWithKeyCondition("tagging", "<Tagging><TagSet><Tag><Key>myTagKey</Key><Value>myTagValue</Value></Tag><Tag><Key>myTagKey2</Key><Value>myTagValue2</Value></Tag></TagSet></Tagging>"),
+                        null,
                         true
                 ),
                 // tagging
@@ -341,10 +342,7 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                         createDefaultPostParamBuilder()
                                 .withMeta("my_meta_data", "value for my meta-data")
                                 .build(),
-                        createFormDataPartsWithKeyCondition(
-                                "x-amz-meta-my_meta_data",
-                                "value for my meta-data"
-                        ),
+                        null,
                         true
                 ),
                 // meta
@@ -354,12 +352,7 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                                 .withMeta("my_meta_data", "value for my meta-data")
                                 .withMeta("my_meta_data2", "value for my meta-data2")
                                 .build(),
-                        createFormDataPartsWithKeyCondition(
-                                "x-amz-meta-my_meta_data",
-                                "value for my meta-data",
-                                "x-amz-meta-my_meta_data2",
-                                "value for my meta-data2"
-                        ),
+                        null,
                         true
                 ),
                 // meta
@@ -404,7 +397,7 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                         createDefaultPostParamBuilder()
                                 .withStorageClass(STANDARD)
                                 .build(),
-                        createFormDataPartsWithKeyCondition("x-amz-storage-class", "STANDARD"),
+                        null,
                         true
                 ),
                 // storage-class
@@ -422,7 +415,7 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                         createDefaultPostParamBuilder()
                                 .withWebsiteRedirectLocation("/anotherPage.html")
                                 .build(),
-                        createFormDataPartsWithKeyCondition("x-amz-website-redirect-location", "/anotherPage.html"),
+                        null,
                         true
                 ),
                 // website-redirect-location
@@ -431,7 +424,7 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                         createDefaultPostParamBuilder()
                                 .withWebsiteRedirectLocation("https://www.google.com")
                                 .build(),
-                        createFormDataPartsWithKeyCondition("x-amz-website-redirect-location", "https://www.google.com"),
+                        null,
                         true
                 ),
                 // website-redirect-location
@@ -451,7 +444,7 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                         createDefaultPostParamBuilder()
                                 .withChecksumSha256(generateChecksumSha256Base64Encoded())
                                 .build(),
-                        createFormDataPartsWithKeyCondition("x-amz-checksum-sha256", generateChecksumSha256Base64Encoded()),
+                        null,
                         true
                 ),
                 // checksum-sha256
@@ -484,7 +477,7 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                         createDefaultPostParamBuilder()
                                 .withChecksumSha1(generateChecksumSha1Base64Encoded())
                                 .build(),
-                        createFormDataPartsWithKeyCondition("x-amz-checksum-sha1", generateChecksumSha1Base64Encoded()),
+                        null,
                         true
                 ),
                 // checksum-sha1
@@ -517,7 +510,7 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                         createDefaultPostParamBuilder()
                                 .withChecksumCrc32("DR7n6g==")
                                 .build(),
-                        createFormDataPartsWithKeyCondition("x-amz-checksum-crc32", "DR7n6g=="),
+                        null,
                         true
                 ),
                 // checksum-CRC32
@@ -550,7 +543,7 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                         createDefaultPostParamBuilder()
                                 .withChecksumCrc32c("fPxmpw==")
                                 .build(),
-                        createFormDataPartsWithKeyCondition("x-amz-checksum-crc32c", "fPxmpw=="),
+                        null,
                         true
                 ),
                 // checksum-CRC32C
@@ -581,7 +574,7 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                         createDefaultPostParamBuilder()
                                 .withServerSideEncryption(PostParams.Builder.EncryptionAlgorithm.AWS_KMS)
                                 .build(),
-                        createFormDataPartsWithKeyCondition("x-amz-server-side-encryption", "aws:kms"),
+                        null,
                         true
                 )
                 ,
@@ -591,7 +584,7 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                         createDefaultPostParamBuilder()
                                 .withServerSideEncryption(PostParams.Builder.EncryptionAlgorithm.AES256)
                                 .build(),
-                        createFormDataPartsWithKeyCondition("x-amz-server-side-encryption", "AES256"),
+                        null,
                         true
                 ),
                 // x-amz-server-side-encryption
@@ -610,12 +603,7 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                                 .withServerSideEncryption(PostParams.Builder.EncryptionAlgorithm.AWS_KMS)
                                 .withServerSideEncryptionAwsKmsKeyId(System.getenv("AWS_KMS_S3_KEY"))
                                 .build(),
-                        createFormDataPartsWithKeyCondition(
-                                "x-amz-server-side-encryption",
-                                "aws:kms",
-                                "x-amz-server-side-encryption-aws-kms-key-id",
-                                System.getenv("AWS_KMS_S3_KEY")
-                        ),
+                        null,
                         true
                 ),
                 // server-side-encryption-aws-kms-key-id
@@ -641,12 +629,7 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                                 .withServerSideEncryption(PostParams.Builder.EncryptionAlgorithm.AWS_KMS)
                                 .withServerSideEncryptionContext("ewogICJ0ZXN0IjogInRlc3QiCn0=")
                                 .build(),
-                        createFormDataPartsWithKeyCondition(
-                                "x-amz-server-side-encryption",
-                                "aws:kms",
-                                "x-amz-server-side-encryption-context",
-                                "ewogICJ0ZXN0IjogInRlc3QiCn0="
-                        ),
+                        null,
                         true
                 ),
                 // server-side-encryption-context
@@ -688,12 +671,7 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                                 .withServerSideEncryption(PostParams.Builder.EncryptionAlgorithm.AWS_KMS)
                                 .withServerSideEncryptionBucketKeyEnabled()
                                 .build(),
-                        createFormDataPartsWithKeyCondition(
-                                "x-amz-server-side-encryption",
-                                "aws:kms",
-                                "x-amz-server-side-encryption-bucket-key-enabled",
-                                "true"
-                        ),
+                        null,
                         true
                 ),
                 // server-side-encryption-bucket-key-enabled
@@ -721,11 +699,7 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                                 .withServerSideEncryptionCustomerKey(encodeToBase64(encryptionKey256bits))
                                 .withServerSideEncryptionCustomerKeyMD5(generateEncryptionKeyMD5DigestAsBase64(encryptionKey256bits))
                                 .build(),
-                        createFormDataPartsWithKeyCondition(
-                                "x-amz-server-side-encryption-customer-algorithm", "AES256",
-                                "x-amz-server-side-encryption-customer-key", encodeToBase64(encryptionKey256bits),
-                                "x-amz-server-side-encryption-customer-key-MD5", generateEncryptionKeyMD5DigestAsBase64(encryptionKey256bits)
-                        ),
+                        null,
                         true
                 ),
                 // x-amz-server-side-encryption-customer-algorithm

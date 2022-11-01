@@ -26,7 +26,7 @@ import java.util.Objects;
 
 import static mendes.sutil.dyego.awspresignedpost.domain.conditions.helper.KeyConditionHelper.withAnyKey;
 import static org.assertj.core.api.Assertions.assertThat;
-
+// TODO The IT should not have conditionals. Separate the tests in a way the null does not have to be passed for 200 cases.
 /**
  * TODO Check to use S3 local?
  * // Reading credentials from ENV-variables
@@ -44,6 +44,16 @@ public class IntegrationTests {
 
     protected void createPreSignedPostAndUpload(PostParams postParams, Map<String, String> formDataParts, Boolean expectedResult) {
         PresignedPost presignedPost = new S3PostSigner(getAmazonCredentialsProvider()).create(postParams);
+
+        if(Objects.isNull(formDataParts)) {
+            formDataParts = new HashMap<>();
+            formDataParts.put(
+                    presignedPost.getKey().getKey(),
+                    presignedPost.getKey().getValue()
+            );
+            formDataParts.putAll(presignedPost.getConditions());
+        }
+
         System.out.println(presignedPost); // TODO Check about logging for tests, would be nice to know why it failed in GIT
         Boolean wasUploadSuccessful = uploadToAws(presignedPost, formDataParts);
         assertThat(wasUploadSuccessful).isEqualTo(expectedResult);

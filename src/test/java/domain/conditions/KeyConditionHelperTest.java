@@ -1,8 +1,8 @@
-package mendes.sutil.dyego.awspresignedpost.domain.conditions;
+package domain.conditions;
 
 import mendes.sutil.dyego.awspresignedpost.domain.conditions.key.ExactKeyCondition;
-import mendes.sutil.dyego.awspresignedpost.domain.conditions.key.KeyCondition;
 import mendes.sutil.dyego.awspresignedpost.domain.conditions.key.KeyStartsWithCondition;
+import mendes.sutil.dyego.awspresignedpost.domain.conditions.key.KeyCondition;
 import org.junit.jupiter.api.Test;
 
 import static mendes.sutil.dyego.awspresignedpost.domain.conditions.helper.KeyConditionHelper.*;

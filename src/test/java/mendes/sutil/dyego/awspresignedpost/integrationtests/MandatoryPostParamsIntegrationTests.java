@@ -2,7 +2,6 @@ package mendes.sutil.dyego.awspresignedpost.integrationtests;
 
 import mendes.sutil.dyego.awspresignedpost.PostParams;
 import mendes.sutil.dyego.awspresignedpost.domain.conditions.key.KeyCondition;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -19,7 +18,6 @@ import java.util.stream.Stream;
 import static mendes.sutil.dyego.awspresignedpost.domain.conditions.helper.KeyConditionHelper.*;
 import static org.junit.jupiter.params.provider.Arguments.of;
 
-@Disabled
 public class MandatoryPostParamsIntegrationTests extends IntegrationTests {
 
     /**
@@ -30,7 +28,6 @@ public class MandatoryPostParamsIntegrationTests extends IntegrationTests {
      * @param expirationDate
      * @param bucket
      * @param keyCondition
-     * @param formDataParts
      * @param expectedResult
      */
     @ParameterizedTest(name = "{0}")
@@ -66,7 +63,7 @@ public class MandatoryPostParamsIntegrationTests extends IntegrationTests {
                         EXPIRATION_DATE,
                         BUCKET,
                         withKey("test.txt"),
-                        createFormDataParts("key", "test.txt"),
+                        null,
                         true
                 ),
                 // key
@@ -115,7 +112,7 @@ public class MandatoryPostParamsIntegrationTests extends IntegrationTests {
                         true
                 ),
                 // key starts-with
-                of("Should succeed while uploading file to S3 when key correctly starts-with the value specified in the policy",
+                of("Should fail while uploading file to S3 when key does not starts-with the value specified in the policy",
                         REGION,
                         EXPIRATION_DATE,
                         BUCKET,
@@ -124,12 +121,13 @@ public class MandatoryPostParamsIntegrationTests extends IntegrationTests {
                         false
                 ),
                 // key starts-with anything - used also when the file name provided by the user should be used
-                of("Should succeed while uploading file to S3 when key correctly starts-with the value specified in the policy",
+                of(
+                        "Should succeed while uploading file to S3 when key correctly starts-with the value specified in the policy",
                         REGION,
                         EXPIRATION_DATE,
                         BUCKET,
                         withAnyKey(),
-                        createFormDataParts("key", "file.txt"),
+                        null,
                         true
                 )
         );

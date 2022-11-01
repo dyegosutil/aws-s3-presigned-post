@@ -1,30 +1,37 @@
 package mendes.sutil.dyego.awspresignedpost;
 
 import lombok.Getter;
-import lombok.Setter;
 
 import java.util.AbstractMap;
+import java.util.Map;
 
 
 @Getter
-@Setter
-// TODO add remaining fields
+/**
+ * TODO say that it will return the ${filename} for key
+ * TODO check if is better to simply return a map and that is it.
+ */
 public class PresignedPost {
-    private String url; //"https://$bucket.s3.eu-central-1.amazonaws.com", //         https://dev-de.fourthline-zip-upload.scalable.s3.eu-central-1.amazonaws.com"
-    private Pair algorithm; // "AWS4-HMAC-SHA256";
-    private Pair credential; // credentialsField;
-    private Pair xAmzSignature; // TODO Find a patter for all of them, putting the x in front or not
-    private Pair date; // AMZ_DATE_FORMATTER.format(date),
-    private Pair policy; // policyB64
-    private Pair key;
+    private final String url;
+    private final Pair algorithm;
+    private final Pair credential;
+    private final Pair xAmzSignature; // TODO Find a pattern for all of them, putting the x in front or not
+    private final Pair date;
+    private final Pair policy;
+    private final Pair key;
 
-    PresignedPost(String url, String credential, String date, String signature, String policy, String algorithm) {
+    private final Map<String, String> conditions;
+
+    PresignedPost(String url, String credential, String date, String signature, String policy, String algorithm, String key, Map<String, String> conditions) {
+        // TODO check not null?
         this.url = url;
         this.credential = new Pair("x-amz-credential", credential);
         this.date = new Pair("x-amz-date", date);
         this.xAmzSignature = new Pair("x-amz-signature", signature);
         this.algorithm = new Pair("x-amz-algorithm", algorithm);
         this.policy = new Pair("policy", policy);
+        this.key = new Pair("key", key);
+        this.conditions = conditions;
     }
 
     // TODO Rename to a better name? Param?
@@ -49,6 +56,9 @@ public class PresignedPost {
         }
     }
 
+    /**
+     * TODO print items in the map as well? mask credential?
+     */
     @Override
     public String toString() {
         return "PresignedPost{" +
