@@ -1,7 +1,15 @@
 package mendes.sutil.dyego.awspresignedpost.integrationtests;
 
+import mendes.sutil.dyego.awspresignedpost.NewPresignedPost;
 import mendes.sutil.dyego.awspresignedpost.PostParams;
+import mendes.sutil.dyego.awspresignedpost.S3PostSigner;
 import mendes.sutil.dyego.awspresignedpost.domain.conditions.key.KeyCondition;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -16,32 +24,55 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import static mendes.sutil.dyego.awspresignedpost.domain.conditions.helper.KeyConditionHelper.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.params.provider.Arguments.of;
 
+@Disabled
 public class MandatoryPostParamsIntegrationTests extends IntegrationTests {
 
     /**
-     * Generates the pre-signed post using the minimum mandatory params and performs the upload to S3 using a http client.
-     *
-     * @param testDescription
-     * @param region
-     * @param expirationDate
-     * @param bucket
-     * @param keyCondition
-     * @param expectedResult
+     * Should succeed while uploading file to S3 using the exact key specified in the policy
+     */
+    @Test
+    void arrangeThatConditionsReturnedFromPresignedPostAreUsed_actUploadingTheFile_assertTheReturnIsSuccess() {
+        // Arrange
+        PostParams postParams = PostParams
+                .builder(
+                        REGION,
+                        EXPIRATION_DATE,
+                        BUCKET,
+                        withKey("test.txt")
+                )
+                .build();
+        NewPresignedPost presignedPost = new S3PostSigner(getAmazonCredentialsProvider()).createNew(postParams);
+        Map<String, String> conditions = presignedPost.getConditions();
+        Request request = createRequest(conditions, presignedPost.getUrl());
+
+        // Act
+        boolean result = postFileIntoS3(request);
+
+        // Assert
+        assertThat(result).isEqualTo(true);
+    }
+
+    /**
+     * @param customizedUploadConditions Used for specifying different values then the ones provided by the presigned
+     *                                   post, that is either values for "startWith" conditions or wrong values for
+     *                                   asserting failure
      */
     @ParameterizedTest(name = "{0}")
-    @MethodSource("getTestCasesMandatoryParams")
-    void testWithMandatoryParams(
+    @MethodSource("getCustomizedUploadConditionsTestCases")
+    void arrangeCustomizedPresignedPostConditions_actUploadTheFile_assertExpectedResult(
             String testDescription,
             Region region,
             ZonedDateTime expirationDate,
             String bucket,
             KeyCondition keyCondition,
-            Map<String, String> formDataParts,
-            Boolean expectedResult
+            Map<String, String> customizedUploadConditions,
+            boolean expectedResult
     ) {
-        PostParams postParams = PostParams // TODO perhaps this can come from the Arguments in the sourceTest method
+        // Arrange
+        PostParams postParams = PostParams
                 .builder(
                         region,
                         expirationDate,
@@ -49,25 +80,34 @@ public class MandatoryPostParamsIntegrationTests extends IntegrationTests {
                         keyCondition
                 )
                 .build();
+        NewPresignedPost presignedPost = new S3PostSigner(getAmazonCredentialsProvider()).createNew(postParams);
+        Map<String, String> conditions = presignedPost.getConditions();
+        conditions.putAll(customizedUploadConditions);
 
-        createPreSignedPostAndUpload(postParams, formDataParts, expectedResult);
+        Request request = createRequest(conditions, presignedPost.getUrl());
+
+        // Act
+        boolean result = postFileIntoS3(request);
+
+        // Assert
+        assertThat(result).isEqualTo(expectedResult);
     }
 
-    private static Stream<Arguments> getTestCasesMandatoryParams() {
-        final Region incorrectRegion = Region.of(System.getenv("AWS_WRONG_REGION"));
-
+    private Request createRequest(Map<String, String> conditions, String url) {
+        MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
+        conditions.forEach(builder::addFormDataPart);
+        // file has to be the last parameter according to aws s3 documentation
+        builder.addFormDataPart("file", "test.txt", RequestBody.create("this is a test".getBytes(), MediaType.parse("text/plain")));
+        return new Request.Builder()
+                .url(url)
+                .post(builder.build())
+                .build();
+    }
+    private static Stream<Arguments> getCustomizedUploadConditionsTestCases() {
         return Stream.of(
                 // key
-                of("Should succeed while uploading file to S3 using the exact key specified in the policy",
-                        REGION,
-                        EXPIRATION_DATE,
-                        BUCKET,
-                        withKey("test.txt"),
-                        null,
-                        true
-                ),
-                // key
-                of("Should fail while uploading file to S3 using a different key then specified in the policy",
+                of(
+                        "Should fail while uploading file to S3 using a different key then specified in the policy",
                         REGION,
                         EXPIRATION_DATE,
                         BUCKET,
@@ -76,7 +116,8 @@ public class MandatoryPostParamsIntegrationTests extends IntegrationTests {
                         false
                 ),
                 // bucket
-                of("Should fail while uploading file to S3 using a different bucket then the one configured in the policy",
+                of(
+                        "Should fail while uploading file to S3 using a different bucket then the one configured in the policy",
                         REGION,
                         EXPIRATION_DATE,
                         "wrongbucket",
@@ -85,8 +126,9 @@ public class MandatoryPostParamsIntegrationTests extends IntegrationTests {
                         false
                 ),
                 // region
-                of("Should fail while uploading file to S3 using a different region then the one configured in the policy",
-                        incorrectRegion,
+                of(
+                        "Should fail while uploading file to S3 using a different region then the one configured in the policy",
+                        Region.of(System.getenv("AWS_WRONG_REGION")),
                         EXPIRATION_DATE,
                         BUCKET,
                         withKey("test.txt"),
@@ -94,7 +136,8 @@ public class MandatoryPostParamsIntegrationTests extends IntegrationTests {
                         false
                 ),
                 // expiration date
-                of("Should fail while uploading file to S3 when the expiration date has passed",
+                of(
+                        "Should fail while uploading file to S3 when the expiration date has passed",
                         REGION,
                         getInvalidExpirationDate(),
                         BUCKET,
@@ -103,7 +146,8 @@ public class MandatoryPostParamsIntegrationTests extends IntegrationTests {
                         false
                 ),
                 // key starts-with
-                of("Should succeed while uploading file to S3 when key correctly starts-with the value specified in the policy",
+                of(
+                        "Should succeed while uploading file to S3 when key correctly starts-with the value specified in the policy",
                         REGION,
                         EXPIRATION_DATE,
                         BUCKET,
@@ -112,7 +156,8 @@ public class MandatoryPostParamsIntegrationTests extends IntegrationTests {
                         true
                 ),
                 // key starts-with
-                of("Should fail while uploading file to S3 when key does not starts-with the value specified in the policy",
+                of(
+                        "Should fail while uploading file to S3 when key does not starts-with the value specified in the policy",
                         REGION,
                         EXPIRATION_DATE,
                         BUCKET,
@@ -122,12 +167,13 @@ public class MandatoryPostParamsIntegrationTests extends IntegrationTests {
                 ),
                 // key starts-with anything - used also when the file name provided by the user should be used
                 of(
+
                         "Should succeed while uploading file to S3 when key correctly starts-with the value specified in the policy",
                         REGION,
                         EXPIRATION_DATE,
                         BUCKET,
                         withAnyKey(),
-                        null,
+                        createFormDataParts("key", "myDifferentFileName.txt"),
                         true
                 )
         );
@@ -138,5 +184,4 @@ public class MandatoryPostParamsIntegrationTests extends IntegrationTests {
                 .minus(1, ChronoUnit.MILLIS)
                 .atZone(ZoneOffset.UTC);
     }
-
 }

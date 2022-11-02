@@ -83,10 +83,10 @@ public class IntegrationTests {
      */
     protected boolean uploadToAws(PresignedPost presignedPost, Map<String, String> formDataParts) {
         Request request = createRequest(presignedPost, formDataParts);
-        return performCallAndVerifySuccessActionRedirect(request);
+        return postFileIntoS3(request);
     }
 
-    boolean performCallAndVerifySuccessActionRedirect(Request request) {
+    boolean postFileIntoS3(Request request) {
         try (Response response = new OkHttpClient().newCall(request).execute()) {
             return checkSuccessAndPrintResponseIfError(response);
         } catch (Exception e) {
@@ -205,10 +205,10 @@ public class IntegrationTests {
     protected boolean uploadToAwsCheckingRedirect(PresignedPost presignedPost, Map<String, String> formDataParts, String redirectHttpClientField) {
         Request request = createRequest(presignedPost, formDataParts);
         String successActionRedirect = formDataParts.get(redirectHttpClientField); // TODO User constants?
-        return performCallAndVerifySuccessActionRedirect(request, successActionRedirect);
+        return postFileIntoS3(request, successActionRedirect);
     }
 
-    private boolean performCallAndVerifySuccessActionRedirect(Request request, String successActionRedirect) {
+    private boolean postFileIntoS3(Request request, String successActionRedirect) {
         try (Response response = new OkHttpClient().newCall(request).execute()) {
             HttpUrl httpUrl = response.request().url();
             String responseRedirectUrl = httpUrl.scheme() + "://" + httpUrl.host();

@@ -30,27 +30,14 @@ public class S3PostSigner { // TODO rename?
         );
     }
 
-    // TODO rename to sign, or sign post??
-
-    /**
-     * Creates the Pre-Signed Post using the data provided in {@link  PostParams}
-     * First the policy is created and then its base64 value is used to generate the signature using the
-     * <a href="https://docs.aws.amazon.com/general/latest/gr/sigv4_signing.html">Aws Signature Version 4 specification</a>
-     * <br><br>
-     * This method performs several validations to prevent the generation of a faulty or invalid pre signed post
-     * TODO Add validations: start-with and with, required/dependent conditions
-     *
-     * @param postParams Contains the information to be used to generate the pre signed post
-     * @return The object containing all the necessary params to be used to upload a file using pre signed post
-     */
-    public PresignedPost create(PostParams postParams) {
+    // TODO Rename
+    public NewPresignedPost createNew(PostParams postParams) {
         AmzDate amzDate = new AmzDate();
         Set<Condition> conditions = new HashSet<>(postParams.getConditions());
         addSessionTokenIfNeeded(conditions);
 
         String bucket = postParams.getBucket();
         String region = postParams.getRegion().id();
-        String url = "https://" + bucket + ".s3." + region + ".amazonaws.com";
         String credentials = AwsSigner.buildCredentialField(awsCredentials, postParams.getRegion(), amzDate);
 
         Policy policy = new Policy(
@@ -69,15 +56,69 @@ public class S3PostSigner { // TODO rename?
         String keyUploadValue = getKeyUploadValue(returnConditions);
         removeKeyFromConditions(returnConditions);
 
-        return new PresignedPost(
-                url,
-                credentials,
-                amzDate.formatForPolicy(),
-                signature,
-                policyB64, "AWS4-HMAC-SHA256", // TODO Should it be a constant? but it is used only once
-                keyUploadValue,
-                returnConditions
+        return new NewPresignedPost(
+                createUrl(bucket,region),
+                createConditionsMap(credentials,signature, amzDate, policyB64, keyUploadValue)
         );
+    }
+
+    // TODO rename to sign, or sign post??
+
+    /**
+     * Creates the Pre-Signed Post using the data provided in {@link  PostParams}
+     * First the policy is created and then its base64 value is used to generate the signature using the
+     * <a href="https://docs.aws.amazon.com/general/latest/gr/sigv4_signing.html">Aws Signature Version 4 specification</a>
+     * <br><br>
+     * This method performs several validations to prevent the generation of a faulty or invalid pre signed post
+     * TODO Add validations: start-with and with, required/dependent conditions
+     *
+     * @param postParams Contains the information to be used to generate the pre signed post
+     * @return The object containing all the necessary params to be used to upload a file using pre signed post
+     */
+    public PresignedPost create(PostParams postParams) {
+        NewPresignedPost newPresignedPost = createNew(postParams);
+        Map<String, String> conditions = newPresignedPost.getConditions();
+        
+        return new PresignedPost(
+                newPresignedPost.getUrl(),
+                conditions.get(CREDENTIAL.valueForApiCall),
+                conditions.get(DATE.valueForApiCall),
+                conditions.get("x-amz-signature"),
+                conditions.get(ConditionField.ALGORITHM.valueForApiCall),
+                conditions.get("policy"),
+                conditions.get(KEY.valueForApiCall),
+                removeCertainConditions(conditions)
+        );
+    }
+
+    private Map<String, String> removeCertainConditions(Map<String, String> conditions) {
+        conditions.remove(CREDENTIAL.valueForApiCall);
+        conditions.remove(DATE.valueForApiCall);
+        conditions.remove("x-amz-signature");
+        conditions.remove(ConditionField.ALGORITHM.valueForApiCall);
+        conditions.remove("policy");
+        conditions.remove(KEY.valueForApiCall);
+        return conditions;
+    }
+
+    private Map<String, String> createConditionsMap(
+            String credentials,
+            String signature,
+            AmzDate amzDate,
+            String policyB64,
+            String keyUploadValue) {
+        Map<String,String> conditions = new HashMap<>();
+        conditions.put(ConditionField.ALGORITHM.valueForApiCall, "AWS4-HMAC-SHA256");
+        conditions.put(CREDENTIAL.valueForApiCall, credentials);
+        conditions.put("x-amz-signature", signature);
+        conditions.put(DATE.valueForApiCall, amzDate.formatForPolicy());
+        conditions.put("policy", policyB64);
+        conditions.put(KEY.valueForApiCall, keyUploadValue);
+        return conditions;
+    }
+
+    private String createUrl(String bucket, String region) {
+        return  "https://" + bucket + ".s3." + region + ".amazonaws.com";
     }
 
     private void removeKeyFromConditions(Map<String, String> filtered) {

@@ -157,7 +157,7 @@ public class FreeTextIntegrationTest extends IntegrationTests {
 
     protected boolean uploadToAws(Map<String, String> formDataParts, String url) {
         Request request = createRequest(formDataParts, url);
-        return performCallAndVerifySuccessActionRedirect(request);
+        return postFileIntoS3(request);
     }
 
     private Request createRequest(Map<String, String> formDataParts, String url) {
