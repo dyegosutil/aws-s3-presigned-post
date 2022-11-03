@@ -2,6 +2,8 @@ package mendes.sutil.dyego.awspresignedpost.integrationtests;
 
 import mendes.sutil.dyego.awspresignedpost.PostParams;
 import okhttp3.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.AwsSessionCredentials;
@@ -23,12 +25,15 @@ import java.util.Map;
 import java.util.Objects;
 
 import static mendes.sutil.dyego.awspresignedpost.domain.conditions.helper.KeyConditionHelper.withAnyKey;
+
 /**
  * TODO Check to use S3 local?
  * // Reading credentials from ENV-variables
  *         AwsCredentialsProvider awsCredentialsProvider = DefaultCredentialsProvider.builder().build();
  */
 public class IntegrationTests {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(IntegrationTests.class);
 
     protected static final Region REGION = Region.of(System.getenv("AWS_REGION"));
     protected static final ZonedDateTime EXPIRATION_DATE = Instant.now(Clock.systemUTC()) // TODO check if clock should be a parameter, check documentation to see how expiration time should be received, check what would happen if different zoneids are used for expiration aand for date in the policy
@@ -54,7 +59,7 @@ public class IntegrationTests {
         try (Response response = new OkHttpClient().newCall(request).execute()) {
             return checkSuccessAndPrintResponseIfError(response);
         } catch (Exception e) {
-            System.err.println(e); // TODO fix
+            LOGGER.error("Error while performing call to post file in S3 using http client", e);
             return false;
         }
     }
@@ -65,8 +70,8 @@ public class IntegrationTests {
             checkSuccessAndPrintResponseIfError(response);
             return httpUrl.scheme() + "://" + httpUrl.host();
         } catch (Exception e) {
-            System.err.println(e); // TODO fix
-            throw new IllegalStateException(e);
+            LOGGER.error("Error while performing call to post file in S3 using http client", e);
+            throw new RuntimeException(e);
         }
     }
 
@@ -75,20 +80,21 @@ public class IntegrationTests {
             checkSuccessAndPrintResponseIfError(response);
             return response.code();
         } catch (Exception e) {
-            System.err.println(e); // TODO fix
-            throw new IllegalStateException(e);
+            LOGGER.error("Error while performing call to post file in S3 using http client", e);
+            throw new RuntimeException(e);
         }
     }
 
     private boolean checkSuccessAndPrintResponseIfError(Response response) {
         if (!response.isSuccessful()) {
+            LOGGER.error("Http client call to post file into s3 failed. Unexpected code {} {}", response, response.message());
             try {
                 String responseXml = new String(Objects.requireNonNull(response.body()).bytes(), StandardCharsets.UTF_8);
-                System.err.println(responseXml); // TODO add logger
+                LOGGER.error(" Response xml: {}", responseXml);
             } catch (IOException e) {
+                LOGGER.error("Error while getting the xml response from failed upload", e);
                 throw new RuntimeException(e);
             }
-            System.err.println("Unexpected code " + response + response.message());  // TODO change it
             return false;
         }
         return true;
@@ -168,7 +174,8 @@ public class IntegrationTests {
             md.update(encryptionKey.getBytes());
             return encodeToBase64(md.digest());
         } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e); // TODO add log error
+            LOGGER.error("Error while generating MD5 digest", e);
+            throw new RuntimeException(e);
         }
     }
 

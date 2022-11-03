@@ -3,10 +3,14 @@ package mendes.sutil.dyego.awspresignedpost.domain.tagging;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.StringWriter;
 
 public class TaggingHelper {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(TaggingHelper.class);
 
     private static final JAXBContext context;
 
@@ -26,8 +30,8 @@ public class TaggingHelper {
             marshaller.marshal(tagging, stringWriter);
             return stringWriter.toString();
         } catch (JAXBException e) {
-            e.printStackTrace(); // TODO add log.error
-            throw new IllegalStateException("Could not generate xml for tagging", e);
+            LOGGER.error("Error while marshalling Tagging to xml", e);
+            throw new IllegalStateException(e);
         }
     }
 }

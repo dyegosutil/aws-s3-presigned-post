@@ -21,7 +21,6 @@ public class SessionTokenIntegrationTests extends IntegrationTests {
         // Arrange
         PostParams postParams = createDefaultPostParamBuilder().build();
         PresignedPost presignedPost = new S3PostSigner(getAmazonCredentialsProviderWithAwsSessionCredentials()).create(postParams);
-        System.out.println(presignedPost); // TODO
 
         Map<String, String> conditions = presignedPost.getConditions();
         Request request = createRequestFromConditions(conditions, presignedPost.getUrl());
@@ -39,7 +38,6 @@ public class SessionTokenIntegrationTests extends IntegrationTests {
         // Arrange
         PostParams postParams = createDefaultPostParamBuilder().build();
         PresignedPost presignedPost = new S3PostSigner(getAmazonCredentialsProviderWithAwsSessionCredentials()).create(postParams);
-        System.out.println(presignedPost); // TODO
 
         Map<String, String> conditions = presignedPost.getConditions();
         conditions.put("x-amz-security-token",  "thisTokenIsWrong");

@@ -8,9 +8,12 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -25,6 +28,8 @@ import static org.junit.jupiter.params.provider.Arguments.of;
 
 @Disabled
 public class OptionalPostParamsIntegrationTests extends IntegrationTests {
+
+    private static Logger LOGGER = LoggerFactory.getLogger(OptionalPostParamsIntegrationTests.class);
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("optionalPostParamsTestCases")
@@ -715,15 +720,23 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
         );
     }
 
-    private static byte[] generateFileChecksum(MessageDigest digest, File file) throws IOException {
-        FileInputStream fis = new FileInputStream(file);
-        byte[] byteArray = new byte[1024];
-        int bytesCount;
-        while ((bytesCount = fis.read(byteArray)) != -1) {
-            digest.update(byteArray, 0, bytesCount);
+    private static byte[] generateFileChecksum(MessageDigest digest, File file){
+        try {
+            FileInputStream fis = new FileInputStream(file);
+            byte[] byteArray = new byte[1024];
+            int bytesCount;
+            while ((bytesCount = fis.read(byteArray)) != -1) {
+                digest.update(byteArray, 0, bytesCount);
+            }
+            fis.close();
+            return digest.digest();
+        } catch (FileNotFoundException e) {
+            LOGGER.error("Could not find file "+file.getAbsolutePath()+" to generate its digest", e);
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            LOGGER.error("Input/Output error while generating digest for file "+file.getAbsolutePath(), e);
+            throw new RuntimeException(e);
         }
-        fis.close();
-        return digest.digest();
     }
 
     private static String generateChecksumSha256Base64Encoded() {
@@ -740,9 +753,9 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
             MessageDigest messageDigest = MessageDigest.getInstance(algorithm);
             byte[] shaChecksum = generateFileChecksum(messageDigest, file);
             return Base64.getEncoder().encodeToString(shaChecksum);
-        } catch (NoSuchAlgorithmException | IOException e) {
-            // TODO add log.error
-            throw new RuntimeException(e);
+        } catch (NoSuchAlgorithmException e) {
+            LOGGER.error("Could not get instance of MessageDigest", e);
+            throw new IllegalStateException(e);
         }
     }
 }

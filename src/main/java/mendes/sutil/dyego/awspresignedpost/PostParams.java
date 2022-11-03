@@ -39,6 +39,10 @@ public final class PostParams {
             AmzExpirationDate amzExpirationDate,
             Map<ConditionField, Condition> conditions
     ){
+        Objects.requireNonNull(bucket);
+        Objects.requireNonNull(region);
+        Objects.requireNonNull(amzExpirationDate);
+        Objects.requireNonNull(conditions);
         this.amzExpirationDate = amzExpirationDate;
         this.bucket = bucket;
         this.region = region;
@@ -69,10 +73,8 @@ public final class PostParams {
     public static final class Builder {
         private final Map<ConditionField, Condition> conditions = new HashMap<>();
         private final Set<Tag> tags = new HashSet<>();
-
         private final String bucket;
         private final Region region;
-
         private final AmzExpirationDate amzExpirationDate;
         private final Map<ConditionField,TreeSet<ConditionField>> dependentConditionFields;
 
@@ -201,9 +203,10 @@ public final class PostParams {
         }
 
         private Builder addIfUnique(Condition condition, String errorMessage) {
-            if (conditions.containsKey(condition.getConditionField()))
+            if (conditions.containsKey(condition.getConditionField())){
                 throw new IllegalArgumentException(errorMessage);
-            this.conditions.put(condition.getConditionField(), condition); // TODO Remove conditions and keep just the map?
+            }
+            this.conditions.put(condition.getConditionField(), condition);
             return this;
         }
 
@@ -211,8 +214,9 @@ public final class PostParams {
                 ConditionField conditionField,
                 String errorMessage
         ) {
-            if (conditions.containsKey(conditionField))
+            if (conditions.containsKey(conditionField)){
                 throw new IllegalArgumentException(errorMessage);
+            }
         }
 
         private Builder assertUniquenessAndAddTagging(String value) {
@@ -331,10 +335,6 @@ public final class PostParams {
 
             CannedAcl(String cannedAcl) {
                 this.cannedAcl = cannedAcl;
-            }
-
-            public String getCannedAcl() {
-                return this.cannedAcl;
             }
         }
 

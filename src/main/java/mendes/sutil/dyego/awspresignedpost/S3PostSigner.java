@@ -8,6 +8,8 @@ import mendes.sutil.dyego.awspresignedpost.domain.conditions.ConditionField;
 import mendes.sutil.dyego.awspresignedpost.domain.conditions.MetaCondition;
 import mendes.sutil.dyego.awspresignedpost.domain.conditions.MatchCondition;
 import mendes.sutil.dyego.awspresignedpost.domain.response.FreeTextPresignedPost;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.auth.credentials.AwsCredentials;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.AwsSessionCredentials;
@@ -21,6 +23,8 @@ import static mendes.sutil.dyego.awspresignedpost.domain.conditions.ConditionFie
 import static mendes.sutil.dyego.awspresignedpost.domain.conditions.MatchCondition.Operator.EQ;
 
 public class S3PostSigner { // TODO rename?
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(S3PostSigner.class);
     private final AwsCredentials awsCredentials;
 
     public S3PostSigner(AwsCredentialsProvider provider) { //TODO Perhaps change to not receive the params here but in the create part
@@ -43,12 +47,14 @@ public class S3PostSigner { // TODO rename?
      */
     public PresignedPost create(PostParams postParams) {
         AmzDate amzDate = new AmzDate();
+        LOGGER.debug("Date used to generate pre signed post {}", amzDate.formatForPolicy());
         Map<ConditionField, Condition> conditions = postParams.getConditions();
+        logConditions(conditions);
         addSessionTokenIfNeeded(conditions);
 
         String bucket = postParams.getBucket();
         String region = postParams.getRegion().id();
-        String credentials = AwsSigner.buildCredentialField(awsCredentials, postParams.getRegion(), amzDate);
+        String credentials = buildCredentialField(awsCredentials, postParams.getRegion(), amzDate);
 
         Policy policy = new Policy(
                 postParams.getAmzExpirationDate().formatForPolicy(),
@@ -70,6 +76,25 @@ public class S3PostSigner { // TODO rename?
                 createUrl(bucket,region),
                 createConditionsMap(credentials,signature, amzDate, policyB64, keyUploadValue, returnConditions)
         );
+    }
+
+    public static String buildCredentialField(AwsCredentials credentials, Region region, AmzDate amzDate) {
+        String accessKeyId = credentials.accessKeyId();
+        String regionId = region.id();
+        String date = amzDate.formatForCredentials();
+        return accessKeyId+"/"+date+"/"+regionId+"/s3/aws4_request";
+    }
+
+    private void logConditions(Map<ConditionField, Condition> conditions) {
+        LOGGER.debug("Conditions to generate pre signed post {}", concatenateConditionField(conditions));
+    }
+
+    private String concatenateConditionField(Map<ConditionField, Condition> condition) {
+        return condition
+                .keySet()
+                .stream()
+                .map(Enum::name)
+                .collect(Collectors.joining(","));
     }
 
     private Map<String, String> createConditionsMap(
@@ -206,6 +231,7 @@ public class S3PostSigner { // TODO rename?
     // TODO tel that token will be added auto
     private void addSessionTokenIfNeeded(Map<ConditionField, Condition> conditions) {
         if (awsCredentials instanceof AwsSessionCredentials) {
+            LOGGER.debug("Adding {} since Aws Sessions credentials are being used", SECURITY_TOKEN.name());
             conditions.put(
                     SECURITY_TOKEN,
                     new MatchCondition(SECURITY_TOKEN, EQ, ((AwsSessionCredentials) awsCredentials).sessionToken())
