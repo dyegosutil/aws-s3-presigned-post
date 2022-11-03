@@ -23,6 +23,7 @@ public class WithSuccessActionRedirectPostParamIntegrationTests extends Integrat
             PostParams postParams,
             String redirectAwsConditionName
     ) {
+        // Act
         NewPresignedPost presignedPost = new S3PostSigner(getAmazonCredentialsProvider()).createNew(postParams);
         System.out.println(presignedPost); // TODO Check about logging for tests, would be nice to know why it failed in GIT
         // TODO watch out while printing this info in github since someone could use it as a attack. Env local and not local for printing?
@@ -32,6 +33,8 @@ public class WithSuccessActionRedirectPostParamIntegrationTests extends Integrat
 
         // Act
         String redirectInResponse = postFileIntoS3ReturningRedirect(request);
+
+        // Arrange
         assertThat(redirectInResponse).isEqualTo(conditions.get(redirectAwsConditionName));
     }
 

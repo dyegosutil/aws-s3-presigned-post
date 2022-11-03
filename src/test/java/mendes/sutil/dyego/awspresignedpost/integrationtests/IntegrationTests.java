@@ -87,6 +87,16 @@ public class IntegrationTests {
         }
     }
 
+    int postFileIntoS3ReturningSuccessActionStatus(Request request) {
+        try (Response response = new OkHttpClient().newCall(request).execute()) {
+            checkSuccessAndPrintResponseIfError(response);
+            return response.code();
+        } catch (Exception e) {
+            System.err.println(e); // TODO fix
+            throw new IllegalStateException(e);
+        }
+    }
+
     private Request createRequest(PresignedPost presignedPost, Map<String, String> formDataParts) {
         MultipartBody.Builder builder = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
