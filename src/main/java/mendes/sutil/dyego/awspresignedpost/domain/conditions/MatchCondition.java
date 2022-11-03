@@ -27,6 +27,12 @@ public class MatchCondition extends Condition {
         };
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (o == null) return false;
+        return o instanceof MatchCondition && ((MatchCondition) o).getConditionField() == this.conditionField;
+    }
+
     public enum Operator {
         EQ("eq"),
         STARTS_WITH("starts-with");

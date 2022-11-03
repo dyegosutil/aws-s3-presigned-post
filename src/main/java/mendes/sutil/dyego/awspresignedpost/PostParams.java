@@ -31,13 +31,13 @@ public final class PostParams {
     private final Region region;
 
     private final AmzExpirationDate amzExpirationDate;
-    private final Set<Condition> conditions;
+    private final Map<ConditionField, Condition> conditions;
 
     private PostParams(
             String bucket,
             Region region,
             AmzExpirationDate amzExpirationDate,
-            Set<Condition> conditions
+            Map<ConditionField, Condition> conditions
     ){
         this.amzExpirationDate = amzExpirationDate;
         this.bucket = bucket;
@@ -67,8 +67,7 @@ public final class PostParams {
     }
 
     public static final class Builder {
-        private final Set<Condition> conditions = new HashSet<>();
-        private final Map<ConditionField, MatchCondition> conditionsMap = new HashMap<>();
+        private final Map<ConditionField, Condition> conditions = new HashMap<>();
         private final Set<Tag> tags = new HashSet<>();
 
         private final String bucket;
@@ -109,8 +108,8 @@ public final class PostParams {
             // TODO add validation for expiration date?
             this.region = region;
             this.amzExpirationDate = amzExpirationDate;
-            conditions.add(keyCondition);
-            this.conditions.add(new MatchCondition(BUCKET, EQ, bucket));
+            this.conditions.put(KEY, keyCondition);
+            this.conditions.put(BUCKET, new MatchCondition(BUCKET, EQ, bucket));
             this.bucket = bucket;
         }
 
@@ -119,16 +118,21 @@ public final class PostParams {
             // TODO Identify mandatory fields and prevent building it if they are missing?
             // TODO Make sure it is build only if it will work and nothing is missing - if possible
             addTags();
-            return new PostParams(bucket, region, amzExpirationDate, Collections.unmodifiableSet(conditions));
+            return new PostParams(
+                    bucket,
+                    region,
+                    amzExpirationDate,
+                    conditions
+            );
         }
 
         private void validateConditions() {
-            conditionsMap.keySet().forEach(
+            conditions.keySet().forEach(
                     conditionField -> {
                         Set<ConditionField> requiredConditions = dependentConditionFields.get(conditionField);
                         if(requiredConditions != null) {
                             requiredConditions.forEach(requiredConditionField -> {
-                                if (!conditionsMap.containsKey(requiredConditionField)) {
+                                if (!conditions.containsKey(requiredConditionField)) {
                                     throw new IllegalArgumentException(
                                             String.format(
                                                     "The condition %s requires the condition(s) %s to be present",
@@ -166,7 +170,7 @@ public final class PostParams {
         }
 
         private Builder withTaggingCondition(String value) {
-            this.conditions.add(new MatchCondition(TAGGING, EQ, value));
+            this.conditions.put(TAGGING, new MatchCondition(TAGGING, EQ, value));
             return this;
         }
 
@@ -183,19 +187,32 @@ public final class PostParams {
         }
 
         private Builder assertUniquenessAndAdd(MatchCondition matchCondition) {
-            if (conditions.contains(matchCondition))
-                throw new IllegalArgumentException(getInvalidConditionExceptionMessage(matchCondition.getConditionField()));
-            this.conditions.add(matchCondition);
-            this.conditionsMap.put(matchCondition.getConditionField(), matchCondition); // TODO Remove conditions and keep just the map?
-            return this;
+            return addIfUnique(matchCondition, getInvalidConditionExceptionMessage(matchCondition.getConditionField()));
         }
 
         private Builder assertUniquenessAndAdd(ChecksumCondition checksumCondition) {
-            if (conditions.contains(checksumCondition)){
-                throw new IllegalArgumentException("Only one checksum condition CRC32, CRC32C, SHA1 or SHA256 can be added at the same time");
-            }
-            this.conditions.add(checksumCondition);
+            new HashSet<>(Arrays.asList(CHECKSUM_CRC32, CHECKSUM_CRC32C, CHECKSUM_SHA1, CHECKSUM_SHA256)).forEach(a -> {
+                if(conditions.containsKey(a)) {
+                    throw new IllegalArgumentException("Only one checksum condition CRC32, CRC32C, SHA1 or SHA256 can be added at the same time");
+                }
+            });
+            conditions.put(checksumCondition.getConditionField(), checksumCondition);
             return this;
+        }
+
+        private Builder addIfUnique(Condition condition, String errorMessage) {
+            if (conditions.containsKey(condition.getConditionField()))
+                throw new IllegalArgumentException(errorMessage);
+            this.conditions.put(condition.getConditionField(), condition); // TODO Remove conditions and keep just the map?
+            return this;
+        }
+
+        private void throwExceptionIfConditionIsPresent(
+                ConditionField conditionField,
+                String errorMessage
+        ) {
+            if (conditions.containsKey(conditionField))
+                throw new IllegalArgumentException(errorMessage);
         }
 
         private Builder assertUniquenessAndAddTagging(String value) {
@@ -206,9 +223,10 @@ public final class PostParams {
         }
 
         private Builder assertUniquenessAndAddTag(String key, String value) {
-            if (conditions.contains(new MatchCondition(TAGGING, EQ, ""))) { // TODO fix this
-                throw new IllegalArgumentException("Either the method withTag() or withTagging() can be used for adding tagging, not both");
-            }
+            throwExceptionIfConditionIsPresent(
+                    TAGGING,
+                    "Either the method withTag() or withTagging() can be used for adding tagging, not both"
+            );
             tags.add(new Tag(key, value));
             return this;
         }
@@ -229,7 +247,7 @@ public final class PostParams {
          */
         public Builder withContentLengthRange(long minimumValue, long maximumValue) {
             ContentLengthRangeCondition condition = new ContentLengthRangeCondition(minimumValue, maximumValue);
-            this.conditions.add(condition);
+            this.conditions.put(condition.getConditionField(), condition);
             return this;
         }
 
@@ -576,7 +594,7 @@ public final class PostParams {
         public Builder withMeta(String metaName, String value) {
             Objects.requireNonNull(metaName);
             Objects.requireNonNull(value);
-            this.conditions.add(new MetaCondition(EQ, metaName, value));
+            conditions.put(META, new MetaCondition(EQ, metaName, value));
             return this;
         }
 
@@ -593,7 +611,7 @@ public final class PostParams {
         public Builder withMetaStartingWith(String metaName, String startingValue) {
             Objects.requireNonNull(metaName);
             Objects.requireNonNull(startingValue);
-            this.conditions.add(new MetaCondition(STARTS_WITH, metaName, startingValue));
+            conditions.put(META, new MetaCondition(STARTS_WITH, metaName, startingValue));
             return this;
         }
 

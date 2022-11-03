@@ -7,12 +7,8 @@ public class ChecksumCondition extends MatchCondition {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        return obj instanceof ChecksumCondition;
-    }
-
-    @Override
-    public int hashCode() {
-        return 1;
+    public boolean equals(Object o) {
+        if (o == null) return false;
+        return o instanceof ChecksumCondition;
     }
 }
