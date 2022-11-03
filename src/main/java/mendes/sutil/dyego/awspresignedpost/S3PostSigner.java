@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.annotations.Expose;
 import mendes.sutil.dyego.awspresignedpost.domain.AmzDate;
 import mendes.sutil.dyego.awspresignedpost.domain.conditions.Condition;
+import mendes.sutil.dyego.awspresignedpost.domain.conditions.ConditionField;
+import mendes.sutil.dyego.awspresignedpost.domain.conditions.MetaCondition;
 import mendes.sutil.dyego.awspresignedpost.domain.conditions.MatchCondition;
 import mendes.sutil.dyego.awspresignedpost.domain.response.FreeTextPresignedPost;
 import software.amazon.awssdk.auth.credentials.AwsCredentials;
@@ -12,10 +14,8 @@ import software.amazon.awssdk.auth.credentials.AwsSessionCredentials;
 import software.amazon.awssdk.regions.Region;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static mendes.sutil.dyego.awspresignedpost.domain.conditions.ConditionField.*;
 import static mendes.sutil.dyego.awspresignedpost.domain.conditions.MatchCondition.Operator.EQ;
@@ -30,7 +30,6 @@ public class S3PostSigner { // TODO rename?
         );
     }
 
-    // TODO rename to sign, or sign post??
     /**
      * Creates the Pre-Signed Post using the data provided in {@link  PostParams}
      * First the policy is created and then its base64 value is used to generate the signature using the
@@ -49,7 +48,6 @@ public class S3PostSigner { // TODO rename?
 
         String bucket = postParams.getBucket();
         String region = postParams.getRegion().id();
-        String url = "https://" + bucket + ".s3." + region + ".amazonaws.com";
         String credentials = AwsSigner.buildCredentialField(awsCredentials, postParams.getRegion(), amzDate);
 
         Policy policy = new Policy(
@@ -64,13 +62,95 @@ public class S3PostSigner { // TODO rename?
         final String policyB64 = Base64.getEncoder().encodeToString(policyJson.getBytes(StandardCharsets.UTF_8));
         String signature = generateSignature(postParams.getRegion(), amzDate, policyB64);
 
+        Map<String, String> returnConditions = keepOnlyNecessaryConditions(conditions);
+        String keyUploadValue = getKeyUploadValue(returnConditions);
+        removeKeyFromConditions(returnConditions);
+
         return new PresignedPost(
-                url,
-                credentials,
-                amzDate.formatForPolicy(),
-                signature,
-                policyB64, "AWS4-HMAC-SHA256" // Shoul it be a constant? but it is used only once
+                createUrl(bucket,region),
+                createConditionsMap(credentials,signature, amzDate, policyB64, keyUploadValue, returnConditions)
         );
+    }
+
+    private Map<String, String> createConditionsMap(
+            String credentials,
+            String signature,
+            AmzDate amzDate,
+            String policyB64,
+            String keyUploadValue,
+            Map<String, String> returnConditions) {
+        Map<String,String> conditions = new HashMap<>();
+        conditions.put(ConditionField.ALGORITHM.valueForApiCall, "AWS4-HMAC-SHA256");
+        conditions.put(CREDENTIAL.valueForApiCall, credentials);
+        conditions.put("x-amz-signature", signature);
+        conditions.put(DATE.valueForApiCall, amzDate.formatForPolicy());
+        conditions.put("policy", policyB64);
+        conditions.put(KEY.valueForApiCall, keyUploadValue);
+        conditions.putAll(returnConditions);
+        return conditions;
+    }
+
+    private String createUrl(String bucket, String region) {
+        return  "https://" + bucket + ".s3." + region + ".amazonaws.com";
+    }
+
+    private void removeKeyFromConditions(Map<String, String> filtered) {
+        filtered.remove(KEY.valueForApiCall);
+    }
+
+    /**
+     * Removes the {@link ConditionField#CONTENT_LENGTH_RANGE} and {@link ConditionField#BUCKET} since they are 
+     * not necessary to be added in the client using the pre signed post.
+     * 
+     * @return A Map containing the condition key and value to be used in the upload. The value is returned as it is if 
+     * the condition operator is {@link mendes.sutil.dyego.awspresignedpost.domain.conditions.MatchCondition.Operator#EQ}
+     * or an empty string if the condition is 
+     * {@link mendes.sutil.dyego.awspresignedpost.domain.conditions.MatchCondition.Operator#STARTS_WITH}, since the value
+     * cannot be predicted.
+     */
+    private Map<String, String> keepOnlyNecessaryConditions(Set<Condition> conditions) {
+        return conditions
+                .stream()
+                .filter(condition -> condition instanceof MatchCondition)
+                .map(matchCondition -> (MatchCondition) matchCondition)
+                .filter(
+                        condition -> condition.getConditionField() != BUCKET && condition.getConditionField() != CONTENT_LENGTH_RANGE
+                )
+                .collect(Collectors.toMap(this::getUploadKey, this::getValueOrEmptyString));
+    }
+
+    private String getUploadKey(MatchCondition matchCondition) {
+        if (matchCondition instanceof MetaCondition metaCondition) {
+            return metaCondition.getConditionField().valueForApiCall + metaCondition.getMetaName();
+        }
+        return matchCondition.getConditionField().valueForApiCall;
+    }
+
+    /**
+     * In case an exact condition was used, the value so be sent to AWS S3 is known and thus can be returned. Otherwise,
+     * a "start with" condition was used and therefore is not possible to foresee which value will be used by the
+     * pre signed post caller
+     *
+     * @return The exact value to be used by the pre signed post caller or an empty string indicating that the caller
+     * has to provide the data themselves.
+     */
+    private String getValueOrEmptyString(MatchCondition matchCondition) {
+        if (matchCondition.getConditionOperator() == EQ) {
+            return matchCondition.getValue();
+        }
+        return "";
+    }
+
+    /**
+     * // TODO remove the "${filename}"
+     */
+    private String getKeyUploadValue(Map<String, String> returnConditions) {
+        String keyValue = returnConditions.get(KEY.valueForApiCall);
+        if (keyValue.isEmpty()) {
+            return "${filename}";
+        } else {
+            return keyValue;
+        }
     }
 
     /**
@@ -132,9 +212,9 @@ public class S3PostSigner { // TODO rename?
 
         conditions.forEach(condition -> result.add(condition.asAwsPolicyCondition()));
 
-        result.add(new String[]{"eq", ALGORITHM.awsConditionName, "AWS4-HMAC-SHA256"}); // TODO use EQ?
-        result.add(new String[]{"eq", DATE.awsConditionName, xAmzDate.formatForPolicy()});
-        result.add(new String[]{"eq", CREDENTIAL.awsConditionName, credentials});
+        result.add(new String[]{"eq", ALGORITHM.valueForAwsPolicy, "AWS4-HMAC-SHA256"}); // TODO use EQ?
+        result.add(new String[]{"eq", DATE.valueForAwsPolicy, xAmzDate.formatForPolicy()});
+        result.add(new String[]{"eq", CREDENTIAL.valueForAwsPolicy, credentials});
 
         return result;
     }

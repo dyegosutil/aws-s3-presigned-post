@@ -68,7 +68,7 @@ public final class PostParams {
 
     public static final class Builder {
         private final Set<Condition> conditions = new HashSet<>();
-        private final Map<ConditionField, Condition> conditionsMap = new HashMap<>();
+        private final Map<ConditionField, MatchCondition> conditionsMap = new HashMap<>();
         private final Set<Tag> tags = new HashSet<>();
 
         private final String bucket;

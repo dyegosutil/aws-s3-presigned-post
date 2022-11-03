@@ -5,14 +5,14 @@ package mendes.sutil.dyego.awspresignedpost.domain.conditions;
  */
 public class ContentLengthRangeCondition extends Condition {
 
+    private final long minimumValue;
+    private final long maximumValue;
+
     public ContentLengthRangeCondition(long minimumValue, long maximumValue) {
         super(ConditionField.CONTENT_LENGTH_RANGE);
         this.minimumValue = minimumValue;
         this.maximumValue = maximumValue;
     }
-
-    private final long minimumValue;
-    private final long maximumValue;
 
     public long getMinimumValue() {
         return minimumValue;
@@ -25,7 +25,7 @@ public class ContentLengthRangeCondition extends Condition {
     @Override
     public String[] asAwsPolicyCondition() {
         return new String[]{
-                getConditionField().awsConditionName,
+                getConditionField().valueForAwsPolicy,
                 String.valueOf(getMinimumValue()),
                 String.valueOf(getMaximumValue())
         };

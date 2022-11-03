@@ -1,61 +1,54 @@
 package mendes.sutil.dyego.awspresignedpost.integrationtests;
 
-import mendes.sutil.dyego.awspresignedpost.PostParams;
 import mendes.sutil.dyego.awspresignedpost.PresignedPost;
+import mendes.sutil.dyego.awspresignedpost.PostParams;
 import mendes.sutil.dyego.awspresignedpost.S3PostSigner;
+import okhttp3.Request;
 import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
-import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
-import software.amazon.awssdk.auth.credentials.AwsSessionCredentials;
-import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 import java.util.Map;
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.params.provider.Arguments.of;
 
 @Disabled
 public class SessionTokenIntegrationTests extends IntegrationTests {
 
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("getTestCasesWithAwsSessionCredentials")
-    void testWithAwsSessionCredentials(
-            String testDescription,
-            PostParams postParams,
-            Map<String, String> formDataParts,
-            Boolean expectedResult
-    ) {
+    @Test
+    @DisplayName("Should succeed while uploading file to S3 using the same session token added in the policy")
+    void arrangeThatAwsSessionCredentialIsUsed_actUploadingTheFile_assertSuccess() {
         // Arrange
+        PostParams postParams = createDefaultPostParamBuilder().build();
         PresignedPost presignedPost = new S3PostSigner(getAmazonCredentialsProviderWithAwsSessionCredentials()).create(postParams);
         System.out.println(presignedPost); // TODO
 
+        Map<String, String> conditions = presignedPost.getConditions();
+        Request request = createRequestFromConditions(conditions, presignedPost.getUrl());
+
         // Act
-        Boolean wasUploadSuccessful = uploadToAws(presignedPost, formDataParts);
+        boolean result = postFileIntoS3(request);
 
         // Assert
-        assertThat(wasUploadSuccessful).isEqualTo(expectedResult);
+        assertThat(result).isEqualTo(true);
     }
 
-    public static Stream<Arguments> getTestCasesWithAwsSessionCredentials() {
-        return Stream.of(
-                of(
-                        "Should succeed while uploading file to S3 using the same session token added in the policy",
-                        createDefaultPostParamBuilder()
-                                .build(),
-                        createFormDataPartsWithKeyCondition("x-amz-security-token",  System.getenv("AWS_SESSION_TOKEN")),
-                        true
-                ),
-                of(
-                        "Should fail while uploading file to S3 using a different session token added in the policy",
-                        createDefaultPostParamBuilder()
-                                .build(),
-                        createFormDataPartsWithKeyCondition("x-amz-security-token",  "thisTokenIsWrong"),
-                        false
-                )
-        );
-    }
+    @Test
+    @DisplayName("Should fail while uploading file to S3 using a different session token added in the policy")
+    void arrangeThatWrongAwsSessionCredentialIsUsed_actUploadingTheFile_assertSuccess() {
+        // Arrange
+        PostParams postParams = createDefaultPostParamBuilder().build();
+        PresignedPost presignedPost = new S3PostSigner(getAmazonCredentialsProviderWithAwsSessionCredentials()).create(postParams);
+        System.out.println(presignedPost); // TODO
 
+        Map<String, String> conditions = presignedPost.getConditions();
+        conditions.put("x-amz-security-token",  "thisTokenIsWrong");
+        Request request = createRequestFromConditions(conditions, presignedPost.getUrl());
+
+        // Act
+        boolean result = postFileIntoS3(request);
+
+        // Assert
+        assertThat(result).isEqualTo(false);
+    }
 }

@@ -1,6 +1,9 @@
 package mendes.sutil.dyego.awspresignedpost.integrationtests;
 
+import mendes.sutil.dyego.awspresignedpost.PresignedPost;
 import mendes.sutil.dyego.awspresignedpost.PostParams;
+import mendes.sutil.dyego.awspresignedpost.S3PostSigner;
+import okhttp3.Request;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -17,51 +20,252 @@ import java.util.stream.Stream;
 
 import static mendes.sutil.dyego.awspresignedpost.PostParams.Builder.CannedAcl.PRIVATE;
 import static mendes.sutil.dyego.awspresignedpost.PostParams.Builder.StorageClass.STANDARD;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.params.provider.Arguments.of;
 
 @Disabled
 public class OptionalPostParamsIntegrationTests extends IntegrationTests {
 
-    /**
-     * Generates the pre-signed post using the mandatory params and also optional params performing the upload to S3.
-     *
-     * @param testDescription
-     * @param postParams
-     * @param formDataParts
-     * @param expectedResult
-     */
     @ParameterizedTest(name = "{0}")
-    @MethodSource("getTestCasesOptionalParams")
-    void testWithOptionalParams(
+    @MethodSource("optionalPostParamsTestCases")
+    void arrangeThatOptionalConditionsReturnedFromPresignedPostAreUsed_actUploadingTheFile_assertTheReturnIsSuccess(
             String testDescription,
-            PostParams postParams,
-            Map<String, String> formDataParts,
-            Boolean expectedResult
+            PostParams postParams
     ) {
-        createPreSignedPostAndUpload(postParams, formDataParts, expectedResult);
+        PresignedPost presignedPost = new S3PostSigner(getAmazonCredentialsProvider()).create(postParams);
+        Request request = createRequestFromConditions(presignedPost.getConditions(), presignedPost.getUrl());
+        boolean result = postFileIntoS3(request);
+        assertThat(result).isTrue();
     }
 
-    private static Stream<Arguments> getTestCasesOptionalParams() {
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("OptionalCustomizedPostParamsTestCases")
+    void arrangeThatOptionalCustomizedConditionsReturnedFromPresignedPostAreUsed_actUploadingTheFile_assertTheReturnIsTheExpected(
+            String testDescription,
+            PostParams postParams,
+            Map<String, String> customizedUploadConditions,
+            boolean expectedResult
+    ) {
+        // Arrange
+        PresignedPost presignedPost = new S3PostSigner(getAmazonCredentialsProvider()).create(postParams);
+        Map<String, String> conditions = presignedPost.getConditions();
+        conditions.putAll(customizedUploadConditions);
+        Request request = createRequestFromConditions(presignedPost.getConditions(), presignedPost.getUrl());
+
+        // Act
+        boolean result = postFileIntoS3(request);
+
+        // Assert
+        assertThat(result).isEqualTo(expectedResult);
+    }
+
+    private static Stream<Arguments> optionalPostParamsTestCases() {
         String tagging = "<Tagging><TagSet><Tag><Key>MyTestTag</Key><Value>MyTagValue</Value></Tag></TagSet></Tagging>";
         return Stream.of(
                 // content-length-range
+                // TODO can content-length-range be handled by free text input?
                 of(
                         "Should succeed while uploading file to S3 when it's size is between the minimum and maximum specified values in the policy",
                         createDefaultPostParamBuilder()
                                 .withContentLengthRange(7, 20)
-                                .build(),
-                        createFormDataParts("key", "${filename}"),
-                        true
+                                .build()
                 ),
                 // content-length-range
                 of(
                         "Should succeed while uploading file to S3 when it's size is of the exact size specified values in the policy",
                         createDefaultPostParamBuilder()
                                 .withContentLengthRange(14, 14)
+                                .build()
+                ),
+                // Cache-Control
+                of(
+                        "Should succeed while uploading file to S3 when the cache-control specified is the same as the one in the policy",
+                        createDefaultPostParamBuilder()
+                                .withCacheControl("public, max-age=7200")
+                                .build()
+                ),
+                // Content-Type
+                of(
+                        "Should succeed while uploading file to S3 when the exact Content-Type specified is the same as the one in the policy",
+                        createDefaultPostParamBuilder()
+                                .withContentType("text/plain")
+                                .build()
+                ),
+                // Content Disposition
+                of(
+                        "Should succeed while uploading file to S3 using the exact content disposition set in the policy",
+                        createDefaultPostParamBuilder()
+                                .withContentDisposition("inline")
+                                .build()
+                ),
+                // Content-Encoding
+                of(
+                        "Should succeed while uploading file to S3 using the exact content encoding set in the policy",
+                        createDefaultPostParamBuilder()
+                                .withContentEncoding("compress")
+                                .build()
+                ),
+                // Expires
+                of(
+                        "Should succeed while uploading file to S3 using the exact Expires condition set in the policy",
+                        createDefaultPostParamBuilder()
+                                .withExpires("Wed, 21 Oct 2015 07:28:00 GMT")
                                 .build(),
-                        createFormDataParts("key", "${filename}"),
+                        null,
+                        // TODO use Expires as a constant? So that it can be seen that this is how it should be passed in the browser params or postman? // Value for what thi comment is for createFormDataPartsWithKeyCondition("Expires", "Wed, 21 Oct 2015 07:28:00 GMT"),
                         true
                 ),
+                // acl
+                of(
+                        "Should succeed while uploading file to S3 when the acl specified is the same as the one in the policy",
+                        createDefaultPostParamBuilder()
+                                .withAcl(PRIVATE)
+                                .build()
+                ),
+                // tagging
+                of(
+                        "Should succeed while uploading file to S3 when it's free text tagging value is the same as the one specified in the policy",
+                        createDefaultPostParamBuilder()
+                                .withTagging(tagging)
+                                .build()
+                ),
+                // tagging
+                of(
+                        "Should succeed while uploading file to S3 when it's tagging is the same as the one specified in the policy",
+                        createDefaultPostParamBuilder()
+                                .withTag("myTagKey", "myTagValue")
+                                .withTag("myTagKey2", "myTagValue2")
+                                .build()
+                ),
+                // meta
+                of(
+                        "Should succeed while uploading file to S3 when the 1 meta specified is the same as the one in the policy",
+                        createDefaultPostParamBuilder()
+                                .withMeta("my_meta_data", "value for my meta-data")
+                                .build()
+                ),
+                // meta
+                of(
+                        "Should succeed while uploading file to S3 when the 2 metas specified are the same as the ones in the policy",
+                        createDefaultPostParamBuilder()
+                                .withMeta("my_meta_data", "value for my meta-data")
+                                .withMeta("my_meta_data2", "value for my meta-data2")
+                                .build()
+                ),
+
+                // storage-class
+                of(
+                        "Should succeed while uploading file to S3 when the storage class specified is the same as the one in the policy",
+                        createDefaultPostParamBuilder()
+                                .withStorageClass(STANDARD)
+                                .build()
+                ),
+                // website-redirect-location
+                of(
+                        "Should succeed while uploading file to S3 when the website-redirect-location specified is the same as the one in the policy which redirects to a file in the same bucket",
+                        createDefaultPostParamBuilder()
+                                .withWebsiteRedirectLocation("/anotherPage.html")
+                                .build()
+                ),
+                // website-redirect-location
+                of(
+                        "Should succeed while uploading file to S3 when the website-redirect-location specified is the same as the one in the policy which redirects to another website",
+                        createDefaultPostParamBuilder()
+                                .withWebsiteRedirectLocation("https://www.google.com")
+                                .build()
+                ),
+                // checksum-sha256
+                of(
+                        "Should succeed while uploading file to S3 when the checksum algorithm is SHA256, " +
+                                "the checksum specified is the same as the one in the policy and the checksum is the" +
+                                " same as the one generated by aws",
+                        createDefaultPostParamBuilder()
+                                .withChecksumSha256(generateChecksumSha256Base64Encoded())
+                                .build()
+                ),
+                // checksum-sha1
+                of(
+                        "Should succeed while uploading file to S3 when the checksum algorithm is SHA1, " +
+                                "the checksum specified is the same as the one in the policy and the checksum is the" +
+                                " same as the one generated by aws",
+                        createDefaultPostParamBuilder()
+                                .withChecksumSha1(generateChecksumSha1Base64Encoded())
+                                .build()
+                ),
+                // checksum-CRC32
+                of(
+                        "Should succeed while uploading file to S3 when the checksum algorithm is CRC32, " +
+                                "the checksum specified is the same as the one in the policy and the checksum is the" +
+                                " same as the one generated by aws",
+                        createDefaultPostParamBuilder()
+                                .withChecksumCrc32("DR7n6g==")
+                                .build()
+                ),
+                // checksum-CRC32C
+                of(
+                        "Should succeed while uploading file to S3 when the checksum algorithm is CRC32C, " +
+                                "the checksum specified is the same as the one in the policy and the checksum is the" +
+                                " same as the one generated by aws",
+                        createDefaultPostParamBuilder()
+                                .withChecksumCrc32c("fPxmpw==")
+                                .build()
+                ),
+
+                // x-amz-server-side-encryption
+                of(
+                        "Should succeed while uploading file to S3 when the server-side-encryption specified is AWS_KMS and is the same as the one in the policy",
+                        createDefaultPostParamBuilder()
+                                .withServerSideEncryption(PostParams.Builder.EncryptionAlgorithm.AWS_KMS)
+                                .build()
+                ),
+                // x-amz-server-side-encryption
+                of(
+                        "Should succeed while uploading file to S3 when the server-side-encryption specified is AES256 and is the same as the one in the policy",
+                        createDefaultPostParamBuilder()
+                                .withServerSideEncryption(PostParams.Builder.EncryptionAlgorithm.AES256)
+                                .build()
+                ),
+                // server-side-encryption-aws-kms-key-id
+                of(
+                        "Should succeed while uploading file to S3 when the server-side-encryption-aws-kms-key-id specified is the same as the one in the policy",
+                        createDefaultPostParamBuilder()
+                                .withServerSideEncryption(PostParams.Builder.EncryptionAlgorithm.AWS_KMS)
+                                .withServerSideEncryptionAwsKmsKeyId(System.getenv("AWS_KMS_S3_KEY"))
+                                .build()
+                ),
+                // server-side-encryption-context
+                of(
+                        "Should succeed while uploading file to S3 when the base64 encoded json " +
+                                "server-side-encryption-context specified is the same as the one in the policy",
+                        createDefaultPostParamBuilder()
+                                .withServerSideEncryption(PostParams.Builder.EncryptionAlgorithm.AWS_KMS)
+                                .withServerSideEncryptionContext("ewogICJ0ZXN0IjogInRlc3QiCn0=")
+                                .build()
+                ),
+                // server-side-encryption-bucket-key-enabled
+                of(
+                        "Should succeed while uploading file to S3 when the server-side-encryption-bucket-key-enabled set as true specified is the same as the one in the policy",
+                        createDefaultPostParamBuilder()
+                                .withServerSideEncryption(PostParams.Builder.EncryptionAlgorithm.AWS_KMS)
+                                .withServerSideEncryptionBucketKeyEnabled()
+                                .build()
+                ),
+                // x-amz-server-side-encryption-customer-algorithm
+                // x-amz-server-side-encryption-customer-key
+                // x-amz-server-side-encryption-customer-key-MD5
+                of(
+                        "Should succeed while uploading file to S3 when customer-provided encryption conditions specified are the same as the ones in the policy",
+                        createDefaultPostParamBuilder()
+                                .withServerSideEncryptionCustomerAlgorithmAES256()
+                                .withServerSideEncryptionCustomerKey(encodeToBase64(encryptionKey256bits))
+                                .withServerSideEncryptionCustomerKeyMD5(generateEncryptionKeyMD5DigestAsBase64(encryptionKey256bits))
+                                .build()
+                )
+        );
+    }
+
+    private static Stream<Arguments> OptionalCustomizedPostParamsTestCases() {
+        return Stream.of(
                 // content-length-range
                 of(
                         "Should fail while uploading file to S3 when it's size is over the maximum specified value in the policy",
@@ -82,9 +286,9 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                 ),
                 // Cache-Control
                 of(
-                        "Should succeed while uploading file to S3 when the cache-control specified is the same as the one in the policy",
+                        "Should succeed while uploading file to S3 when the cache-control specified starts with the same value specified in the policy",
                         createDefaultPostParamBuilder()
-                                .withCacheControl("public, max-age=7200")
+                                .withCacheControlStartingWith("public,")
                                 .build(),
                         createFormDataPartsWithKeyCondition("Cache-Control", "public, max-age=7200"),
                         true
@@ -100,15 +304,6 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                 ),
                 // Cache-Control
                 of(
-                        "Should succeed while uploading file to S3 when the cache-control specified starts with the same value specified in the policy",
-                        createDefaultPostParamBuilder()
-                                .withCacheControlStartingWith("public,")
-                                .build(),
-                        createFormDataPartsWithKeyCondition("Cache-Control", "public, max-age=7200"),
-                        true
-                ),
-                // Cache-Control
-                of(
                         "Should fail while uploading file to S3 when the cache-control specified does not start with the same value specified in the policy",
                         createDefaultPostParamBuilder()
                                 .withCacheControl("public, max-age=7200")
@@ -118,9 +313,9 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                 ),
                 // Content-Type
                 of(
-                        "Should succeed while uploading file to S3 when the exact Content-Type specified is the same as the one in the policy",
+                        "Should succeed while uploading file to S3 when the Content-Type specified starts with the same value specified in the policy",
                         createDefaultPostParamBuilder()
-                                .withContentType("text/plain")
+                                .withContentTypeStartingWith("tex")
                                 .build(),
                         createFormDataPartsWithKeyCondition("Content-Type", "text/plain"),
                         true
@@ -136,15 +331,6 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                 ),
                 // Content-Type
                 of(
-                        "Should succeed while uploading file to S3 when the Content-Type specified starts with the same value specified in the policy",
-                        createDefaultPostParamBuilder()
-                                .withContentTypeStartingWith("tex")
-                                .build(),
-                        createFormDataPartsWithKeyCondition("Content-Type", "text/plain"),
-                        true
-                ),
-                // Content-Type
-                of(
                         "Should fail while uploading file to S3 when the Content-Type specified does not start with the same value specified in the policy",
                         createDefaultPostParamBuilder()
                                 .withContentTypeStartingWith("dex")
@@ -154,9 +340,9 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                 ),
                 // Content Disposition
                 of(
-                        "Should succeed while uploading file to S3 using the exact content disposition set in the policy",
+                        "Should succeed while uploading file to S3 using the content disposition starting with value as set in the policy",
                         createDefaultPostParamBuilder()
-                                .withContentDisposition("inline")
+                                .withContentDispositionStartingWith("inli")
                                 .build(),
                         createFormDataPartsWithKeyCondition("Content-Disposition", "inline"),
                         true
@@ -172,39 +358,11 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                 ),
                 // Content Disposition
                 of(
-                        "Should succeed while uploading file to S3 using the content disposition starting with value as set in the policy",
-                        createDefaultPostParamBuilder()
-                                .withContentDispositionStartingWith("inli")
-                                .build(),
-                        createFormDataPartsWithKeyCondition("Content-Disposition", "inline"),
-                        true
-                ),
-                // Content Disposition
-                of(
                         "Should fail while uploading file to S3 using the content disposition starting with value different than the one set in the policy",
                         createDefaultPostParamBuilder()
                                 .withContentDispositionStartingWith("inline")
                                 .build(),
                         createFormDataPartsWithKeyCondition("Content-Disposition", "attachment"),
-                        false
-                ),
-                // Content-Encoding
-                of(
-                        "Should succeed while uploading file to S3 using the exact content encoding set in the policy",
-                        createDefaultPostParamBuilder()
-                                .withContentEncoding("compress")
-                                .build(),
-                        createFormDataPartsWithKeyCondition("Content-Encoding", "compress"),
-                        true
-                )
-                ,
-                // Content-Encoding
-                of(
-                        "Should fail while uploading file to S3 not using the exact content encoding set in the policy",
-                        createDefaultPostParamBuilder()
-                                .withContentEncoding("compress")
-                                .build(),
-                        createFormDataPartsWithKeyCondition("Content-Encoding", "gzip"),
                         false
                 ),
                 // Content-Encoding
@@ -218,30 +376,20 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                 ),
                 // Content-Encoding
                 of(
+                        "Should fail while uploading file to S3 not using the exact content encoding set in the policy",
+                        createDefaultPostParamBuilder()
+                                .withContentEncoding("compress")
+                                .build(),
+                        createFormDataPartsWithKeyCondition("Content-Encoding", "gzip"),
+                        false
+                ),
+                // Content-Encoding
+                of(
                         "Should fail while uploading file to S3 using the content encoding starting with value different than the one set in the policy",
                         createDefaultPostParamBuilder()
                                 .withContentEncodingStartingWith("com")
                                 .build(),
                         createFormDataPartsWithKeyCondition("Content-Disposition", "abc"),
-                        false
-                ),
-                // Expires
-                of(
-                        "Should succeed while uploading file to S3 using the exact Expires condition set in the policy",
-                        createDefaultPostParamBuilder()
-                                .withExpires("Wed, 21 Oct 2015 07:28:00 GMT")
-                                .build(),
-                        createFormDataPartsWithKeyCondition("Expires", "Wed, 21 Oct 2015 07:28:00 GMT"), // TODO use Expires as a constant? So that it can be seen that this is how it should be passed in the browser params or postman?
-                        true
-                )
-                ,
-                // Expires
-                of(
-                        "Should fail while uploading file to S3 not using the exact Expires condition set in the policy",
-                        createDefaultPostParamBuilder()
-                                .withExpires("Wed, 21 Oct 2015 07:28:00 GMT")
-                                .build(),
-                        createFormDataPartsWithKeyCondition("Expires", "Wed, 21 Oct 2015 07:29:00 GMT"),
                         false
                 ),
                 // Expires
@@ -255,29 +403,20 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                 ),
                 // Expires
                 of(
+                        "Should fail while uploading file to S3 not using the exact Expires condition set in the policy",
+                        createDefaultPostParamBuilder()
+                                .withExpires("Wed, 21 Oct 2015 07:28:00 GMT")
+                                .build(),
+                        createFormDataPartsWithKeyCondition("Expires", "Wed, 21 Oct 2015 07:29:00 GMT"),
+                        false
+                ),
+                // Expires
+                of(
                         "Should fail while uploading file to S3 using the Expires starting with value different than the one set in the policy",
                         createDefaultPostParamBuilder()
                                 .withExpiresStartingWith("Wed,")
                                 .build(),
                         createFormDataPartsWithKeyCondition("Expires", "Mon, 21 Oct 2015 07:29:00 GMT"),
-                        false
-                ),
-                // acl
-                of(
-                        "Should succeed while uploading file to S3 when the acl specified is the same as the one in the policy",
-                        createDefaultPostParamBuilder()
-                                .withAcl(PRIVATE)
-                                .build(),
-                        createFormDataPartsWithKeyCondition("acl", "private"),
-                        true
-                ),
-                // acl
-                of(
-                        "Should fail while uploading file to S3 when the acl specified is not the same as the one in the policy",
-                        createDefaultPostParamBuilder()
-                                .withAcl(PRIVATE)
-                                .build(),
-                        createFormDataPartsWithKeyCondition("acl", "wrongValue"),
                         false
                 ),
                 // acl
@@ -289,6 +428,7 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                         createFormDataPartsWithKeyCondition("acl", "private"),
                         true
                 ),
+                // acl
                 of(
                         "Should fail while uploading file to S3 when the acl starts with value specified is not the same as the one in the policy",
                         createDefaultPostParamBuilder()
@@ -297,33 +437,23 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                         createFormDataPartsWithKeyCondition("acl", "private"),
                         false
                 ),
-                // tagging
+                // acl
                 of(
-                        "Should succeed while uploading file to S3 when it's free text tagging value is the same as the one specified in the policy",
+                        "Should fail while uploading file to S3 when the acl specified is not the same as the one in the policy",
                         createDefaultPostParamBuilder()
-                                .withTagging(tagging)
+                                .withAcl(PRIVATE)
                                 .build(),
-                        createFormDataPartsWithKeyCondition("tagging", tagging),
-                        true
+                        createFormDataPartsWithKeyCondition("acl", "wrongValue"),
+                        false
                 ),
                 // tagging
                 of(
                         "Should fail while uploading file to S3 when it's free text tagging is the same as the one specified in the policy",
                         createDefaultPostParamBuilder()
-                                .withTagging(tagging)
+                                .withTagging("<Tagging><TagSet><Tag><Key>MyTestTag</Key><Value>MyTagValue</Value></Tag></TagSet></Tagging>")
                                 .build(),
                         createFormDataPartsWithKeyCondition("tagging", "wrongValue"),
                         false
-                ),
-                // tagging
-                of(
-                        "Should succeed while uploading file to S3 when it's tagging is the same as the one specified in the policy",
-                        createDefaultPostParamBuilder()
-                                .withTag("myTagKey", "myTagValue")
-                                .withTag("myTagKey2", "myTagValue2")
-                                .build(),
-                        createFormDataPartsWithKeyCondition("tagging", "<Tagging><TagSet><Tag><Key>myTagKey</Key><Value>myTagValue</Value></Tag><Tag><Key>myTagKey2</Key><Value>myTagValue2</Value></Tag></TagSet></Tagging>"),
-                        true
                 ),
                 // tagging
                 of(
@@ -334,33 +464,6 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                                 .build(),
                         createFormDataPartsWithKeyCondition("tagging", "wrongValue"),
                         false
-                ),
-                // meta
-                of(
-                        "Should succeed while uploading file to S3 when the 1 meta specified is the same as the one in the policy",
-                        createDefaultPostParamBuilder()
-                                .withMeta("my_meta_data", "value for my meta-data")
-                                .build(),
-                        createFormDataPartsWithKeyCondition(
-                                "x-amz-meta-my_meta_data",
-                                "value for my meta-data"
-                        ),
-                        true
-                ),
-                // meta
-                of(
-                        "Should succeed while uploading file to S3 when the 2 metas specified are the same as the ones in the policy",
-                        createDefaultPostParamBuilder()
-                                .withMeta("my_meta_data", "value for my meta-data")
-                                .withMeta("my_meta_data2", "value for my meta-data2")
-                                .build(),
-                        createFormDataPartsWithKeyCondition(
-                                "x-amz-meta-my_meta_data",
-                                "value for my meta-data",
-                                "x-amz-meta-my_meta_data2",
-                                "value for my meta-data2"
-                        ),
-                        true
                 ),
                 // meta
                 of(
@@ -400,15 +503,6 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                 ),
                 // storage-class
                 of(
-                        "Should succeed while uploading file to S3 when the storage class specified is the same as the one in the policy",
-                        createDefaultPostParamBuilder()
-                                .withStorageClass(STANDARD)
-                                .build(),
-                        createFormDataPartsWithKeyCondition("x-amz-storage-class", "STANDARD"),
-                        true
-                ),
-                // storage-class
-                of(
                         "Should fail while uploading file to S3 when the storage class specified is not the same as the one in the policy",
                         createDefaultPostParamBuilder()
                                 .withStorageClass(STANDARD)
@@ -418,41 +512,12 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                 ),
                 // website-redirect-location
                 of(
-                        "Should succeed while uploading file to S3 when the website-redirect-location specified is the same as the one in the policy which redirects to a file in the same bucket",
-                        createDefaultPostParamBuilder()
-                                .withWebsiteRedirectLocation("/anotherPage.html")
-                                .build(),
-                        createFormDataPartsWithKeyCondition("x-amz-website-redirect-location", "/anotherPage.html"),
-                        true
-                ),
-                // website-redirect-location
-                of(
-                        "Should succeed while uploading file to S3 when the website-redirect-location specified is the same as the one in the policy which redirects to another website",
-                        createDefaultPostParamBuilder()
-                                .withWebsiteRedirectLocation("https://www.google.com")
-                                .build(),
-                        createFormDataPartsWithKeyCondition("x-amz-website-redirect-location", "https://www.google.com"),
-                        true
-                ),
-                // website-redirect-location
-                of(
                         "Should fail while uploading file to S3 when the website-redirect-location specified is not the same as the one in the policy",
                         createDefaultPostParamBuilder()
                                 .withWebsiteRedirectLocation("/anotherPage.html")
                                 .build(),
                         createFormDataPartsWithKeyCondition("x-amz-website-redirect-location", "/yetAnotherPage.html"),
                         false
-                ),
-                // checksum-sha256
-                of(
-                        "Should succeed while uploading file to S3 when the checksum algorithm is SHA256, " +
-                                "the checksum specified is the same as the one in the policy and the checksum is the" +
-                                " same as the one generated by aws",
-                        createDefaultPostParamBuilder()
-                                .withChecksumSha256(generateChecksumSha256Base64Encoded())
-                                .build(),
-                        createFormDataPartsWithKeyCondition("x-amz-checksum-sha256", generateChecksumSha256Base64Encoded()),
-                        true
                 ),
                 // checksum-sha256
                 of(
@@ -478,17 +543,6 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                 ),
                 // checksum-sha1
                 of(
-                        "Should succeed while uploading file to S3 when the checksum algorithm is SHA1, " +
-                                "the checksum specified is the same as the one in the policy and the checksum is the" +
-                                " same as the one generated by aws",
-                        createDefaultPostParamBuilder()
-                                .withChecksumSha1(generateChecksumSha1Base64Encoded())
-                                .build(),
-                        createFormDataPartsWithKeyCondition("x-amz-checksum-sha1", generateChecksumSha1Base64Encoded()),
-                        true
-                ),
-                // checksum-sha1
-                of(
                         "Should fail while uploading file to S3 when the checksum algorithm is SHA1, " +
                                 "the checksum specified is not the same as the one in the policy and the checksum is not the" +
                                 " same as the one generated by aws",
@@ -508,17 +562,6 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                                 .build(),
                         createFormDataPartsWithKeyCondition("x-amz-checksum-sha1", "wrongChecksum"),
                         false
-                ),
-                // checksum-CRC32
-                of(
-                        "Should succeed while uploading file to S3 when the checksum algorithm is CRC32, " +
-                                "the checksum specified is the same as the one in the policy and the checksum is the" +
-                                " same as the one generated by aws",
-                        createDefaultPostParamBuilder()
-                                .withChecksumCrc32("DR7n6g==")
-                                .build(),
-                        createFormDataPartsWithKeyCondition("x-amz-checksum-crc32", "DR7n6g=="),
-                        true
                 ),
                 // checksum-CRC32
                 of(
@@ -544,17 +587,6 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                 ),
                 // checksum-CRC32C
                 of(
-                        "Should succeed while uploading file to S3 when the checksum algorithm is CRC32C, " +
-                                "the checksum specified is the same as the one in the policy and the checksum is the" +
-                                " same as the one generated by aws",
-                        createDefaultPostParamBuilder()
-                                .withChecksumCrc32c("fPxmpw==")
-                                .build(),
-                        createFormDataPartsWithKeyCondition("x-amz-checksum-crc32c", "fPxmpw=="),
-                        true
-                ),
-                // checksum-CRC32C
-                of(
                         "Should fail while uploading file to S3 when the checksum algorithm is CRC32C, " +
                                 "the checksum specified is not the same as the one in the policy and the checksum is the" +
                                 " same as the one generated by aws",
@@ -577,46 +609,12 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                 ),
                 // x-amz-server-side-encryption
                 of(
-                        "Should succeed while uploading file to S3 when the server-side-encryption specified is AWS_KMS and is the same as the one in the policy",
-                        createDefaultPostParamBuilder()
-                                .withServerSideEncryption(PostParams.Builder.EncryptionAlgorithm.AWS_KMS)
-                                .build(),
-                        createFormDataPartsWithKeyCondition("x-amz-server-side-encryption", "aws:kms"),
-                        true
-                )
-                ,
-                // x-amz-server-side-encryption
-                of(
-                        "Should succeed while uploading file to S3 when the server-side-encryption specified is AES256 and is the same as the one in the policy",
-                        createDefaultPostParamBuilder()
-                                .withServerSideEncryption(PostParams.Builder.EncryptionAlgorithm.AES256)
-                                .build(),
-                        createFormDataPartsWithKeyCondition("x-amz-server-side-encryption", "AES256"),
-                        true
-                ),
-                // x-amz-server-side-encryption
-                of(
                         "Should fail while uploading file to S3 when the server-side-encryption specified is not the same as the one in the policy",
                         createDefaultPostParamBuilder()
                                 .withServerSideEncryption(PostParams.Builder.EncryptionAlgorithm.AWS_KMS)
                                 .build(),
                         createFormDataPartsWithKeyCondition("x-amz-server-side-encryption", "AES256"),
                         false
-                ),
-                // server-side-encryption-aws-kms-key-id
-                of(
-                        "Should succeed while uploading file to S3 when the server-side-encryption-aws-kms-key-id specified is the same as the one in the policy",
-                        createDefaultPostParamBuilder()
-                                .withServerSideEncryption(PostParams.Builder.EncryptionAlgorithm.AWS_KMS)
-                                .withServerSideEncryptionAwsKmsKeyId(System.getenv("AWS_KMS_S3_KEY"))
-                                .build(),
-                        createFormDataPartsWithKeyCondition(
-                                "x-amz-server-side-encryption",
-                                "aws:kms",
-                                "x-amz-server-side-encryption-aws-kms-key-id",
-                                System.getenv("AWS_KMS_S3_KEY")
-                        ),
-                        true
                 ),
                 // server-side-encryption-aws-kms-key-id
                 of(
@@ -632,22 +630,6 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                                 "wrongKmsKeyValue"
                         ),
                         false
-                ),
-                // server-side-encryption-context
-                of(
-                        "Should succeed while uploading file to S3 when the base64 encoded json " +
-                                "server-side-encryption-context specified is the same as the one in the policy",
-                        createDefaultPostParamBuilder()
-                                .withServerSideEncryption(PostParams.Builder.EncryptionAlgorithm.AWS_KMS)
-                                .withServerSideEncryptionContext("ewogICJ0ZXN0IjogInRlc3QiCn0=")
-                                .build(),
-                        createFormDataPartsWithKeyCondition(
-                                "x-amz-server-side-encryption",
-                                "aws:kms",
-                                "x-amz-server-side-encryption-context",
-                                "ewogICJ0ZXN0IjogInRlc3QiCn0="
-                        ),
-                        true
                 ),
                 // server-side-encryption-context
                 of(
@@ -683,21 +665,6 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                 ),
                 // server-side-encryption-bucket-key-enabled
                 of(
-                        "Should succeed while uploading file to S3 when the server-side-encryption-bucket-key-enabled set as true specified is the same as the one in the policy",
-                        createDefaultPostParamBuilder()
-                                .withServerSideEncryption(PostParams.Builder.EncryptionAlgorithm.AWS_KMS)
-                                .withServerSideEncryptionBucketKeyEnabled()
-                                .build(),
-                        createFormDataPartsWithKeyCondition(
-                                "x-amz-server-side-encryption",
-                                "aws:kms",
-                                "x-amz-server-side-encryption-bucket-key-enabled",
-                                "true"
-                        ),
-                        true
-                ),
-                // server-side-encryption-bucket-key-enabled
-                of(
                         "Should fail while uploading file to S3 when the server-side-encryption-bucket-key-enabled specified is not the same as the one in the policy",
                         createDefaultPostParamBuilder()
                                 .withServerSideEncryption(PostParams.Builder.EncryptionAlgorithm.AWS_KMS)
@@ -710,23 +677,6 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                                 "false"
                         ),
                         false
-                ),
-                // x-amz-server-side-encryption-customer-algorithm
-                // x-amz-server-side-encryption-customer-key
-                // x-amz-server-side-encryption-customer-key-MD5
-                of(
-                        "Should succeed while uploading file to S3 when customer-provided encryption conditions specified are the same as the ones in the policy",
-                        createDefaultPostParamBuilder()
-                                .withServerSideEncryptionCustomerAlgorithmAES256()
-                                .withServerSideEncryptionCustomerKey(encodeToBase64(encryptionKey256bits))
-                                .withServerSideEncryptionCustomerKeyMD5(generateEncryptionKeyMD5DigestAsBase64(encryptionKey256bits))
-                                .build(),
-                        createFormDataPartsWithKeyCondition(
-                                "x-amz-server-side-encryption-customer-algorithm", "AES256",
-                                "x-amz-server-side-encryption-customer-key", encodeToBase64(encryptionKey256bits),
-                                "x-amz-server-side-encryption-customer-key-MD5", generateEncryptionKeyMD5DigestAsBase64(encryptionKey256bits)
-                        ),
-                        true
                 ),
                 // x-amz-server-side-encryption-customer-algorithm
                 // x-amz-server-side-encryption-customer-key
@@ -765,8 +715,7 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
         );
     }
 
-    private static byte[] generateFileChecksum(MessageDigest digest, File file) throws IOException
-    {
+    private static byte[] generateFileChecksum(MessageDigest digest, File file) throws IOException {
         FileInputStream fis = new FileInputStream(file);
         byte[] byteArray = new byte[1024];
         int bytesCount;

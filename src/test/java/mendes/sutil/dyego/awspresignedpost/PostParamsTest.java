@@ -112,16 +112,6 @@ class PostParamsTest {
                 .contains(new MetaCondition(expectedOperator, "test", "test"));
     }
 
-    @Test
-    void shouldTestIfConditionContentLengthRangeWasAdded() {
-        Assertions.assertThat(
-                createBuilder()
-                        .withContentLengthRange(10, 20)
-                        .build()
-                        .getConditions()
-        ).contains(new ContentLengthRangeCondition(10, 20));  // TODO adding a 10, 21 here works. Perhaps change to override the hashcode and equals.
-    }
-
     @ParameterizedTest(name = "{0}")
     @MethodSource("shouldAssertSingleMutuallyExclusiveConditionsTest")
     void shouldAssertSingleMutuallyExclusiveConditions(

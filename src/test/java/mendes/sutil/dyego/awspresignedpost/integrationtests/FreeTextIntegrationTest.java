@@ -7,10 +7,10 @@ import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.Request;
 import okhttp3.RequestBody;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.api.Disabled;
 
 import java.time.Clock;
 import java.time.ZoneOffset;
@@ -23,7 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.params.provider.Arguments.of;
 
 @Disabled
-public class FreeTextConditionIntegrationTest extends IntegrationTests {
+public class FreeTextIntegrationTest extends IntegrationTests {
 
     private static final ZonedDateTime DATE = ZonedDateTime.now(Clock.systemUTC());
     private static final DateTimeFormatter YYYYMMDD_DATE_FORMATTER = getYyyyMmDdDateFormatter();
@@ -39,7 +39,7 @@ public class FreeTextConditionIntegrationTest extends IntegrationTests {
     ) {
         assertThat(
                 uploadToAws(formDataParts, getUrl())
-        ).isEqualTo(true);
+        ).isTrue();
     }
 
     private static Stream<Arguments> freeTextConditionSessionTokenTestCases() {
@@ -159,7 +159,7 @@ public class FreeTextConditionIntegrationTest extends IntegrationTests {
 
     protected boolean uploadToAws(Map<String, String> formDataParts, String url) {
         Request request = createRequest(formDataParts, url);
-        return performCallAndVerifySuccessActionRedirect(request);
+        return postFileIntoS3(request);
     }
 
     private Request createRequest(Map<String, String> formDataParts, String url) {

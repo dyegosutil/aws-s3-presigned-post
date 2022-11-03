@@ -1,64 +1,27 @@
 package mendes.sutil.dyego.awspresignedpost;
 
-import lombok.Getter;
-import lombok.Setter;
-
-import java.util.AbstractMap;
+import java.util.Map;
+import java.util.Objects;
 
 
-@Getter
-@Setter
-// TODO add remaining fields
+// TODO say that it will return the ${filename} for key or change it to not return the ${filename}
 public class PresignedPost {
-    private String url; //"https://$bucket.s3.eu-central-1.amazonaws.com", //         https://dev-de.fourthline-zip-upload.scalable.s3.eu-central-1.amazonaws.com"
-    private Pair algorithm; // "AWS4-HMAC-SHA256";
-    private Pair credential; // credentialsField;
-    private Pair xAmzSignature; // TODO Find a patter for all of them, putting the x in front or not
-    private Pair date; // AMZ_DATE_FORMATTER.format(date),
-    private Pair policy; // policyB64
-    private Pair key;
+    private final String url;
 
-    PresignedPost(String url, String credential, String date, String signature, String policy, String algorithm) {
+    private final Map<String, String> conditions;
+
+    PresignedPost(String url, Map<String, String> conditions) {
+        Objects.requireNonNull(url);
+        Objects.requireNonNull(conditions);
         this.url = url;
-        this.credential = new Pair("x-amz-credential", credential);
-        this.date = new Pair("x-amz-date", date);
-        this.xAmzSignature = new Pair("x-amz-signature", signature);
-        this.algorithm = new Pair("x-amz-algorithm", algorithm);
-        this.policy = new Pair("policy", policy);
+        this.conditions = conditions;
     }
 
-    // TODO Rename to a better name? Param?
-    public static class Pair extends AbstractMap.SimpleImmutableEntry<String, String> {
-        public Pair(String key, String value) {
-            super(key, value);
-        }
-
-        @Override
-        public String getKey() {
-            return super.getKey();
-        }
-
-        @Override
-        public String getValue() {
-            return super.getValue();
-        }
-
-        @Override
-        public String toString() {
-            return "key='"+getKey()+"' value='"+getValue()+"'}";
-        }
+    public String getUrl() {
+        return url;
     }
 
-    @Override
-    public String toString() {
-        return "PresignedPost{" +
-                "url='" + url + '\'' +
-                "\n, algorithm=" + algorithm +
-                "\n, credential=" + credential +
-                "\n, xAmzSignature=" + xAmzSignature +
-                "\n, date=" + date +
-                "\n, policy=" + policy +
-                "\n, key=" + key +
-                '}';
+    public Map<String, String> getConditions() {
+        return conditions;
     }
 }

@@ -1,8 +1,6 @@
 package mendes.sutil.dyego.awspresignedpost.integrationtests;
 
 import mendes.sutil.dyego.awspresignedpost.PostParams;
-import mendes.sutil.dyego.awspresignedpost.PresignedPost;
-import mendes.sutil.dyego.awspresignedpost.S3PostSigner;
 import okhttp3.*;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
@@ -25,8 +23,6 @@ import java.util.Map;
 import java.util.Objects;
 
 import static mendes.sutil.dyego.awspresignedpost.domain.conditions.helper.KeyConditionHelper.withAnyKey;
-import static org.assertj.core.api.Assertions.assertThat;
-
 /**
  * TODO Check to use S3 local?
  * // Reading credentials from ENV-variables
@@ -42,13 +38,6 @@ public class IntegrationTests {
     protected static final String BUCKET = System.getenv("AWS_BUCKET");
     protected static final String encryptionKey256bits = "PcI54Y7WIu8aU1fSoEN&34mS#$*S21%3";
 
-    protected void createPreSignedPostAndUpload(PostParams postParams, Map<String, String> formDataParts, Boolean expectedResult) {
-        PresignedPost presignedPost = new S3PostSigner(getAmazonCredentialsProvider()).create(postParams);
-        System.out.println(presignedPost); // TODO Check about logging for tests, would be nice to know why it failed in GIT
-        Boolean wasUploadSuccessful = uploadToAws(presignedPost, formDataParts);
-        assertThat(wasUploadSuccessful).isEqualTo(expectedResult);
-    }
-
     /**
      * TODO check if this is really necessary, if it could be just done using not aws lib code
      *
@@ -61,19 +50,7 @@ public class IntegrationTests {
         );
     }
 
-    /**
-     * TODO Change to a better http client since okhttp does not give as much information as postman when a 400 happens.
-     * If errors happens here, better debug with postman
-     *
-     * @param presignedPost
-     * @return
-     */
-    protected boolean uploadToAws(PresignedPost presignedPost, Map<String, String> formDataParts) {
-        Request request = createRequest(presignedPost, formDataParts);
-        return performCallAndVerifySuccessActionRedirect(request);
-    }
-
-    boolean performCallAndVerifySuccessActionRedirect(Request request) {
+    boolean postFileIntoS3(Request request) {
         try (Response response = new OkHttpClient().newCall(request).execute()) {
             return checkSuccessAndPrintResponseIfError(response);
         } catch (Exception e) {
@@ -82,27 +59,25 @@ public class IntegrationTests {
         }
     }
 
-    private Request createRequest(PresignedPost presignedPost, Map<String, String> formDataParts) {
-        MultipartBody.Builder builder = new MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                // below are all the parameters that are required for the upload to be successful. Apart from file that has to be the last one
-                .addFormDataPart(presignedPost.getCredential().getKey(), presignedPost.getCredential().getValue())
-                .addFormDataPart(presignedPost.getXAmzSignature().getKey(), presignedPost.getXAmzSignature().getValue()) // TODO fix this
-                .addFormDataPart(presignedPost.getAlgorithm().getKey(), presignedPost.getAlgorithm().getValue())
-                .addFormDataPart(presignedPost.getDate().getKey(), presignedPost.getDate().getValue())
-                .addFormDataPart(presignedPost.getPolicy().getKey(), presignedPost.getPolicy().getValue());
+    String postFileIntoS3ReturningRedirect(Request request) {
+        try (Response response = new OkHttpClient().newCall(request).execute()) {
+            HttpUrl httpUrl = response.request().url();
+            checkSuccessAndPrintResponseIfError(response);
+            return httpUrl.scheme() + "://" + httpUrl.host();
+        } catch (Exception e) {
+            System.err.println(e); // TODO fix
+            throw new IllegalStateException(e);
+        }
+    }
 
-        // Parameters specific for the test
-        formDataParts.forEach(builder::addFormDataPart);
-
-        // file has to be the last parameter according to aws
-        builder.addFormDataPart("file", "test.txt", RequestBody.create("this is a test".getBytes(), MediaType.parse("text/plain")));
-
-        MultipartBody multipartBody = builder.build();
-
-        return new Request.Builder()
-                .url(presignedPost.getUrl())
-                .post(multipartBody).build();
+    int postFileIntoS3ReturningSuccessActionStatus(Request request) {
+        try (Response response = new OkHttpClient().newCall(request).execute()) {
+            checkSuccessAndPrintResponseIfError(response);
+            return response.code();
+        } catch (Exception e) {
+            System.err.println(e); // TODO fix
+            throw new IllegalStateException(e);
+        }
     }
 
     private boolean checkSuccessAndPrintResponseIfError(Response response) {
@@ -172,42 +147,6 @@ public class IntegrationTests {
         return formDataParts;
     }
 
-    protected boolean uploadToAwsCheckingSuccessActionStatus(
-            PresignedPost presignedPost, Map<String, String> formDataParts, int expectedResponseCode
-    ) {
-        Request request = createRequest(presignedPost, formDataParts);
-        return performCallAndVerifySuccessActionStatus(request, expectedResponseCode);
-    }
-
-    private boolean performCallAndVerifySuccessActionStatus(Request request, int expectedResponseCode) {
-        try (Response response = new OkHttpClient().newCall(request).execute()) {
-            assertThat(response.code()).isEqualTo(expectedResponseCode);
-            return checkSuccessAndPrintResponseIfError(response);
-        } catch (Exception e) {
-            System.err.println(e); // TODO fix
-            return false;
-        }
-    }
-
-    protected boolean uploadToAwsCheckingRedirect(PresignedPost presignedPost, Map<String, String> formDataParts, String redirectHttpClientField) {
-        Request request = createRequest(presignedPost, formDataParts);
-        String successActionRedirect = formDataParts.get(redirectHttpClientField); // TODO User constants?
-        return performCallAndVerifySuccessActionRedirect(request, successActionRedirect);
-    }
-
-    private boolean performCallAndVerifySuccessActionRedirect(Request request, String successActionRedirect) {
-        try (Response response = new OkHttpClient().newCall(request).execute()) {
-            HttpUrl httpUrl = response.request().url();
-            String responseRedirectUrl = httpUrl.scheme() + "://" + httpUrl.host();
-            assertThat(responseRedirectUrl).isEqualTo(successActionRedirect);
-
-            return checkSuccessAndPrintResponseIfError(response);
-        } catch (Exception e) {
-            System.err.println(e); // TODO fix
-            return false;
-        }
-    }
-
     protected static AwsCredentialsProvider getAmazonCredentialsProviderWithAwsSessionCredentials() {
         return StaticCredentialsProvider.create(
                 AwsSessionCredentials.create(
@@ -231,5 +170,17 @@ public class IntegrationTests {
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e); // TODO add log error
         }
+    }
+
+    // TODO possiblly shorter the name?
+    protected Request createRequestFromConditions(Map<String, String> conditions, String url) {
+        MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
+        conditions.forEach(builder::addFormDataPart);
+        // file has to be the last parameter according to aws s3 documentation
+        builder.addFormDataPart("file", "test.txt", RequestBody.create("this is a test".getBytes(), MediaType.parse("text/plain")));
+        return new Request.Builder()
+                .url(url)
+                .post(builder.build())
+                .build();
     }
 }
