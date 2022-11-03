@@ -37,7 +37,7 @@ public class FreeTextIntegrationTest extends IntegrationTests {
     ) {
         assertThat(
                 uploadToAws(formDataParts, getUrl())
-        ).isEqualTo(true);
+        ).isTrue();
     }
 
     private static Stream<Arguments> freeTextConditionSessionTokenTestCases() {

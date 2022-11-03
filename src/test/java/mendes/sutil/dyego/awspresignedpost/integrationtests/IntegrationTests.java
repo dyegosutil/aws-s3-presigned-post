@@ -42,14 +42,6 @@ public class IntegrationTests {
     protected static final String BUCKET = System.getenv("AWS_BUCKET");
     protected static final String encryptionKey256bits = "PcI54Y7WIu8aU1fSoEN&34mS#$*S21%3";
 
-    protected void createPreSignedPostAndUpload(PostParams postParams, Map<String, String> formDataParts, Boolean expectedResult) {
-        PresignedPost presignedPost = new S3PostSigner(getAmazonCredentialsProvider()).create(postParams);
-        Map<String, String> completeFormData = fillFormData(presignedPost, formDataParts);
-        System.out.println(presignedPost); // TODO Check about logging for tests, would be nice to know why it failed in GIT
-        Boolean wasUploadSuccessful = uploadToAws(presignedPost, completeFormData);
-        assertThat(wasUploadSuccessful).isEqualTo(expectedResult);
-    }
-
     // TODO possible remove
     protected Map<String, String> fillFormData(PresignedPost presignedPost, Map<String, String> formDataParts) {
         if (Objects.isNull(formDataParts)) {
@@ -75,25 +67,23 @@ public class IntegrationTests {
         );
     }
 
-    /**
-     * TODO Change to a better http client since okhttp does not give as much information as postman when a 400 happens.
-     * If errors happens here, better debug with postman
-     *
-     * @param presignedPost
-     * @return
-     */
-    // todo POSSIBLE REMOVE?
-    protected boolean uploadToAws(PresignedPost presignedPost, Map<String, String> formDataParts) {
-        Request request = createRequest(presignedPost, formDataParts);
-        return postFileIntoS3(request);
-    }
-
     boolean postFileIntoS3(Request request) {
         try (Response response = new OkHttpClient().newCall(request).execute()) {
             return checkSuccessAndPrintResponseIfError(response);
         } catch (Exception e) {
             System.err.println(e); // TODO fix
             return false;
+        }
+    }
+
+    String postFileIntoS3ReturningRedirect(Request request) {
+        try (Response response = new OkHttpClient().newCall(request).execute()) {
+            HttpUrl httpUrl = response.request().url();
+            checkSuccessAndPrintResponseIfError(response);
+            return httpUrl.scheme() + "://" + httpUrl.host();
+        } catch (Exception e) {
+            System.err.println(e); // TODO fix
+            throw new IllegalStateException(e);
         }
     }
 
@@ -197,25 +187,6 @@ public class IntegrationTests {
     private boolean performCallAndVerifySuccessActionStatus(Request request, int expectedResponseCode) {
         try (Response response = new OkHttpClient().newCall(request).execute()) {
             assertThat(response.code()).isEqualTo(expectedResponseCode);
-            return checkSuccessAndPrintResponseIfError(response);
-        } catch (Exception e) {
-            System.err.println(e); // TODO fix
-            return false;
-        }
-    }
-
-    protected boolean uploadToAwsCheckingRedirect(PresignedPost presignedPost, Map<String, String> formDataParts, String redirectHttpClientField) {
-        Request request = createRequest(presignedPost, formDataParts);
-        String successActionRedirect = formDataParts.get(redirectHttpClientField); // TODO User constants?
-        return postFileIntoS3(request, successActionRedirect);
-    }
-
-    private boolean postFileIntoS3(Request request, String successActionRedirect) {
-        try (Response response = new OkHttpClient().newCall(request).execute()) {
-            HttpUrl httpUrl = response.request().url();
-            String responseRedirectUrl = httpUrl.scheme() + "://" + httpUrl.host();
-            assertThat(responseRedirectUrl).isEqualTo(successActionRedirect);
-
             return checkSuccessAndPrintResponseIfError(response);
         } catch (Exception e) {
             System.err.println(e); // TODO fix
