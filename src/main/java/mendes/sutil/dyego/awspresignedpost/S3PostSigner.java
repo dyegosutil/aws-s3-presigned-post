@@ -58,7 +58,7 @@ public class S3PostSigner { // TODO rename?
 
         return new NewPresignedPost(
                 createUrl(bucket,region),
-                createConditionsMap(credentials,signature, amzDate, policyB64, keyUploadValue)
+                createConditionsMap(credentials,signature, amzDate, policyB64, keyUploadValue, returnConditions)
         );
     }
 
@@ -106,7 +106,8 @@ public class S3PostSigner { // TODO rename?
             String signature,
             AmzDate amzDate,
             String policyB64,
-            String keyUploadValue) {
+            String keyUploadValue,
+            Map<String, String> returnConditions) {
         Map<String,String> conditions = new HashMap<>();
         conditions.put(ConditionField.ALGORITHM.valueForApiCall, "AWS4-HMAC-SHA256");
         conditions.put(CREDENTIAL.valueForApiCall, credentials);
@@ -114,6 +115,7 @@ public class S3PostSigner { // TODO rename?
         conditions.put(DATE.valueForApiCall, amzDate.formatForPolicy());
         conditions.put("policy", policyB64);
         conditions.put(KEY.valueForApiCall, keyUploadValue);
+        conditions.putAll(returnConditions);
         return conditions;
     }
 

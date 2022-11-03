@@ -4,10 +4,7 @@ import mendes.sutil.dyego.awspresignedpost.NewPresignedPost;
 import mendes.sutil.dyego.awspresignedpost.PostParams;
 import mendes.sutil.dyego.awspresignedpost.S3PostSigner;
 import mendes.sutil.dyego.awspresignedpost.domain.conditions.key.KeyCondition;
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
 import okhttp3.Request;
-import okhttp3.RequestBody;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -30,9 +27,6 @@ import static org.junit.jupiter.params.provider.Arguments.of;
 @Disabled
 public class MandatoryPostParamsIntegrationTests extends IntegrationTests {
 
-    /**
-     * Should succeed while uploading file to S3 using the exact key specified in the policy
-     */
     @Test
     void arrangeThatConditionsReturnedFromPresignedPostAreUsed_actUploadingTheFile_assertTheReturnIsSuccess() {
         // Arrange
@@ -46,13 +40,13 @@ public class MandatoryPostParamsIntegrationTests extends IntegrationTests {
                 .build();
         NewPresignedPost presignedPost = new S3PostSigner(getAmazonCredentialsProvider()).createNew(postParams);
         Map<String, String> conditions = presignedPost.getConditions();
-        Request request = createRequest(conditions, presignedPost.getUrl());
+        Request request = createRequestFromConditions(conditions, presignedPost.getUrl());
 
         // Act
         boolean result = postFileIntoS3(request);
 
         // Assert
-        assertThat(result).isEqualTo(true);
+        assertThat(result).isTrue();
     }
 
     /**
@@ -84,7 +78,7 @@ public class MandatoryPostParamsIntegrationTests extends IntegrationTests {
         Map<String, String> conditions = presignedPost.getConditions();
         conditions.putAll(customizedUploadConditions);
 
-        Request request = createRequest(conditions, presignedPost.getUrl());
+        Request request = createRequestFromConditions(conditions, presignedPost.getUrl());
 
         // Act
         boolean result = postFileIntoS3(request);
@@ -93,16 +87,6 @@ public class MandatoryPostParamsIntegrationTests extends IntegrationTests {
         assertThat(result).isEqualTo(expectedResult);
     }
 
-    private Request createRequest(Map<String, String> conditions, String url) {
-        MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
-        conditions.forEach(builder::addFormDataPart);
-        // file has to be the last parameter according to aws s3 documentation
-        builder.addFormDataPart("file", "test.txt", RequestBody.create("this is a test".getBytes(), MediaType.parse("text/plain")));
-        return new Request.Builder()
-                .url(url)
-                .post(builder.build())
-                .build();
-    }
     private static Stream<Arguments> getCustomizedUploadConditionsTestCases() {
         return Stream.of(
                 // key

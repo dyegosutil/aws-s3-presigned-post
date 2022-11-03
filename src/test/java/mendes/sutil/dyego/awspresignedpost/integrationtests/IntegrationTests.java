@@ -50,6 +50,7 @@ public class IntegrationTests {
         assertThat(wasUploadSuccessful).isEqualTo(expectedResult);
     }
 
+    // TODO possible remove
     protected Map<String, String> fillFormData(PresignedPost presignedPost, Map<String, String> formDataParts) {
         if (Objects.isNull(formDataParts)) {
             formDataParts = new HashMap<>();
@@ -81,6 +82,7 @@ public class IntegrationTests {
      * @param presignedPost
      * @return
      */
+    // todo POSSIBLE REMOVE?
     protected boolean uploadToAws(PresignedPost presignedPost, Map<String, String> formDataParts) {
         Request request = createRequest(presignedPost, formDataParts);
         return postFileIntoS3(request);
@@ -244,5 +246,17 @@ public class IntegrationTests {
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e); // TODO add log error
         }
+    }
+
+    // TODO possiblly shorter the name?
+    protected Request createRequestFromConditions(Map<String, String> conditions, String url) {
+        MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
+        conditions.forEach(builder::addFormDataPart);
+        // file has to be the last parameter according to aws s3 documentation
+        builder.addFormDataPart("file", "test.txt", RequestBody.create("this is a test".getBytes(), MediaType.parse("text/plain")));
+        return new Request.Builder()
+                .url(url)
+                .post(builder.build())
+                .build();
     }
 }
