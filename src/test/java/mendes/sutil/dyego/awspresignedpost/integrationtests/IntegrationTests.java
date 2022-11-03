@@ -23,7 +23,6 @@ import java.util.Map;
 import java.util.Objects;
 
 import static mendes.sutil.dyego.awspresignedpost.domain.conditions.helper.KeyConditionHelper.withAnyKey;
-// TODO The IT should not have conditionals. Separate the tests in a way the null does not have to be passed for 200 cases.
 /**
  * TODO Check to use S3 local?
  * // Reading credentials from ENV-variables
