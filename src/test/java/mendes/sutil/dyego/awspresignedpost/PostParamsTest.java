@@ -10,18 +10,19 @@ import org.junit.jupiter.params.provider.MethodSource;
 import software.amazon.awssdk.regions.Region;
 
 import java.time.ZonedDateTime;
-import java.util.Set;
+import java.util.Map;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import static mendes.sutil.dyego.awspresignedpost.PostParams.Builder.CannedAcl.PRIVATE;
 import static mendes.sutil.dyego.awspresignedpost.PostParams.Builder.EncryptionAlgorithm.AWS_KMS;
 import static mendes.sutil.dyego.awspresignedpost.PostParams.Builder.StorageClass.STANDARD;
+import static mendes.sutil.dyego.awspresignedpost.PostParams.Builder.SuccessActionStatus;
 import static mendes.sutil.dyego.awspresignedpost.domain.conditions.ConditionField.*;
 import static mendes.sutil.dyego.awspresignedpost.domain.conditions.MatchCondition.Operator.EQ;
 import static mendes.sutil.dyego.awspresignedpost.domain.conditions.MatchCondition.Operator.STARTS_WITH;
-import static mendes.sutil.dyego.awspresignedpost.PostParams.Builder.SuccessActionStatus;
 import static mendes.sutil.dyego.awspresignedpost.domain.conditions.helper.KeyConditionHelper.withAnyKey;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.params.provider.Arguments.of;
 
@@ -40,11 +41,10 @@ class PostParamsTest {
 
     ) {
         // Arrange & Act
-        Set<Condition> conditions = builderSupplier.get().build().getConditions();
+        Map<ConditionField, Condition> conditions = builderSupplier.get().build().getConditions();
 
         // Assert
-        Assertions.assertThat(conditions)
-                .contains(new MatchCondition(expectedConditionField, expectedOperator, "test"));
+        assertThat(conditions).containsValue(new MatchCondition(expectedConditionField, expectedOperator, "test"));
     }
 
     @Test
@@ -57,10 +57,10 @@ class PostParamsTest {
                 .build();
 
         // Act
-        Set<Condition> conditions = postParams.getConditions();
+        Map<ConditionField, Condition> conditions = postParams.getConditions();
 
         // Assert
-        Assertions.assertThat(conditions).contains(
+        Assertions.assertThat(conditions).containsValues(
                 new MatchCondition(SERVER_SIDE_ENCRYPTION_CUSTOMER_ALGORITHM, EQ, "AES256"),
                 new MatchCondition(SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY, EQ, "test"),
                 new MatchCondition(SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY_MD5, EQ, "test")
@@ -89,11 +89,11 @@ class PostParamsTest {
 
     ) {
         // Arrange & act
-        Set<Condition> conditions = builderSupplier.get().build().getConditions();
+        Map<ConditionField, Condition> conditions = builderSupplier.get().build().getConditions();
 
         // Assert
         Assertions.assertThat(conditions)
-                .contains(new ChecksumCondition(expectedConditionField, "test"));
+                .containsValue(new ChecksumCondition(expectedConditionField, "test"));
     }
 
     @ParameterizedTest(name = "{0}")
@@ -105,11 +105,11 @@ class PostParamsTest {
 
     ) {
         // Arrange & act
-        Set<Condition> conditions = builderSupplier.get().build().getConditions();
+        Map<ConditionField, Condition> conditions = builderSupplier.get().build().getConditions();
 
         // Assert
-        Assertions.assertThat(conditions)
-                .contains(new MetaCondition(expectedOperator, "test", "test"));
+        assertThat(conditions)
+                .containsValue(new MetaCondition(expectedOperator, "test", "test"));
     }
 
     @ParameterizedTest(name = "{0}")

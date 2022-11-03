@@ -43,7 +43,7 @@ public class S3PostSigner { // TODO rename?
      */
     public PresignedPost create(PostParams postParams) {
         AmzDate amzDate = new AmzDate();
-        Set<Condition> conditions = new HashSet<>(postParams.getConditions());
+        Map<ConditionField, Condition> conditions = postParams.getConditions();
         addSessionTokenIfNeeded(conditions);
 
         String bucket = postParams.getBucket();
@@ -99,6 +99,7 @@ public class S3PostSigner { // TODO rename?
     }
 
     /**
+     * TODO review?
      * Removes the {@link ConditionField#CONTENT_LENGTH_RANGE} and {@link ConditionField#BUCKET} since they are 
      * not necessary to be added in the client using the pre signed post.
      * 
@@ -108,15 +109,19 @@ public class S3PostSigner { // TODO rename?
      * {@link mendes.sutil.dyego.awspresignedpost.domain.conditions.MatchCondition.Operator#STARTS_WITH}, since the value
      * cannot be predicted.
      */
-    private Map<String, String> keepOnlyNecessaryConditions(Set<Condition> conditions) {
-        return conditions
+    private Map<String, String> keepOnlyNecessaryConditions(Map<ConditionField, Condition> conditionMap) {
+        conditionMap.remove(CONTENT_LENGTH_RANGE);
+        conditionMap.remove(BUCKET);
+
+        return conditionMap
+                .entrySet()
                 .stream()
-                .filter(condition -> condition instanceof MatchCondition)
-                .map(matchCondition -> (MatchCondition) matchCondition)
-                .filter(
-                        condition -> condition.getConditionField() != BUCKET && condition.getConditionField() != CONTENT_LENGTH_RANGE
-                )
-                .collect(Collectors.toMap(this::getUploadKey, this::getValueOrEmptyString));
+                .collect(
+                        Collectors.toMap(
+                                entry -> getUploadKey((MatchCondition) entry.getValue()),
+                                entry -> getValueOrEmptyString((MatchCondition) entry.getValue())
+                        )
+                );
     }
 
     private String getUploadKey(MatchCondition matchCondition) {
@@ -198,19 +203,23 @@ public class S3PostSigner { // TODO rename?
         );
     }
 
-    private void addSessionTokenIfNeeded(Set<Condition> conditions) {
+    // TODO tel that token will be added auto
+    private void addSessionTokenIfNeeded(Map<ConditionField, Condition> conditions) {
         if (awsCredentials instanceof AwsSessionCredentials) {
-            conditions.add(new MatchCondition(SECURITY_TOKEN, EQ, ((AwsSessionCredentials) awsCredentials).sessionToken()));
+            conditions.put(
+                    SECURITY_TOKEN,
+                    new MatchCondition(SECURITY_TOKEN, EQ, ((AwsSessionCredentials) awsCredentials).sessionToken())
+            );
         }
     }
 
     private Set<String[]> buildConditions(
-            Set<Condition> conditions,
+            Map<ConditionField, Condition> conditions,
             AmzDate xAmzDate,
             String credentials) {
         final Set<String[]> result = new HashSet<>();
 
-        conditions.forEach(condition -> result.add(condition.asAwsPolicyCondition()));
+        conditions.forEach((key,condition)-> result.add(condition.asAwsPolicyCondition()));
 
         result.add(new String[]{"eq", ALGORITHM.valueForAwsPolicy, "AWS4-HMAC-SHA256"}); // TODO use EQ?
         result.add(new String[]{"eq", DATE.valueForAwsPolicy, xAmzDate.formatForPolicy()});
