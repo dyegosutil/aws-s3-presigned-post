@@ -38,7 +38,6 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
         assertThat(result).isTrue();
     }
 
-    @Disabled
     @ParameterizedTest(name = "{0}")
     @MethodSource("OptionalCustomizedPostParamsTestCases")
     void arrangeThatOptionalCustomizedConditionsReturnedFromPresignedPostAreUsed_actUploadingTheFile_assertTheReturnIsSuccess(
