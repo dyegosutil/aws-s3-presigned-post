@@ -1,6 +1,6 @@
 package mendes.sutil.dyego.awspresignedpost.integrationtests;
 
-import mendes.sutil.dyego.awspresignedpost.NewPresignedPost;
+import mendes.sutil.dyego.awspresignedpost.PresignedPost;
 import mendes.sutil.dyego.awspresignedpost.PostParams;
 import mendes.sutil.dyego.awspresignedpost.S3PostSigner;
 import mendes.sutil.dyego.awspresignedpost.domain.conditions.key.KeyCondition;
@@ -38,7 +38,7 @@ public class MandatoryPostParamsIntegrationTests extends IntegrationTests {
                         withKey("test.txt")
                 )
                 .build();
-        NewPresignedPost presignedPost = new S3PostSigner(getAmazonCredentialsProvider()).createNew(postParams);
+        PresignedPost presignedPost = new S3PostSigner(getAmazonCredentialsProvider()).create(postParams);
         Map<String, String> conditions = presignedPost.getConditions();
         Request request = createRequestFromConditions(conditions, presignedPost.getUrl());
 
@@ -74,7 +74,7 @@ public class MandatoryPostParamsIntegrationTests extends IntegrationTests {
                         keyCondition
                 )
                 .build();
-        NewPresignedPost presignedPost = new S3PostSigner(getAmazonCredentialsProvider()).createNew(postParams);
+        PresignedPost presignedPost = new S3PostSigner(getAmazonCredentialsProvider()).create(postParams);
         Map<String, String> conditions = presignedPost.getConditions();
         conditions.putAll(customizedUploadConditions);
 

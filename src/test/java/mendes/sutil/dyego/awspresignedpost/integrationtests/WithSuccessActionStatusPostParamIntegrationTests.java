@@ -1,6 +1,6 @@
 package mendes.sutil.dyego.awspresignedpost.integrationtests;
 
-import mendes.sutil.dyego.awspresignedpost.NewPresignedPost;
+import mendes.sutil.dyego.awspresignedpost.PresignedPost;
 import mendes.sutil.dyego.awspresignedpost.PostParams;
 import mendes.sutil.dyego.awspresignedpost.S3PostSigner;
 import okhttp3.Request;
@@ -27,7 +27,7 @@ public class WithSuccessActionStatusPostParamIntegrationTests extends Integratio
             int expectedResponseCode
     ) {
         // Arrange
-        NewPresignedPost presignedPost = new S3PostSigner(getAmazonCredentialsProvider()).createNew(postParams);
+        PresignedPost presignedPost = new S3PostSigner(getAmazonCredentialsProvider()).create(postParams);
         System.out.println(presignedPost);
 
         Map<String, String> conditions = presignedPost.getConditions();
@@ -46,7 +46,7 @@ public class WithSuccessActionStatusPostParamIntegrationTests extends Integratio
         PostParams postParams = createDefaultPostParamBuilder()
                 .withSuccessActionStatus(PostParams.Builder.SuccessActionStatus.OK)
                 .build();
-        NewPresignedPost presignedPost = new S3PostSigner(getAmazonCredentialsProvider()).createNew(postParams);
+        PresignedPost presignedPost = new S3PostSigner(getAmazonCredentialsProvider()).create(postParams);
         System.out.println(presignedPost);
         Map<String, String> conditions = presignedPost.getConditions();
         conditions.put("success_action_status", "299");

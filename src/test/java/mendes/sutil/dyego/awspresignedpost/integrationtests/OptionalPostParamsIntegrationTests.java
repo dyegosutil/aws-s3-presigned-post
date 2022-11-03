@@ -1,6 +1,6 @@
 package mendes.sutil.dyego.awspresignedpost.integrationtests;
 
-import mendes.sutil.dyego.awspresignedpost.NewPresignedPost;
+import mendes.sutil.dyego.awspresignedpost.PresignedPost;
 import mendes.sutil.dyego.awspresignedpost.PostParams;
 import mendes.sutil.dyego.awspresignedpost.S3PostSigner;
 import okhttp3.Request;
@@ -32,7 +32,7 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
             String testDescription,
             PostParams postParams
     ) {
-        NewPresignedPost presignedPost = new S3PostSigner(getAmazonCredentialsProvider()).createNew(postParams);
+        PresignedPost presignedPost = new S3PostSigner(getAmazonCredentialsProvider()).create(postParams);
         Request request = createRequestFromConditions(presignedPost.getConditions(), presignedPost.getUrl());
         boolean result = postFileIntoS3(request);
         assertThat(result).isTrue();
@@ -47,7 +47,7 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
             boolean expectedResult
     ) {
         // Arrange
-        NewPresignedPost presignedPost = new S3PostSigner(getAmazonCredentialsProvider()).createNew(postParams);
+        PresignedPost presignedPost = new S3PostSigner(getAmazonCredentialsProvider()).create(postParams);
         Map<String, String> conditions = presignedPost.getConditions();
         conditions.putAll(customizedUploadConditions);
         Request request = createRequestFromConditions(presignedPost.getConditions(), presignedPost.getUrl());

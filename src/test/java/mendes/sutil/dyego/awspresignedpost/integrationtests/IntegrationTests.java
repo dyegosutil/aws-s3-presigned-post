@@ -1,8 +1,6 @@
 package mendes.sutil.dyego.awspresignedpost.integrationtests;
 
 import mendes.sutil.dyego.awspresignedpost.PostParams;
-import mendes.sutil.dyego.awspresignedpost.PresignedPost;
-import mendes.sutil.dyego.awspresignedpost.S3PostSigner;
 import okhttp3.*;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
@@ -25,7 +23,6 @@ import java.util.Map;
 import java.util.Objects;
 
 import static mendes.sutil.dyego.awspresignedpost.domain.conditions.helper.KeyConditionHelper.withAnyKey;
-import static org.assertj.core.api.Assertions.assertThat;
 // TODO The IT should not have conditionals. Separate the tests in a way the null does not have to be passed for 200 cases.
 /**
  * TODO Check to use S3 local?
@@ -41,19 +38,6 @@ public class IntegrationTests {
 
     protected static final String BUCKET = System.getenv("AWS_BUCKET");
     protected static final String encryptionKey256bits = "PcI54Y7WIu8aU1fSoEN&34mS#$*S21%3";
-
-    // TODO possible remove
-    protected Map<String, String> fillFormData(PresignedPost presignedPost, Map<String, String> formDataParts) {
-        if (Objects.isNull(formDataParts)) {
-            formDataParts = new HashMap<>();
-            formDataParts.put(
-                    presignedPost.getKey().getKey(),
-                    presignedPost.getKey().getValue()
-            );
-            formDataParts.putAll(presignedPost.getConditions());
-        }
-        return formDataParts;
-    }
 
     /**
      * TODO check if this is really necessary, if it could be just done using not aws lib code
@@ -95,29 +79,6 @@ public class IntegrationTests {
             System.err.println(e); // TODO fix
             throw new IllegalStateException(e);
         }
-    }
-
-    private Request createRequest(PresignedPost presignedPost, Map<String, String> formDataParts) {
-        MultipartBody.Builder builder = new MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                // below are all the parameters that are required for the upload to be successful. Apart from file that has to be the last one
-                .addFormDataPart(presignedPost.getCredential().getKey(), presignedPost.getCredential().getValue())
-                .addFormDataPart(presignedPost.getXAmzSignature().getKey(), presignedPost.getXAmzSignature().getValue()) // TODO fix this
-                .addFormDataPart(presignedPost.getAlgorithm().getKey(), presignedPost.getAlgorithm().getValue())
-                .addFormDataPart(presignedPost.getDate().getKey(), presignedPost.getDate().getValue())
-                .addFormDataPart(presignedPost.getPolicy().getKey(), presignedPost.getPolicy().getValue());
-
-        // Parameters specific for the test
-        formDataParts.forEach(builder::addFormDataPart);
-
-        // file has to be the last parameter according to aws
-        builder.addFormDataPart("file", "test.txt", RequestBody.create("this is a test".getBytes(), MediaType.parse("text/plain")));
-
-        MultipartBody multipartBody = builder.build();
-
-        return new Request.Builder()
-                .url(presignedPost.getUrl())
-                .post(multipartBody).build();
     }
 
     private boolean checkSuccessAndPrintResponseIfError(Response response) {
@@ -185,23 +146,6 @@ public class IntegrationTests {
         formDataParts.put(key3, value3);
         formDataParts.put("key", "${filename}");
         return formDataParts;
-    }
-
-    protected boolean uploadToAwsCheckingSuccessActionStatus(
-            PresignedPost presignedPost, Map<String, String> formDataParts, int expectedResponseCode
-    ) {
-        Request request = createRequest(presignedPost, formDataParts);
-        return performCallAndVerifySuccessActionStatus(request, expectedResponseCode);
-    }
-
-    private boolean performCallAndVerifySuccessActionStatus(Request request, int expectedResponseCode) {
-        try (Response response = new OkHttpClient().newCall(request).execute()) {
-            assertThat(response.code()).isEqualTo(expectedResponseCode);
-            return checkSuccessAndPrintResponseIfError(response);
-        } catch (Exception e) {
-            System.err.println(e); // TODO fix
-            return false;
-        }
     }
 
     protected static AwsCredentialsProvider getAmazonCredentialsProviderWithAwsSessionCredentials() {

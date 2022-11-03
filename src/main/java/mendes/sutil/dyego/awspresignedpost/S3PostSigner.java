@@ -30,8 +30,18 @@ public class S3PostSigner { // TODO rename?
         );
     }
 
-    // TODO Rename
-    public NewPresignedPost createNew(PostParams postParams) {
+    /**
+     * Creates the Pre-Signed Post using the data provided in {@link  PostParams}
+     * First the policy is created and then its base64 value is used to generate the signature using the
+     * <a href="https://docs.aws.amazon.com/general/latest/gr/sigv4_signing.html">Aws Signature Version 4 specification</a>
+     * <br><br>
+     * This method performs several validations to prevent the generation of a faulty or invalid pre signed post
+     * TODO Add validations: start-with and with, required/dependent conditions
+     *
+     * @param postParams Contains the information to be used to generate the pre signed post
+     * @return The object containing all the necessary params to be used to upload a file using pre signed post
+     */
+    public PresignedPost create(PostParams postParams) {
         AmzDate amzDate = new AmzDate();
         Set<Condition> conditions = new HashSet<>(postParams.getConditions());
         addSessionTokenIfNeeded(conditions);
@@ -56,49 +66,10 @@ public class S3PostSigner { // TODO rename?
         String keyUploadValue = getKeyUploadValue(returnConditions);
         removeKeyFromConditions(returnConditions);
 
-        return new NewPresignedPost(
+        return new PresignedPost(
                 createUrl(bucket,region),
                 createConditionsMap(credentials,signature, amzDate, policyB64, keyUploadValue, returnConditions)
         );
-    }
-
-    // TODO rename to sign, or sign post??
-
-    /**
-     * Creates the Pre-Signed Post using the data provided in {@link  PostParams}
-     * First the policy is created and then its base64 value is used to generate the signature using the
-     * <a href="https://docs.aws.amazon.com/general/latest/gr/sigv4_signing.html">Aws Signature Version 4 specification</a>
-     * <br><br>
-     * This method performs several validations to prevent the generation of a faulty or invalid pre signed post
-     * TODO Add validations: start-with and with, required/dependent conditions
-     *
-     * @param postParams Contains the information to be used to generate the pre signed post
-     * @return The object containing all the necessary params to be used to upload a file using pre signed post
-     */
-    public PresignedPost create(PostParams postParams) {
-        NewPresignedPost newPresignedPost = createNew(postParams);
-        Map<String, String> conditions = newPresignedPost.getConditions();
-        
-        return new PresignedPost(
-                newPresignedPost.getUrl(),
-                conditions.get(CREDENTIAL.valueForApiCall),
-                conditions.get(DATE.valueForApiCall),
-                conditions.get("x-amz-signature"),
-                conditions.get(ConditionField.ALGORITHM.valueForApiCall),
-                conditions.get("policy"),
-                conditions.get(KEY.valueForApiCall),
-                removeCertainConditions(conditions)
-        );
-    }
-
-    private Map<String, String> removeCertainConditions(Map<String, String> conditions) {
-        conditions.remove(CREDENTIAL.valueForApiCall);
-        conditions.remove(DATE.valueForApiCall);
-        conditions.remove("x-amz-signature");
-        conditions.remove(ConditionField.ALGORITHM.valueForApiCall);
-        conditions.remove("policy");
-        conditions.remove(KEY.valueForApiCall);
-        return conditions;
     }
 
     private Map<String, String> createConditionsMap(

@@ -1,19 +1,16 @@
 package mendes.sutil.dyego.awspresignedpost.integrationtests;
 
-import mendes.sutil.dyego.awspresignedpost.NewPresignedPost;
+import mendes.sutil.dyego.awspresignedpost.PresignedPost;
 import mendes.sutil.dyego.awspresignedpost.PostParams;
 import mendes.sutil.dyego.awspresignedpost.S3PostSigner;
 import okhttp3.Request;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.provider.Arguments;
 
 import java.util.Map;
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.params.provider.Arguments.of;
 
 @Disabled
 public class SessionTokenIntegrationTests extends IntegrationTests {
@@ -23,7 +20,7 @@ public class SessionTokenIntegrationTests extends IntegrationTests {
     void arrangeThatAwsSessionCredentialIsUsed_actUploadingTheFile_assertSuccess() {
         // Arrange
         PostParams postParams = createDefaultPostParamBuilder().build();
-        NewPresignedPost presignedPost = new S3PostSigner(getAmazonCredentialsProviderWithAwsSessionCredentials()).createNew(postParams);
+        PresignedPost presignedPost = new S3PostSigner(getAmazonCredentialsProviderWithAwsSessionCredentials()).create(postParams);
         System.out.println(presignedPost); // TODO
 
         Map<String, String> conditions = presignedPost.getConditions();
@@ -41,7 +38,7 @@ public class SessionTokenIntegrationTests extends IntegrationTests {
     void arrangeThatWrongAwsSessionCredentialIsUsed_actUploadingTheFile_assertSuccess() {
         // Arrange
         PostParams postParams = createDefaultPostParamBuilder().build();
-        NewPresignedPost presignedPost = new S3PostSigner(getAmazonCredentialsProviderWithAwsSessionCredentials()).createNew(postParams);
+        PresignedPost presignedPost = new S3PostSigner(getAmazonCredentialsProviderWithAwsSessionCredentials()).create(postParams);
         System.out.println(presignedPost); // TODO
 
         Map<String, String> conditions = presignedPost.getConditions();

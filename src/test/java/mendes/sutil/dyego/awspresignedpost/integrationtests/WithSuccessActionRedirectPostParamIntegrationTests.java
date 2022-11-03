@@ -1,6 +1,6 @@
 package mendes.sutil.dyego.awspresignedpost.integrationtests;
 
-import mendes.sutil.dyego.awspresignedpost.NewPresignedPost;
+import mendes.sutil.dyego.awspresignedpost.PresignedPost;
 import mendes.sutil.dyego.awspresignedpost.PostParams;
 import mendes.sutil.dyego.awspresignedpost.S3PostSigner;
 import okhttp3.Request;
@@ -24,7 +24,7 @@ public class WithSuccessActionRedirectPostParamIntegrationTests extends Integrat
             String redirectAwsConditionName
     ) {
         // Act
-        NewPresignedPost presignedPost = new S3PostSigner(getAmazonCredentialsProvider()).createNew(postParams);
+        PresignedPost presignedPost = new S3PostSigner(getAmazonCredentialsProvider()).create(postParams);
         System.out.println(presignedPost); // TODO Check about logging for tests, would be nice to know why it failed in GIT
         // TODO watch out while printing this info in github since someone could use it as a attack. Env local and not local for printing?
 
@@ -51,7 +51,7 @@ public class WithSuccessActionRedirectPostParamIntegrationTests extends Integrat
             String redirectAwsConditionName
 //            Boolean expectedResult
     ) {
-        NewPresignedPost presignedPost = new S3PostSigner(getAmazonCredentialsProvider()).createNew(postParams);
+        PresignedPost presignedPost = new S3PostSigner(getAmazonCredentialsProvider()).create(postParams);
         System.out.println(presignedPost); // TODO Check about logging for tests, would be nice to know why it failed in GIT
         // TODO watch out while printing this info in github since someone could use it as a attack. Env local and not local for printing?
 
