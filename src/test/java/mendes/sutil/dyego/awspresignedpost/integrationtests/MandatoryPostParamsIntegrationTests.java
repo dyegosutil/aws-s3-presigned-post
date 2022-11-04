@@ -3,7 +3,9 @@ package mendes.sutil.dyego.awspresignedpost.integrationtests;
 import mendes.sutil.dyego.awspresignedpost.PresignedPost;
 import mendes.sutil.dyego.awspresignedpost.PostParams;
 import mendes.sutil.dyego.awspresignedpost.S3PostSigner;
+import mendes.sutil.dyego.awspresignedpost.domain.conditions.key.ExactKeyCondition;
 import mendes.sutil.dyego.awspresignedpost.domain.conditions.key.KeyCondition;
+import mendes.sutil.dyego.awspresignedpost.domain.conditions.key.KeyStartingWithCondition;
 import okhttp3.Request;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -66,14 +68,7 @@ public class MandatoryPostParamsIntegrationTests extends IntegrationTests {
             boolean expectedResult
     ) {
         // Arrange
-        PostParams postParams = PostParams
-                .builder(
-                        region,
-                        expirationDate,
-                        bucket,
-                        keyCondition
-                )
-                .build();
+        PostParams postParams = createPostParams(region,expirationDate, bucket, keyCondition);
         PresignedPost presignedPost = new S3PostSigner(getAmazonCredentialsProvider()).create(postParams);
         Map<String, String> conditions = presignedPost.getConditions();
         conditions.putAll(customizedUploadConditions);
@@ -85,6 +80,56 @@ public class MandatoryPostParamsIntegrationTests extends IntegrationTests {
 
         // Assert
         assertThat(result).isEqualTo(expectedResult);
+    }
+
+    private PostParams createPostParams(Region region, ZonedDateTime expirationDate, String bucket, KeyCondition keyCondition) {
+        if (keyCondition instanceof ExactKeyCondition) {
+           return createPostParamsWithExactKeyCondition(region, expirationDate, bucket, keyCondition);
+        }
+        if (keyCondition instanceof KeyStartingWithCondition) {
+            return createPostParamsWithKeyStartingWithCondition(region, expirationDate, bucket, keyCondition);
+        }
+        throw new IllegalArgumentException("Cannot create PostParams. Only ExactKeyCondition and KeyStartingWithCondition are supported");
+    }
+
+    private PostParams createPostParamsWithExactKeyCondition(
+            Region region,
+            ZonedDateTime expirationDate,
+            String bucket,
+            KeyCondition keyCondition
+    ) {
+        return PostParams
+                .builder(
+                        region,
+                        expirationDate,
+                        bucket,
+                        castToExactKeyCondition(keyCondition)
+                )
+                .build();
+    }
+
+    private PostParams createPostParamsWithKeyStartingWithCondition(
+            Region region,
+            ZonedDateTime expirationDate,
+            String bucket,
+            KeyCondition keyCondition
+    ) {
+        return PostParams
+                .builder(
+                        region,
+                        expirationDate,
+                        bucket,
+                        castToKeyStartingWithCondition(keyCondition)
+                )
+                .build();
+    }
+
+    private ExactKeyCondition castToExactKeyCondition(KeyCondition keyCondition) {
+        return (ExactKeyCondition) keyCondition;
+    }
+
+    private KeyStartingWithCondition castToKeyStartingWithCondition(KeyCondition keyCondition) {
+        return (KeyStartingWithCondition) keyCondition;
     }
 
     private static Stream<Arguments> getCustomizedUploadConditionsTestCases() {

@@ -1,7 +1,7 @@
 package mendes.sutil.dyego.awspresignedpost.domain.conditions.helper;
 
 import mendes.sutil.dyego.awspresignedpost.domain.conditions.key.ExactKeyCondition;
-import mendes.sutil.dyego.awspresignedpost.domain.conditions.key.KeyStartsWithCondition;
+import mendes.sutil.dyego.awspresignedpost.domain.conditions.key.KeyStartingWithCondition;
 import mendes.sutil.dyego.awspresignedpost.domain.conditions.key.KeyCondition;
 
 /**
@@ -28,16 +28,16 @@ public class KeyConditionHelper {
      * @return @link KeyStartsWithCondition}
      */
     public static KeyCondition withKeyStartingWith(String value) {
-        return new KeyStartsWithCondition(value);
+        return new KeyStartingWithCondition(value);
     }
 
     /**
      * Allow any key to be specified by the pre-signed post user.
      * If the value provided by the user for the param 'key' is ${filename}, the name of the file being uploaded will
      * be used.
-     * @return {@link KeyStartsWithCondition}
+     * @return {@link KeyStartingWithCondition}
      */
-    public static KeyStartsWithCondition withAnyKey() {
-        return new KeyStartsWithCondition("");
+    public static KeyStartingWithCondition withAnyKey() {
+        return new KeyStartingWithCondition("");
     }
 }
