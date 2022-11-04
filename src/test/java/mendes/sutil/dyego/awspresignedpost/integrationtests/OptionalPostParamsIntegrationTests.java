@@ -29,7 +29,7 @@ import static org.junit.jupiter.params.provider.Arguments.of;
 @Disabled
 public class OptionalPostParamsIntegrationTests extends IntegrationTests {
 
-    private static Logger LOGGER = LoggerFactory.getLogger(OptionalPostParamsIntegrationTests.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(OptionalPostParamsIntegrationTests.class);
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("optionalPostParamsTestCases")

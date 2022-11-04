@@ -63,11 +63,17 @@ public final class PostParams {
             Region region,
             ZonedDateTime expirationDate,
             String bucket,
+            // TODO CHECK ABOUT BAD POSSIBILITY OF CREATING THEIR OWN IMPL - solutions add two constructors!
             KeyCondition keyCondition
     ){
         // TODO Enforce UTC expirationDate? Test what happens if this is expired in another timezone and the lib creates the pre-signed in UTC
-        ;
-        return new Builder(region, new AmzExpirationDate(expirationDate), keyCondition, bucket);
+        Objects.requireNonNull(expirationDate, "Argument expirationDate must not be null");
+        return new Builder(
+                Objects.requireNonNull(region, "Argument region must not be null"),
+                new AmzExpirationDate(expirationDate),
+                Objects.requireNonNull(keyCondition, "Argument keyCondition must not be null"),
+                Objects.requireNonNull(bucket, "Argument bucket must not be null")
+        );
     }
 
     public static final class Builder {
@@ -108,6 +114,10 @@ public final class PostParams {
 
         private Builder(Region region, AmzExpirationDate amzExpirationDate, KeyCondition keyCondition, String bucket) {
             // TODO add validation for expiration date?
+            Objects.requireNonNull(region);
+            Objects.requireNonNull(amzExpirationDate);
+            Objects.requireNonNull(keyCondition);
+            Objects.requireNonNull(bucket);
             this.region = region;
             this.amzExpirationDate = amzExpirationDate;
             this.conditions.put(KEY, keyCondition);

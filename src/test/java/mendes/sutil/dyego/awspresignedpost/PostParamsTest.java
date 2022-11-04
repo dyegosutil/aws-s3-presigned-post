@@ -1,8 +1,10 @@
 package mendes.sutil.dyego.awspresignedpost;
 
 import mendes.sutil.dyego.awspresignedpost.domain.conditions.*;
+import mendes.sutil.dyego.awspresignedpost.domain.conditions.key.KeyCondition;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.ThrowableAssert;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -122,6 +124,80 @@ class PostParamsTest {
         assertThatThrownBy(prohibitedDoubleConditionCall)
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage(exceptionMessage);
+    }
+
+    @Test
+    void createBuilderTest() {
+        // Act
+        PostParams.Builder builder = PostParams
+                .builder(
+                        Region.AP_EAST_1,
+                        ZonedDateTime.now(),
+                        "testBucket",
+                        withAnyKey()
+                );
+
+        // Assert
+        assertThat(builder).isNotNull();
+    }
+
+    @ParameterizedTest(name = "Should assert that {0} is not null")
+    @MethodSource("createBuilderArgsNullTestCases")
+    void createBuilderArgsNullTest(
+            String argument,
+            Region region,
+            ZonedDateTime expirationDate,
+            String bucket,
+            KeyCondition keyCondition,
+            String errorMessage
+    ) {
+        assertThatThrownBy(() ->
+                PostParams.builder(
+                        region,
+                        expirationDate,
+                        bucket,
+                        keyCondition
+                )
+        )
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage(errorMessage);
+    }
+
+    private static Stream<Arguments> createBuilderArgsNullTestCases() {
+        return Stream.of(
+                of(
+                        "region",
+                        null,
+                        ZonedDateTime.now(),
+                        "testBucket",
+                        withAnyKey(),
+                        "Argument region must not be null"
+                ),
+                of(
+                        "expirationDate",
+                        Region.AP_EAST_1,
+                        null,
+                        "testBucket",
+                        withAnyKey(),
+                        "Argument expirationDate must not be null"
+                ),
+                of(
+                        "bucket",
+                        Region.AP_EAST_1,
+                        ZonedDateTime.now(),
+                        null,
+                        withAnyKey(),
+                        "Argument bucket must not be null"
+                ),
+                of(
+                        "bucket",
+                        Region.AP_EAST_1,
+                        ZonedDateTime.now(),
+                        "testBucket",
+                        null,
+                        "Argument keyCondition must not be null"
+                )
+        );
     }
 
     private static Stream<Arguments> shouldTestIfCheckConditionWasAddedTestCases() {
@@ -644,10 +720,6 @@ class PostParamsTest {
 
     private static String getExceptionMessage(ConditionField conditionField) {
         return String.format("Only one %s condition can be used", conditionField.name());
-    }
-
-    private static String getEncryptionExceptionMessage(ConditionField conditionField, ConditionField requiredConditionField) {
-        return String.format("The condition %s requires the condition %s to be present", conditionField, requiredConditionField);
     }
 
     private static PostParams.Builder createBuilder() {
