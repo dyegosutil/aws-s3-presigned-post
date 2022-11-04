@@ -1,7 +1,7 @@
 package mendes.sutil.dyego.awspresignedpost.integrationtests;
 
-import mendes.sutil.dyego.awspresignedpost.PresignedPost;
 import mendes.sutil.dyego.awspresignedpost.PostParams;
+import mendes.sutil.dyego.awspresignedpost.PresignedPost;
 import mendes.sutil.dyego.awspresignedpost.S3PostSigner;
 import okhttp3.Request;
 import org.junit.jupiter.api.Disabled;
@@ -27,8 +27,6 @@ public class WithSuccessActionRedirectPostParamIntegrationTests extends Integrat
     ) {
         // Act
         PresignedPost presignedPost = new S3PostSigner(getAmazonCredentialsProvider()).create(postParams);
-        System.out.println(presignedPost); // TODO Check about logging for tests, would be nice to know why it failed in GIT
-        // TODO watch out while printing this info in github since someone could use it as a attack. Env local and not local for printing?
 
         Map<String, String> conditions = presignedPost.getConditions();
         Request request = createRequestFromConditions(conditions, presignedPost.getUrl());
@@ -51,18 +49,17 @@ public class WithSuccessActionRedirectPostParamIntegrationTests extends Integrat
             PostParams postParams,
             Map<String, String> formDataParts,
             String redirectAwsConditionName
-//            Boolean expectedResult
     ) {
+        // Arrange
         PresignedPost presignedPost = new S3PostSigner(getAmazonCredentialsProvider()).create(postParams);
-        System.out.println(presignedPost); // TODO Check about logging for tests, would be nice to know why it failed in GIT
-        // TODO watch out while printing this info in github since someone could use it as a attack. Env local and not local for printing?
-
         Map<String, String> conditions = presignedPost.getConditions();
         conditions.putAll(formDataParts);
         Request request = createRequestFromConditions(conditions, presignedPost.getUrl());
 
         // Act
         String redirectInResponse = postFileIntoS3ReturningRedirect(request);
+
+        // Assert
         assertThat(redirectInResponse).isEqualTo(conditions.get(redirectAwsConditionName));
     }
 

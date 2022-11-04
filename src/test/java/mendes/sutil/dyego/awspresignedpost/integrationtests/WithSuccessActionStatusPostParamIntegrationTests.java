@@ -1,7 +1,7 @@
 package mendes.sutil.dyego.awspresignedpost.integrationtests;
 
-import mendes.sutil.dyego.awspresignedpost.PresignedPost;
 import mendes.sutil.dyego.awspresignedpost.PostParams;
+import mendes.sutil.dyego.awspresignedpost.PresignedPost;
 import mendes.sutil.dyego.awspresignedpost.S3PostSigner;
 import okhttp3.Request;
 import org.junit.jupiter.api.Disabled;
@@ -28,7 +28,6 @@ public class WithSuccessActionStatusPostParamIntegrationTests extends Integratio
     ) {
         // Arrange
         PresignedPost presignedPost = new S3PostSigner(getAmazonCredentialsProvider()).create(postParams);
-        System.out.println(presignedPost);
 
         Map<String, String> conditions = presignedPost.getConditions();
         Request request = createRequestFromConditions(conditions, presignedPost.getUrl());
@@ -47,7 +46,6 @@ public class WithSuccessActionStatusPostParamIntegrationTests extends Integratio
                 .withSuccessActionStatus(PostParams.Builder.SuccessActionStatus.OK)
                 .build();
         PresignedPost presignedPost = new S3PostSigner(getAmazonCredentialsProvider()).create(postParams);
-        System.out.println(presignedPost);
         Map<String, String> conditions = presignedPost.getConditions();
         conditions.put("success_action_status", "299");
         Request request = createRequestFromConditions(conditions, presignedPost.getUrl());

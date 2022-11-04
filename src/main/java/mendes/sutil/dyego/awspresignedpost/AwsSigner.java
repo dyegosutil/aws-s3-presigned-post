@@ -1,20 +1,19 @@
 package mendes.sutil.dyego.awspresignedpost;
 
+import mendes.sutil.dyego.awspresignedpost.domain.AmzDate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import software.amazon.awssdk.regions.Region;
+
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
-import java.util.Locale;
-
-import mendes.sutil.dyego.awspresignedpost.domain.AmzDate;
-import software.amazon.awssdk.auth.credentials.AwsCredentials;
-import software.amazon.awssdk.regions.Region;
 
 public final class AwsSigner{
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(AwsSigner.class);
     private static final char[] HEX_CHARS = "0123456789abcdef".toCharArray();
 
     static byte[] generateSigningKey(String secretKey, Region region, AmzDate xAmzDate) {
@@ -28,19 +27,13 @@ public final class AwsSigner{
         return signMac(dateRegionServiceKey, "aws4_request".getBytes(StandardCharsets.UTF_8));
     }
 
-    public static String buildCredentialField(AwsCredentials credentials, Region region, AmzDate amzDate) {
-        String accessKeyId = credentials.accessKeyId();
-        String regionId = region.id();
-        String date = amzDate.formatForCredentials();
-        return accessKeyId+"/"+date+"/"+regionId+"/s3/aws4_request";
-    }
-
     static byte[] signMac(byte[] key, byte[] data) {
         try {
             Mac mac = Mac.getInstance("HmacSHA256");
             mac.init(new SecretKeySpec(key, "HmacSHA256"));
             return mac.doFinal(data);
         } catch (NoSuchAlgorithmException | InvalidKeyException e) {
+            LOGGER.error("Error while signing Mac with algorithm HmacSHA256",e);
             throw new RuntimeException(e);
         }
     }

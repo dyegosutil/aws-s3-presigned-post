@@ -39,6 +39,10 @@ public final class PostParams {
             AmzExpirationDate amzExpirationDate,
             Map<ConditionField, Condition> conditions
     ){
+        Objects.requireNonNull(bucket);
+        Objects.requireNonNull(region);
+        Objects.requireNonNull(amzExpirationDate);
+        Objects.requireNonNull(conditions);
         this.amzExpirationDate = amzExpirationDate;
         this.bucket = bucket;
         this.region = region;
@@ -59,20 +63,24 @@ public final class PostParams {
             Region region,
             ZonedDateTime expirationDate,
             String bucket,
+            // TODO CHECK ABOUT BAD POSSIBILITY OF CREATING THEIR OWN IMPL - solutions add two constructors!
             KeyCondition keyCondition
     ){
         // TODO Enforce UTC expirationDate? Test what happens if this is expired in another timezone and the lib creates the pre-signed in UTC
-        ;
-        return new Builder(region, new AmzExpirationDate(expirationDate), keyCondition, bucket);
+        Objects.requireNonNull(expirationDate, "Argument expirationDate must not be null");
+        return new Builder(
+                Objects.requireNonNull(region, "Argument region must not be null"),
+                new AmzExpirationDate(expirationDate),
+                Objects.requireNonNull(keyCondition, "Argument keyCondition must not be null"),
+                Objects.requireNonNull(bucket, "Argument bucket must not be null")
+        );
     }
 
     public static final class Builder {
         private final Map<ConditionField, Condition> conditions = new HashMap<>();
         private final Set<Tag> tags = new HashSet<>();
-
         private final String bucket;
         private final Region region;
-
         private final AmzExpirationDate amzExpirationDate;
         private final Map<ConditionField,TreeSet<ConditionField>> dependentConditionFields;
 
@@ -106,6 +114,10 @@ public final class PostParams {
 
         private Builder(Region region, AmzExpirationDate amzExpirationDate, KeyCondition keyCondition, String bucket) {
             // TODO add validation for expiration date?
+            Objects.requireNonNull(region);
+            Objects.requireNonNull(amzExpirationDate);
+            Objects.requireNonNull(keyCondition);
+            Objects.requireNonNull(bucket);
             this.region = region;
             this.amzExpirationDate = amzExpirationDate;
             this.conditions.put(KEY, keyCondition);
@@ -201,9 +213,10 @@ public final class PostParams {
         }
 
         private Builder addIfUnique(Condition condition, String errorMessage) {
-            if (conditions.containsKey(condition.getConditionField()))
+            if (conditions.containsKey(condition.getConditionField())){
                 throw new IllegalArgumentException(errorMessage);
-            this.conditions.put(condition.getConditionField(), condition); // TODO Remove conditions and keep just the map?
+            }
+            this.conditions.put(condition.getConditionField(), condition);
             return this;
         }
 
@@ -211,8 +224,9 @@ public final class PostParams {
                 ConditionField conditionField,
                 String errorMessage
         ) {
-            if (conditions.containsKey(conditionField))
+            if (conditions.containsKey(conditionField)){
                 throw new IllegalArgumentException(errorMessage);
+            }
         }
 
         private Builder assertUniquenessAndAddTagging(String value) {
@@ -331,10 +345,6 @@ public final class PostParams {
 
             CannedAcl(String cannedAcl) {
                 this.cannedAcl = cannedAcl;
-            }
-
-            public String getCannedAcl() {
-                return this.cannedAcl;
             }
         }
 

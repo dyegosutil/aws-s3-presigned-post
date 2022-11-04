@@ -2,6 +2,9 @@ package mendes.sutil.dyego.awspresignedpost.domain.response;
 
 import java.util.AbstractMap;
 
+/**
+ * TODO change to map
+ */
 public class FreeTextPresignedPost {
     private final Pair xAmzSignature; // TODO Find a patter for all of them, putting the x in front or not
     private final Pair policy;
@@ -31,18 +34,6 @@ public class FreeTextPresignedPost {
         public String toString() {
             return "key='"+getKey()+"' value='"+getValue()+"'}";
         }
-    }
-
-    /**
-     * TODO watch out to not log PII info or sensitive info
-     * @return
-     */
-    @Override
-    public String toString() {
-        return "PresignedPost2{" +
-                "\nxAmzSignature=" + xAmzSignature +
-                "\n, policy=" + policy +
-                '}';
     }
 
     public Pair getxAmzSignature() {

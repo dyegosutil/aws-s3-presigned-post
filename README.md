@@ -182,8 +182,8 @@ try to remove aws dependencies?
 HAVE A look in well know libraries souce code to see what they are using
 lombok? @nonull? etc
 
-Where I stopped:
 
-- I fixed one test in Mandatory IT, using the info from PreSignedPost object
-- Now other tests should be fixed, as well as possibly adding asserts that evertyting is comming
-- And map should be returned for the caller
+
+- Test logging in ECS
+- Add id to pre signed post generation to get meaningfull loggings, userId, etc
+- Have one more look in the logs, Input validation failures e.g. protocol violations, unacceptable encodings, invalid parameter names and values
