@@ -4,7 +4,9 @@ import lombok.Getter;
 import mendes.sutil.dyego.awspresignedpost.domain.AmzExpirationDate;
 import mendes.sutil.dyego.awspresignedpost.domain.conditions.*;
 import mendes.sutil.dyego.awspresignedpost.domain.conditions.helper.KeyConditionHelper;
+import mendes.sutil.dyego.awspresignedpost.domain.conditions.key.ExactKeyCondition;
 import mendes.sutil.dyego.awspresignedpost.domain.conditions.key.KeyCondition;
+import mendes.sutil.dyego.awspresignedpost.domain.conditions.key.KeyStartingWithCondition;
 import mendes.sutil.dyego.awspresignedpost.domain.tagging.Tag;
 import mendes.sutil.dyego.awspresignedpost.domain.tagging.Tagging;
 import software.amazon.awssdk.regions.Region;
@@ -55,7 +57,8 @@ public final class PostParams {
      *
      * @param region Region to be used in the signature
      * @param expirationDate Date until when the pre-signed post can be used.
-     * @param keyCondition TODO You can use the ConditionHelper to provide the values
+     * @param exactKeyCondition Specifies which is the exact value that should be used to perform the upload. For
+     *                          convenience, use the {@link KeyConditionHelper#withKey(String)} to build the condition.
      * @param bucket The bucket when the file should be uploaded to.
      * @return A PostParams builder which allows more fine-grained conditions to be added
      */
@@ -63,15 +66,42 @@ public final class PostParams {
             Region region,
             ZonedDateTime expirationDate,
             String bucket,
-            // TODO CHECK ABOUT BAD POSSIBILITY OF CREATING THEIR OWN IMPL - solutions add two constructors!
-            KeyCondition keyCondition
+            ExactKeyCondition exactKeyCondition
     ){
         // TODO Enforce UTC expirationDate? Test what happens if this is expired in another timezone and the lib creates the pre-signed in UTC
         Objects.requireNonNull(expirationDate, "Argument expirationDate must not be null");
         return new Builder(
                 Objects.requireNonNull(region, "Argument region must not be null"),
                 new AmzExpirationDate(expirationDate),
-                Objects.requireNonNull(keyCondition, "Argument keyCondition must not be null"),
+                Objects.requireNonNull(exactKeyCondition, "Argument keyCondition must not be null"),
+                Objects.requireNonNull(bucket, "Argument bucket must not be null")
+        );
+    }
+
+    /**
+     * Accepts all the minimum necessary parameters to generate a pre-signed valid pre-signed POST.
+     * // TODO add additional information because this method is too cool
+     *
+     * @param region Region to be used in the signature
+     * @param expirationDate Date until when the pre-signed post can be used.
+     * @param keyStartingWithCondition Specifies which is the exact value that should be used to perform the upload. For
+     *                          convenience, use the {@link KeyConditionHelper#withKeyStartingWith(String)}
+     *                          {@link KeyConditionHelper#withKeyStartingWith(String)} or to build the condition.
+     * @param bucket The bucket when the file should be uploaded to.
+     * @return A PostParams builder which allows more fine-grained conditions to be added
+     */
+    public static Builder builder(
+            Region region,
+            ZonedDateTime expirationDate,
+            String bucket,
+            KeyStartingWithCondition keyStartingWithCondition
+    ){
+        // TODO Enforce UTC expirationDate? Test what happens if this is expired in another timezone and the lib creates the pre-signed in UTC
+        Objects.requireNonNull(expirationDate, "Argument expirationDate must not be null");
+        return new Builder(
+                Objects.requireNonNull(region, "Argument region must not be null"),
+                new AmzExpirationDate(expirationDate),
+                Objects.requireNonNull(keyStartingWithCondition, "Argument keyCondition must not be null"),
                 Objects.requireNonNull(bucket, "Argument bucket must not be null")
         );
     }

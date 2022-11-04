@@ -1,7 +1,7 @@
 package domain.conditions;
 
 import mendes.sutil.dyego.awspresignedpost.domain.conditions.key.ExactKeyCondition;
-import mendes.sutil.dyego.awspresignedpost.domain.conditions.key.KeyStartsWithCondition;
+import mendes.sutil.dyego.awspresignedpost.domain.conditions.key.KeyStartingWithCondition;
 import mendes.sutil.dyego.awspresignedpost.domain.conditions.key.KeyCondition;
 import org.junit.jupiter.api.Test;
 
@@ -32,7 +32,7 @@ class KeyConditionHelperTest {
         KeyCondition startWithCondition = withKeyStartingWith(value);
 
         // Assert
-        assertThat(startWithCondition).isInstanceOf(KeyStartsWithCondition.class);
+        assertThat(startWithCondition).isInstanceOf(KeyStartingWithCondition.class);
         assertThat(startWithCondition.getValue()).isEqualTo(value);
     }
 
@@ -42,7 +42,7 @@ class KeyConditionHelperTest {
         KeyCondition startWithCondition = withAnyKey();
 
         // Assert
-        assertThat(startWithCondition).isInstanceOf(KeyStartsWithCondition.class);
+        assertThat(startWithCondition).isInstanceOf(KeyStartingWithCondition.class);
         assertThat(startWithCondition.getValue()).isEqualTo("");
     }
 }

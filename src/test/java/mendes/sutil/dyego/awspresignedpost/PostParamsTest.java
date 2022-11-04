@@ -1,10 +1,10 @@
 package mendes.sutil.dyego.awspresignedpost;
 
 import mendes.sutil.dyego.awspresignedpost.domain.conditions.*;
-import mendes.sutil.dyego.awspresignedpost.domain.conditions.key.KeyCondition;
+import mendes.sutil.dyego.awspresignedpost.domain.conditions.key.ExactKeyCondition;
+import mendes.sutil.dyego.awspresignedpost.domain.conditions.key.KeyStartingWithCondition;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.ThrowableAssert;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -24,6 +24,7 @@ import static mendes.sutil.dyego.awspresignedpost.domain.conditions.ConditionFie
 import static mendes.sutil.dyego.awspresignedpost.domain.conditions.MatchCondition.Operator.EQ;
 import static mendes.sutil.dyego.awspresignedpost.domain.conditions.MatchCondition.Operator.STARTS_WITH;
 import static mendes.sutil.dyego.awspresignedpost.domain.conditions.helper.KeyConditionHelper.withAnyKey;
+import static mendes.sutil.dyego.awspresignedpost.domain.conditions.helper.KeyConditionHelper.withKey;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.params.provider.Arguments.of;
@@ -142,13 +143,13 @@ class PostParamsTest {
     }
 
     @ParameterizedTest(name = "Should assert that {0} is not null")
-    @MethodSource("createBuilderArgsNullTestCases")
-    void createBuilderArgsNullTest(
+    @MethodSource("createBuilderWithNullArgKeyStartingWithConditionTestCases")
+    void createBuilderNullArgKeyStartingWithConditionTest(
             String argument,
             Region region,
             ZonedDateTime expirationDate,
             String bucket,
-            KeyCondition keyCondition,
+            KeyStartingWithCondition keyCondition,
             String errorMessage
     ) {
         assertThatThrownBy(() ->
@@ -163,7 +164,66 @@ class PostParamsTest {
                 .hasMessage(errorMessage);
     }
 
-    private static Stream<Arguments> createBuilderArgsNullTestCases() {
+    @ParameterizedTest(name = "Should assert that {0} is not null")
+    @MethodSource("createBuilderWithNullArgExactKeyConditionTestCases")
+    void createBuilderNullArgExactKeyConditionTest(
+            String argument,
+            Region region,
+            ZonedDateTime expirationDate,
+            String bucket,
+            ExactKeyCondition keyCondition,
+            String errorMessage
+    ) {
+        assertThatThrownBy(() ->
+                PostParams.builder(
+                        region,
+                        expirationDate,
+                        bucket,
+                        keyCondition
+                )
+        )
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage(errorMessage);
+    }
+
+    private static Stream<Arguments> createBuilderWithNullArgExactKeyConditionTestCases() {
+        return Stream.of(
+                of(
+                        "region",
+                        null,
+                        ZonedDateTime.now(),
+                        "testBucket",
+                        withKey("test"),
+                        "Argument region must not be null"
+                ),
+                of(
+                        "expirationDate",
+                        Region.AP_EAST_1,
+                        null,
+                        "testBucket",
+                        withKey("test"),
+                        "Argument expirationDate must not be null"
+                ),
+                of(
+                        "bucket",
+                        Region.AP_EAST_1,
+                        ZonedDateTime.now(),
+                        null,
+                        withKey("test"),
+                        "Argument bucket must not be null"
+                ),
+                of(
+                        "bucket",
+                        Region.AP_EAST_1,
+                        ZonedDateTime.now(),
+                        "testBucket",
+                        null,
+                        "Argument keyCondition must not be null"
+                )
+        );
+    }
+
+    private static Stream<Arguments> createBuilderWithNullArgKeyStartingWithConditionTestCases() {
         return Stream.of(
                 of(
                         "region",
