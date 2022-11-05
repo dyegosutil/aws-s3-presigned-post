@@ -1,5 +1,6 @@
 package mendes.sutil.dyego.awspresignedpost;
 
+import mendes.sutil.dyego.awspresignedpost.domain.AmzExpirationDate;
 import mendes.sutil.dyego.awspresignedpost.domain.conditions.*;
 import mendes.sutil.dyego.awspresignedpost.domain.conditions.key.ExactKeyCondition;
 import mendes.sutil.dyego.awspresignedpost.domain.conditions.key.KeyStartingWithCondition;
@@ -20,6 +21,7 @@ import static mendes.sutil.dyego.awspresignedpost.PostParams.Builder.CannedAcl.P
 import static mendes.sutil.dyego.awspresignedpost.PostParams.Builder.EncryptionAlgorithm.AWS_KMS;
 import static mendes.sutil.dyego.awspresignedpost.PostParams.Builder.StorageClass.STANDARD;
 import static mendes.sutil.dyego.awspresignedpost.PostParams.Builder.SuccessActionStatus;
+import static mendes.sutil.dyego.awspresignedpost.TestUtils.EXPIRATION_DATE;
 import static mendes.sutil.dyego.awspresignedpost.domain.conditions.ConditionField.*;
 import static mendes.sutil.dyego.awspresignedpost.domain.conditions.MatchCondition.Operator.EQ;
 import static mendes.sutil.dyego.awspresignedpost.domain.conditions.MatchCondition.Operator.STARTS_WITH;
@@ -142,6 +144,26 @@ class PostParamsTest {
         assertThat(builder).isNotNull();
     }
 
+    @Test
+    void createPostParamTest() {
+        AmzExpirationDate amzExpirationDate = new AmzExpirationDate(EXPIRATION_DATE);
+        // Act
+        PostParams postParams = PostParams
+                .builder(
+                        Region.AP_EAST_1,
+                        EXPIRATION_DATE,
+                        "testBucket",
+                        withAnyKey()
+                ).build();
+
+
+        // Assert
+        assertThat(postParams.getRegion()).isEqualTo(Region.AP_EAST_1);
+        assertThat(postParams.getBucket()).isEqualTo("testBucket");
+        AmzExpirationDate amzExpirationDate1 = postParams.getAmzExpirationDate();
+        assertThat(postParams.getAmzExpirationDate()).isEqualTo(amzExpirationDate);
+    }
+
     @ParameterizedTest(name = "Should assert that {0} is not null")
     @MethodSource("createBuilderWithNullArgKeyStartingWithConditionTestCases")
     void createBuilderNullArgKeyStartingWithConditionTest(
@@ -184,6 +206,23 @@ class PostParamsTest {
         )
                 .isInstanceOf(NullPointerException.class)
                 .hasMessage(errorMessage);
+    }
+
+    @Test
+    void contentLengthRangeConditionTest() {
+        // Act
+        PostParams postParams = PostParams
+                .builder(
+                        Region.AP_EAST_1,
+                        EXPIRATION_DATE,
+                        "testBucket",
+                        withAnyKey()
+                )
+                .withContentLengthRange(100,200)
+                .build();
+
+        // Assert
+        assertThat(postParams.getConditions()).containsValue(new ContentLengthRangeCondition(100,200));
     }
 
     private static Stream<Arguments> createBuilderWithNullArgExactKeyConditionTestCases() {
