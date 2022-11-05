@@ -182,6 +182,8 @@ try to remove aws dependencies?
 HAVE A look in well know libraries souce code to see what they are using
 lombok? @nonull? etc
 
+- Should I think about put as well? or naming the library with a more generic name?
+
 
 
 - Test logging in ECS

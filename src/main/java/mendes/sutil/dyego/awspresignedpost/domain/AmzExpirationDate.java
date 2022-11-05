@@ -4,6 +4,7 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
+import java.util.Objects;
 
 /**
  * Represents the expiration date time used in the policy to limit until when the pre-signed post can be used.
@@ -22,5 +23,18 @@ public class AmzExpirationDate {
 
     public String formatForPolicy() {
         return ISO8601_FORMATTER.format(expirationDate);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AmzExpirationDate that = (AmzExpirationDate) o;
+        return Objects.equals(expirationDate, that.expirationDate);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(expirationDate);
     }
 }
