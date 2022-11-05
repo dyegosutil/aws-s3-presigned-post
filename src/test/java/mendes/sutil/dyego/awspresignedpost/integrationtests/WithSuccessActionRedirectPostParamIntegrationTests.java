@@ -1,7 +1,7 @@
 package mendes.sutil.dyego.awspresignedpost.integrationtests;
 
-import mendes.sutil.dyego.awspresignedpost.PostParams;
-import mendes.sutil.dyego.awspresignedpost.PresignedPost;
+import mendes.sutil.dyego.awspresignedpost.postparams.PostParams;
+import mendes.sutil.dyego.awspresignedpost.result.PresignedPost;
 import mendes.sutil.dyego.awspresignedpost.S3PostSigner;
 import okhttp3.Request;
 import org.junit.jupiter.api.Disabled;

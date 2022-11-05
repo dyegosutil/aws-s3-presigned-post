@@ -1,4 +1,4 @@
-package mendes.sutil.dyego.awspresignedpost.domain;
+package mendes.sutil.dyego.awspresignedpost;
 
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;

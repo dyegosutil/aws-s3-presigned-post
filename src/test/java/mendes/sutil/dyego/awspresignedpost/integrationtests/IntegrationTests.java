@@ -1,6 +1,6 @@
 package mendes.sutil.dyego.awspresignedpost.integrationtests;
 
-import mendes.sutil.dyego.awspresignedpost.PostParams;
+import mendes.sutil.dyego.awspresignedpost.postparams.PostParams;
 import okhttp3.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import static mendes.sutil.dyego.awspresignedpost.TestUtils.EXPIRATION_DATE;
-import static mendes.sutil.dyego.awspresignedpost.domain.conditions.helper.KeyConditionHelper.withAnyKey;
+import static mendes.sutil.dyego.awspresignedpost.conditions.helper.KeyConditionHelper.withAnyKey;
 
 /**
  * TODO Check to use S3 local?

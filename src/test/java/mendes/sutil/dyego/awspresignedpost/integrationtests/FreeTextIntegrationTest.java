@@ -1,8 +1,8 @@
 package mendes.sutil.dyego.awspresignedpost.integrationtests;
 
-import mendes.sutil.dyego.awspresignedpost.FreeTextPostParams;
+import mendes.sutil.dyego.awspresignedpost.postparams.FreeTextPostParams;
 import mendes.sutil.dyego.awspresignedpost.S3PostSigner;
-import mendes.sutil.dyego.awspresignedpost.domain.response.FreeTextPresignedPost;
+import mendes.sutil.dyego.awspresignedpost.result.FreeTextPresignedPost;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.Request;

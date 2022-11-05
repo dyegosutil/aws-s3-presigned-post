@@ -1,4 +1,6 @@
-package mendes.sutil.dyego.awspresignedpost.domain.conditions.key;
+package mendes.sutil.dyego.awspresignedpost.conditions.key;
+
+import mendes.sutil.dyego.awspresignedpost.conditions.MatchCondition;
 
 /**
  * Represents the condition on which it can be chosen how the key should start
@@ -6,6 +8,6 @@ package mendes.sutil.dyego.awspresignedpost.domain.conditions.key;
 public class KeyStartingWithCondition extends KeyCondition {
 
     public KeyStartingWithCondition(String keyStartWithValue) {
-        super(Operator.STARTS_WITH, keyStartWithValue);
+        super(MatchCondition.Operator.STARTS_WITH, keyStartWithValue);
     }
 }

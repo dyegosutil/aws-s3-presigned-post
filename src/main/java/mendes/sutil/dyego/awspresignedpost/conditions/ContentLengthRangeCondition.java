@@ -1,4 +1,4 @@
-package mendes.sutil.dyego.awspresignedpost.domain.conditions;
+package mendes.sutil.dyego.awspresignedpost.conditions;
 
 /**
  * Used to specify minimum and maximum size condition to accept the upload of a file

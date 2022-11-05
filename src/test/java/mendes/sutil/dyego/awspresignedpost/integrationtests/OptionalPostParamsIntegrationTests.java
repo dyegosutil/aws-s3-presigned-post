@@ -1,7 +1,7 @@
 package mendes.sutil.dyego.awspresignedpost.integrationtests;
 
-import mendes.sutil.dyego.awspresignedpost.PresignedPost;
-import mendes.sutil.dyego.awspresignedpost.PostParams;
+import mendes.sutil.dyego.awspresignedpost.result.PresignedPost;
+import mendes.sutil.dyego.awspresignedpost.postparams.PostParams;
 import mendes.sutil.dyego.awspresignedpost.S3PostSigner;
 import okhttp3.Request;
 import org.junit.jupiter.api.Disabled;
@@ -21,8 +21,8 @@ import java.util.Base64;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import static mendes.sutil.dyego.awspresignedpost.PostParams.Builder.CannedAcl.PRIVATE;
-import static mendes.sutil.dyego.awspresignedpost.PostParams.Builder.StorageClass.STANDARD;
+import static mendes.sutil.dyego.awspresignedpost.postparams.PostParams.Builder.CannedAcl.PRIVATE;
+import static mendes.sutil.dyego.awspresignedpost.postparams.PostParams.Builder.StorageClass.STANDARD;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.params.provider.Arguments.of;
 

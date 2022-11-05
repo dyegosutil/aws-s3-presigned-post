@@ -1,11 +1,11 @@
 package domain.conditions;
 
-import mendes.sutil.dyego.awspresignedpost.domain.conditions.key.ExactKeyCondition;
-import mendes.sutil.dyego.awspresignedpost.domain.conditions.key.KeyStartingWithCondition;
-import mendes.sutil.dyego.awspresignedpost.domain.conditions.key.KeyCondition;
+import mendes.sutil.dyego.awspresignedpost.conditions.key.ExactKeyCondition;
+import mendes.sutil.dyego.awspresignedpost.conditions.key.KeyStartingWithCondition;
+import mendes.sutil.dyego.awspresignedpost.conditions.key.KeyCondition;
 import org.junit.jupiter.api.Test;
 
-import static mendes.sutil.dyego.awspresignedpost.domain.conditions.helper.KeyConditionHelper.*;
+import static mendes.sutil.dyego.awspresignedpost.conditions.helper.KeyConditionHelper.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class KeyConditionHelperTest {

@@ -1,4 +1,4 @@
-package mendes.sutil.dyego.awspresignedpost.domain.conditions;
+package mendes.sutil.dyego.awspresignedpost.conditions;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -6,8 +6,8 @@ import org.junit.jupiter.api.Test;
 import java.util.HashMap;
 import java.util.Map;
 
-import static mendes.sutil.dyego.awspresignedpost.domain.conditions.MatchCondition.Operator.EQ;
-import static mendes.sutil.dyego.awspresignedpost.domain.conditions.MatchCondition.Operator.STARTS_WITH;
+import static mendes.sutil.dyego.awspresignedpost.conditions.MatchCondition.Operator.EQ;
+import static mendes.sutil.dyego.awspresignedpost.conditions.MatchCondition.Operator.STARTS_WITH;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class ConditionTest {

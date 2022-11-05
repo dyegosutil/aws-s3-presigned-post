@@ -1,6 +1,6 @@
 package domain.conditions;
 
-import mendes.sutil.dyego.awspresignedpost.domain.conditions.key.ExactKeyCondition;
+import mendes.sutil.dyego.awspresignedpost.conditions.key.ExactKeyCondition;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

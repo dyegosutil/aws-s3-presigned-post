@@ -1,22 +1,22 @@
-package mendes.sutil.dyego.awspresignedpost;
+package mendes.sutil.dyego.awspresignedpost.postparams;
 
 import lombok.Getter;
-import mendes.sutil.dyego.awspresignedpost.domain.AmzExpirationDate;
-import mendes.sutil.dyego.awspresignedpost.domain.conditions.*;
-import mendes.sutil.dyego.awspresignedpost.domain.conditions.helper.KeyConditionHelper;
-import mendes.sutil.dyego.awspresignedpost.domain.conditions.key.ExactKeyCondition;
-import mendes.sutil.dyego.awspresignedpost.domain.conditions.key.KeyCondition;
-import mendes.sutil.dyego.awspresignedpost.domain.conditions.key.KeyStartingWithCondition;
-import mendes.sutil.dyego.awspresignedpost.domain.tagging.Tag;
-import mendes.sutil.dyego.awspresignedpost.domain.tagging.Tagging;
+import mendes.sutil.dyego.awspresignedpost.AmzExpirationDate;
+import mendes.sutil.dyego.awspresignedpost.conditions.*;
+import mendes.sutil.dyego.awspresignedpost.conditions.helper.KeyConditionHelper;
+import mendes.sutil.dyego.awspresignedpost.conditions.key.ExactKeyCondition;
+import mendes.sutil.dyego.awspresignedpost.conditions.key.KeyCondition;
+import mendes.sutil.dyego.awspresignedpost.conditions.key.KeyStartingWithCondition;
+import mendes.sutil.dyego.awspresignedpost.tagging.Tag;
+import mendes.sutil.dyego.awspresignedpost.tagging.Tagging;
 import software.amazon.awssdk.regions.Region;
 
 import java.time.ZonedDateTime;
 import java.util.*;
 
-import static mendes.sutil.dyego.awspresignedpost.domain.conditions.ConditionField.*;
-import static mendes.sutil.dyego.awspresignedpost.domain.conditions.MatchCondition.Operator.EQ;
-import static mendes.sutil.dyego.awspresignedpost.domain.conditions.MatchCondition.Operator.STARTS_WITH;
+import static mendes.sutil.dyego.awspresignedpost.conditions.ConditionField.*;
+import static mendes.sutil.dyego.awspresignedpost.conditions.MatchCondition.Operator.EQ;
+import static mendes.sutil.dyego.awspresignedpost.conditions.MatchCondition.Operator.STARTS_WITH;
 
 /**
  * A pre-signed POST request that can be executed at a later time without requiring additional signing or
