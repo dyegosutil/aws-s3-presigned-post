@@ -27,7 +27,7 @@ import static mendes.sutil.dyego.awspresignedpost.postparams.PostParams.Builder.
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.params.provider.Arguments.of;
 
-@Disabled
+//@Disabled
 public class OptionalPostParamsIntegrationTests extends IntegrationTests {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OptionalPostParamsIntegrationTests.class);

@@ -12,11 +12,12 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Collections;
+import java.util.Locale;
 
 import static mendes.sutil.dyego.awspresignedpost.conditions.helper.KeyConditionHelper.withAnyKey;
-import static mendes.sutil.dyego.awspresignedpost.conditions.helper.KeyConditionHelper.withKey;
 
 public class TestUtils {
 
@@ -59,15 +60,6 @@ public class TestUtils {
         ).build();
     }
 
-    public static PostParams createPostParamsWithExactKey() {
-        return PostParams.builder(
-                Region.AP_EAST_1,
-                EXPIRATION_DATE,
-                "myBucket",
-                withKey("test.txt")
-        ).build();
-    }
-
     // todo not a working exmaple, see if a working example is needed here
     public static FreeTextPostParams createFreeTextPostParams() {
         return new FreeTextPostParams(
@@ -76,5 +68,17 @@ public class TestUtils {
                 ZonedDateTime.now(),
                 Collections.singleton(new String[]{"eq", "$bucket", "myBucket"})
         );
+    }
+
+    public static DateTimeFormatter getAmzDateFormatter() {
+        return DateTimeFormatter
+                .ofPattern("yyyyMMdd'T'HHmmss'Z'", Locale.ENGLISH)
+                .withZone(ZoneOffset.UTC);
+    }
+
+    public static DateTimeFormatter getYyyyMmDdDateFormatter() {
+        return DateTimeFormatter
+                .ofPattern("yyyyMMdd", Locale.ENGLISH)
+                .withZone(ZoneOffset.UTC);
     }
 }

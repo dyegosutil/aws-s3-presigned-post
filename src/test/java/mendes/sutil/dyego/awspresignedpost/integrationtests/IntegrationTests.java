@@ -4,10 +4,6 @@ import mendes.sutil.dyego.awspresignedpost.postparams.PostParams;
 import okhttp3.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
-import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
-import software.amazon.awssdk.auth.credentials.AwsSessionCredentials;
-import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 
 import java.io.IOException;
@@ -34,8 +30,8 @@ import static mendes.sutil.dyego.awspresignedpost.conditions.helper.KeyCondition
 public class IntegrationTests {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(IntegrationTests.class);
+    public static final Region REGION = Region.of(System.getenv("AWS_REGION"));
 
-    protected static final Region REGION = Region.of(System.getenv("AWS_REGION"));
     protected static final ZonedDateTime EXPIRATION_DATE = Instant.now(Clock.systemUTC()) // TODO check if clock should be a parameter, check documentation to see how expiration time should be received, check what would happen if different zoneids are used for expiration aand for date in the policy
             .plus(1, ChronoUnit.MINUTES)
             .atZone(ZoneOffset.UTC);
