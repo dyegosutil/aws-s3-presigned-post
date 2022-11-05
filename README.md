@@ -1,3 +1,5 @@
+![example workflow](https://github.com/github/docs/actions/workflows/main.yml/badge.svg)
+![sfexample workflow](https://github.com/dyegosutil/aws-s3-presigned-post/actions/workflows/github-actions-demo.yml/badge.svg)
 # Aws S3 Presigned Post
 
 Generating S3 post data for uploading files into public access s3 buckets is not included in this library since it is pretty straight forward. 
