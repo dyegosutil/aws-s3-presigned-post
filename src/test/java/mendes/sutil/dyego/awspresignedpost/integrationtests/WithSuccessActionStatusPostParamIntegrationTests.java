@@ -13,6 +13,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import static mendes.sutil.dyego.awspresignedpost.TestUtils.getAmazonCredentialsProvider;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.params.provider.Arguments.of;
 
@@ -27,7 +28,7 @@ public class WithSuccessActionStatusPostParamIntegrationTests extends Integratio
             int expectedResponseCode
     ) {
         // Arrange
-        PresignedPost presignedPost = new S3PostSigner(getAmazonCredentialsProvider()).create(postParams);
+        PresignedPost presignedPost = S3PostSigner.create(postParams, getAmazonCredentialsProvider());
 
         Map<String, String> conditions = presignedPost.getConditions();
         Request request = createRequestFromConditions(conditions, presignedPost.getUrl());
@@ -45,7 +46,7 @@ public class WithSuccessActionStatusPostParamIntegrationTests extends Integratio
         PostParams postParams = createDefaultPostParamBuilder()
                 .withSuccessActionStatus(PostParams.Builder.SuccessActionStatus.OK)
                 .build();
-        PresignedPost presignedPost = new S3PostSigner(getAmazonCredentialsProvider()).create(postParams);
+        PresignedPost presignedPost = S3PostSigner.create(postParams, getAmazonCredentialsProvider());
         Map<String, String> conditions = presignedPost.getConditions();
         conditions.put("success_action_status", "299");
         Request request = createRequestFromConditions(conditions, presignedPost.getUrl());

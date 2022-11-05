@@ -1,11 +1,11 @@
 package mendes.sutil.dyego.awspresignedpost.integrationtests;
 
-import mendes.sutil.dyego.awspresignedpost.result.PresignedPost;
-import mendes.sutil.dyego.awspresignedpost.postparams.PostParams;
 import mendes.sutil.dyego.awspresignedpost.S3PostSigner;
 import mendes.sutil.dyego.awspresignedpost.conditions.key.ExactKeyCondition;
 import mendes.sutil.dyego.awspresignedpost.conditions.key.KeyCondition;
 import mendes.sutil.dyego.awspresignedpost.conditions.key.KeyStartingWithCondition;
+import mendes.sutil.dyego.awspresignedpost.postparams.PostParams;
+import mendes.sutil.dyego.awspresignedpost.result.PresignedPost;
 import okhttp3.Request;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -22,7 +22,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import static mendes.sutil.dyego.awspresignedpost.TestUtils.EXPIRATION_DATE;
+import static mendes.sutil.dyego.awspresignedpost.TestUtils.getAmazonCredentialsProvider;
 import static mendes.sutil.dyego.awspresignedpost.conditions.helper.KeyConditionHelper.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.params.provider.Arguments.of;
@@ -41,7 +41,7 @@ public class MandatoryPostParamsIntegrationTests extends IntegrationTests {
                         withKey("test.txt")
                 )
                 .build();
-        PresignedPost presignedPost = new S3PostSigner(getAmazonCredentialsProvider()).create(postParams);
+        PresignedPost presignedPost = S3PostSigner.create(postParams, getAmazonCredentialsProvider());
         Map<String, String> conditions = presignedPost.getConditions();
         Request request = createRequestFromConditions(conditions, presignedPost.getUrl());
 
@@ -69,8 +69,8 @@ public class MandatoryPostParamsIntegrationTests extends IntegrationTests {
             boolean expectedResult
     ) {
         // Arrange
-        PostParams postParams = createPostParams(region,expirationDate, bucket, keyCondition);
-        PresignedPost presignedPost = new S3PostSigner(getAmazonCredentialsProvider()).create(postParams);
+        PostParams postParams = createPostParams(region, expirationDate, bucket, keyCondition);
+        PresignedPost presignedPost = S3PostSigner.create(postParams, getAmazonCredentialsProvider());
         Map<String, String> conditions = presignedPost.getConditions();
         conditions.putAll(customizedUploadConditions);
 
@@ -85,7 +85,7 @@ public class MandatoryPostParamsIntegrationTests extends IntegrationTests {
 
     private PostParams createPostParams(Region region, ZonedDateTime expirationDate, String bucket, KeyCondition keyCondition) {
         if (keyCondition instanceof ExactKeyCondition) {
-           return createPostParamsWithExactKeyCondition(region, expirationDate, bucket, keyCondition);
+            return createPostParamsWithExactKeyCondition(region, expirationDate, bucket, keyCondition);
         }
         if (keyCondition instanceof KeyStartingWithCondition) {
             return createPostParamsWithKeyStartingWithCondition(region, expirationDate, bucket, keyCondition);

@@ -43,18 +43,6 @@ public class IntegrationTests {
     protected static final String BUCKET = System.getenv("AWS_BUCKET");
     protected static final String encryptionKey256bits = "PcI54Y7WIu8aU1fSoEN&34mS#$*S21%3";
 
-    /**
-     * TODO check if this is really necessary, if it could be just done using not aws lib code
-     *
-     * @return The AwsCredentialsProvider to be used to create the pre-signed post
-     */
-    protected static AwsCredentialsProvider getAmazonCredentialsProvider() {
-        return StaticCredentialsProvider.create(
-                AwsBasicCredentials.create(System.getenv("AWS_KEY"),
-                        System.getenv("AWS_SECRET"))
-        );
-    }
-
     boolean postFileIntoS3(Request request) {
         try (Response response = new OkHttpClient().newCall(request).execute()) {
             return checkSuccessAndPrintResponseIfError(response);
@@ -151,13 +139,6 @@ public class IntegrationTests {
         formDataParts.put(key3, value3);
         formDataParts.put("key", "${filename}");
         return formDataParts;
-    }
-
-    protected static AwsCredentialsProvider getAmazonCredentialsProviderWithAwsSessionCredentials() {
-        return StaticCredentialsProvider.create(
-                AwsSessionCredentials.create(
-                        System.getenv("AWS_SESSION_KEY"), System.getenv("AWS_SESSION_SECRET"), System.getenv("AWS_SESSION_TOKEN"))
-        );
     }
 
     protected static String encodeToBase64(String valueToBeBase64Encoded) { // TODO insert notNull annotation?
