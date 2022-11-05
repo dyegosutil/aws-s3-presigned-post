@@ -21,6 +21,7 @@ import java.util.Base64;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import static mendes.sutil.dyego.awspresignedpost.TestUtils.getAmazonCredentialsProvider;
 import static mendes.sutil.dyego.awspresignedpost.postparams.PostParams.Builder.CannedAcl.PRIVATE;
 import static mendes.sutil.dyego.awspresignedpost.postparams.PostParams.Builder.StorageClass.STANDARD;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -37,7 +38,7 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
             String testDescription,
             PostParams postParams
     ) {
-        PresignedPost presignedPost = new S3PostSigner(getAmazonCredentialsProvider()).create(postParams);
+        PresignedPost presignedPost = S3PostSigner.create(postParams, getAmazonCredentialsProvider());
         Request request = createRequestFromConditions(presignedPost.getConditions(), presignedPost.getUrl());
         boolean result = postFileIntoS3(request);
         assertThat(result).isTrue();
@@ -52,7 +53,7 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
             boolean expectedResult
     ) {
         // Arrange
-        PresignedPost presignedPost = new S3PostSigner(getAmazonCredentialsProvider()).create(postParams);
+        PresignedPost presignedPost = S3PostSigner.create(postParams, getAmazonCredentialsProvider());
         Map<String, String> conditions = presignedPost.getConditions();
         conditions.putAll(customizedUploadConditions);
         Request request = createRequestFromConditions(presignedPost.getConditions(), presignedPost.getUrl());

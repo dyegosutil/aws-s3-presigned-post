@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 
+import static mendes.sutil.dyego.awspresignedpost.TestUtils.getAmazonCredentialsProviderWithAwsSessionCredentials;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Disabled
@@ -20,7 +21,7 @@ public class SessionTokenIntegrationTests extends IntegrationTests {
     void arrangeThatAwsSessionCredentialIsUsed_actUploadingTheFile_assertSuccess() {
         // Arrange
         PostParams postParams = createDefaultPostParamBuilder().build();
-        PresignedPost presignedPost = new S3PostSigner(getAmazonCredentialsProviderWithAwsSessionCredentials()).create(postParams);
+        PresignedPost presignedPost = S3PostSigner.create(postParams, getAmazonCredentialsProviderWithAwsSessionCredentials());
 
         Map<String, String> conditions = presignedPost.getConditions();
         Request request = createRequestFromConditions(conditions, presignedPost.getUrl());
@@ -37,7 +38,7 @@ public class SessionTokenIntegrationTests extends IntegrationTests {
     void arrangeThatWrongAwsSessionCredentialIsUsed_actUploadingTheFile_assertSuccess() {
         // Arrange
         PostParams postParams = createDefaultPostParamBuilder().build();
-        PresignedPost presignedPost = new S3PostSigner(getAmazonCredentialsProviderWithAwsSessionCredentials()).create(postParams);
+        PresignedPost presignedPost = S3PostSigner.create(postParams, getAmazonCredentialsProviderWithAwsSessionCredentials());
 
         Map<String, String> conditions = presignedPost.getConditions();
         conditions.put("x-amz-security-token",  "thisTokenIsWrong");

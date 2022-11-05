@@ -24,17 +24,9 @@ import java.util.stream.Collectors;
 import static mendes.sutil.dyego.awspresignedpost.conditions.ConditionField.*;
 import static mendes.sutil.dyego.awspresignedpost.conditions.MatchCondition.Operator.EQ;
 
-public class S3PostSigner { // TODO rename?
+public final class S3PostSigner { // TODO rename?
 
     private static final Logger LOGGER = LoggerFactory.getLogger(S3PostSigner.class);
-    private final AwsCredentials awsCredentials;
-
-    public S3PostSigner(AwsCredentialsProvider provider) { //TODO Perhaps change to not receive the params here but in the create part
-        this.awsCredentials = Objects.requireNonNull(
-                provider.resolveCredentials(),
-                "AwsCredentialsProvider must provide non-null AwsCredentials"
-        );
-    }
 
     /**
      * Creates the Pre-Signed Post using the data provided in {@link  PostParams}
@@ -47,18 +39,19 @@ public class S3PostSigner { // TODO rename?
      * @param postParams Contains the information to be used to generate the pre signed post
      * @return The object containing all the necessary params to be used to upload a file using pre signed post
      */
-    public PresignedPost create(PostParams postParams) {
-        AmzDate amzDate = new AmzDate();
+    public static PresignedPost create(final PostParams postParams, final AwsCredentialsProvider provider) {
+        final AwsCredentials awsCredentials = validateAwsCredentials(provider);
+        final AmzDate amzDate = new AmzDate();
         LOGGER.debug("Date used to generate pre signed post {}", amzDate.formatForPolicy());
         Map<ConditionField, Condition> conditions = postParams.getConditions();
         logConditions(conditions);
-        addSessionTokenIfNeeded(conditions);
+        addSessionTokenIfNeeded(conditions, awsCredentials);
 
-        String bucket = postParams.getBucket();
-        String region = postParams.getRegion().id();
-        String credentials = buildCredentialField(awsCredentials, postParams.getRegion(), amzDate);
+        final String bucket = postParams.getBucket();
+        final String region = postParams.getRegion().id();
+        final String credentials = buildCredentialField(awsCredentials, postParams.getRegion(), amzDate);
 
-        Policy policy = new Policy(
+        final Policy policy = new Policy(
                 postParams.getAmzExpirationDate().formatForPolicy(),
                 buildConditions(
                         conditions,
@@ -68,10 +61,10 @@ public class S3PostSigner { // TODO rename?
         );
         final String policyJson = new Gson().toJson(policy);
         final String policyB64 = Base64.getEncoder().encodeToString(policyJson.getBytes(StandardCharsets.UTF_8));
-        String signature = generateSignature(postParams.getRegion(), amzDate, policyB64);
+        final String signature = generateSignature(postParams.getRegion(), amzDate, policyB64, awsCredentials);
 
         Map<String, String> returnConditions = keepOnlyNecessaryConditions(conditions);
-        String keyUploadValue = getKeyUploadValue(returnConditions);
+        final String keyUploadValue = getKeyUploadValue(returnConditions);
         removeKeyFromConditions(returnConditions);
 
         return new PresignedPost(
@@ -80,18 +73,61 @@ public class S3PostSigner { // TODO rename?
         );
     }
 
-    public static String buildCredentialField(AwsCredentials credentials, Region region, AmzDate amzDate) {
-        String accessKeyId = credentials.accessKeyId();
-        String regionId = region.id();
-        String date = amzDate.formatForCredentials();
+    /**
+     * This method, compared to {@link #create(PostParams, AwsCredentialsProvider)}, gives more liberty to the caller who can provide more freely
+     * the conditions to generate the pre signed post. Note that this method performs only basic validations hence its
+     * use is more error-prone because the caller should know the intricacies of the
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-HTTPPOSTConstructPolicy.html">Aws S3 Post Policy</a>.
+     * This method might be useful though for using new features made available by AWS not yet added to
+     * {@link #create(PostParams, AwsCredentialsProvider)} or for troubleshooting using raw data. For reference about how to use this method,
+     * check the correspondent integration tests in the source code.
+     * <br><br>
+     * Creates the Pre-Signed Post using the data provided in {@link  FreeTextPostParams}
+     * First the policy is created and then its base64 value is used to generate the signature using the
+     * <a href="https://docs.aws.amazon.com/general/latest/gr/sigv4_signing.html">Aws Signature Version 4 specification</a>
+     *
+     * @param params Contains the information to be used to generate the pre signed post
+     * @return The object containing only the signature and policy to be used to upload a file using pre signed post. Note
+     * that these fields only are not enough to perform the file upload. The caller must add the other necessary fields
+     * matching the conditions passed to this method.
+     */
+    public static FreeTextPresignedPost create(final FreeTextPostParams params,  final AwsCredentialsProvider provider) {
+        final AwsCredentials awsCredentials = validateAwsCredentials(provider);
+        final AmzDate amzDate = new AmzDate(params.getDate());
+
+        final Policy policy = new Policy(
+                params.getAmzExpirationDate().formatForPolicy(),
+                params.getConditions()
+        );
+        final String policyJson = new Gson().toJson(policy);
+        final String policyB64 = Base64.getEncoder().encodeToString(policyJson.getBytes(StandardCharsets.UTF_8));
+        final String signature = generateSignature(params.getRegion(), amzDate, policyB64, awsCredentials);
+
+        return new FreeTextPresignedPost(signature, policyB64);
+    }
+
+    private static AwsCredentials validateAwsCredentials(AwsCredentialsProvider provider) {
+        return Objects.requireNonNull(
+                provider.resolveCredentials(),
+                "AwsCredentialsProvider must provide non-null AwsCredentials"
+        );
+    }
+
+    public static String buildCredentialField(
+            final AwsCredentials credentials,
+            final Region region,
+            final AmzDate amzDate) {
+        final String accessKeyId = credentials.accessKeyId();
+        final String regionId = region.id();
+        final String date = amzDate.formatForCredentials();
         return accessKeyId+"/"+date+"/"+regionId+"/s3/aws4_request";
     }
 
-    private void logConditions(Map<ConditionField, Condition> conditions) {
+    private static void logConditions(Map<ConditionField, Condition> conditions) {
         LOGGER.debug("Conditions to generate pre signed post {}", concatenateConditionField(conditions));
     }
 
-    private String concatenateConditionField(Map<ConditionField, Condition> condition) {
+    private static String concatenateConditionField(Map<ConditionField, Condition> condition) {
         return condition
                 .keySet()
                 .stream()
@@ -99,13 +135,14 @@ public class S3PostSigner { // TODO rename?
                 .collect(Collectors.joining(","));
     }
 
-    private Map<String, String> createConditionsMap(
-            String credentials,
-            String signature,
-            AmzDate amzDate,
-            String policyB64,
-            String keyUploadValue,
-            Map<String, String> returnConditions) {
+    private static Map<String, String> createConditionsMap(
+            final String credentials,
+            final String signature,
+            final AmzDate amzDate,
+            final String policyB64,
+            final String keyUploadValue,
+            final Map<String, String> returnConditions
+    ) {
         Map<String,String> conditions = new HashMap<>();
         conditions.put(ConditionField.ALGORITHM.valueForApiCall, "AWS4-HMAC-SHA256");
         conditions.put(CREDENTIAL.valueForApiCall, credentials);
@@ -117,11 +154,11 @@ public class S3PostSigner { // TODO rename?
         return conditions;
     }
 
-    private String createUrl(String bucket, String region) {
+    private static String createUrl(final String bucket, final String region) {
         return  "https://" + bucket + ".s3." + region + ".amazonaws.com";
     }
 
-    private void removeKeyFromConditions(Map<String, String> filtered) {
+    private static void removeKeyFromConditions(Map<String, String> filtered) {
         filtered.remove(KEY.valueForApiCall);
     }
 
@@ -136,7 +173,7 @@ public class S3PostSigner { // TODO rename?
      * {@link MatchCondition.Operator#STARTS_WITH}, since the value
      * cannot be predicted.
      */
-    private Map<String, String> keepOnlyNecessaryConditions(Map<ConditionField, Condition> conditionMap) {
+    private static Map<String, String> keepOnlyNecessaryConditions(Map<ConditionField, Condition> conditionMap) {
         conditionMap.remove(CONTENT_LENGTH_RANGE);
         conditionMap.remove(BUCKET);
 
@@ -151,7 +188,7 @@ public class S3PostSigner { // TODO rename?
                 );
     }
 
-    private String getUploadKey(MatchCondition matchCondition) {
+    private static String getUploadKey(MatchCondition matchCondition) {
         if (matchCondition instanceof MetaCondition metaCondition) {
             return metaCondition.getConditionField().valueForApiCall + metaCondition.getMetaName();
         }
@@ -166,7 +203,7 @@ public class S3PostSigner { // TODO rename?
      * @return The exact value to be used by the pre signed post caller or an empty string indicating that the caller
      * has to provide the data themselves.
      */
-    private String getValueOrEmptyString(MatchCondition matchCondition) {
+    private static String getValueOrEmptyString(MatchCondition matchCondition) {
         if (matchCondition.getConditionOperator() == EQ) {
             return matchCondition.getValue();
         }
@@ -176,7 +213,7 @@ public class S3PostSigner { // TODO rename?
     /**
      * // TODO remove the "${filename}"
      */
-    private String getKeyUploadValue(Map<String, String> returnConditions) {
+    private static String getKeyUploadValue(Map<String, String> returnConditions) {
         String keyValue = returnConditions.get(KEY.valueForApiCall);
         if (keyValue.isEmpty()) {
             return "${filename}";
@@ -185,39 +222,11 @@ public class S3PostSigner { // TODO rename?
         }
     }
 
-    /**
-     * This method, compared to {@link #create(PostParams)}, gives more liberty to the caller who can provide more freely
-     * the conditions to generate the pre signed post. Note that this method performs only basic validations hence its
-     * use is more error-prone because the caller should know the intricacies of the
-     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-HTTPPOSTConstructPolicy.html">Aws S3 Post Policy</a>.
-     * This method might be useful though for using new features made available by AWS not yet added to
-     * {@link #create(PostParams)} or for troubleshooting using raw data. For reference about how to use this method,
-     * check the correspondent integration tests in the source code.
-     * <br><br>
-     * Creates the Pre-Signed Post using the data provided in {@link  FreeTextPostParams}
-     * First the policy is created and then its base64 value is used to generate the signature using the
-     * <a href="https://docs.aws.amazon.com/general/latest/gr/sigv4_signing.html">Aws Signature Version 4 specification</a>
-     *
-     * @param params Contains the information to be used to generate the pre signed post
-     * @return The object containing only the signature and policy to be used to upload a file using pre signed post. Note
-     * that these fields only are not enough to perform the file upload. The caller must add the other necessary fields
-     * matching the conditions passed to this method.
-     */
-    public FreeTextPresignedPost create(FreeTextPostParams params) {
-        AmzDate amzDate = new AmzDate(params.getDate());
-
-        Policy policy = new Policy(
-                params.getAmzExpirationDate().formatForPolicy(),
-                params.getConditions()
-        );
-        final String policyJson = new Gson().toJson(policy);
-        final String policyB64 = Base64.getEncoder().encodeToString(policyJson.getBytes(StandardCharsets.UTF_8));
-        String signature = generateSignature(params.getRegion(), amzDate, policyB64);
-
-        return new FreeTextPresignedPost(signature, policyB64);
-    }
-
-    private String generateSignature(Region region, AmzDate amzDate, String policyB64) {
+    private static String generateSignature(
+            final Region region,
+            final AmzDate amzDate,
+            final String policyB64,
+            final AwsCredentials awsCredentials) {
         return AwsSigner.hexDump(
                 AwsSigner.signMac(
                         AwsSigner.generateSigningKey(
@@ -231,7 +240,8 @@ public class S3PostSigner { // TODO rename?
     }
 
     // TODO tel that token will be added auto
-    private void addSessionTokenIfNeeded(Map<ConditionField, Condition> conditions) {
+    private static void addSessionTokenIfNeeded(Map<ConditionField, Condition> conditions,
+                                                final AwsCredentials awsCredentials) {
         if (awsCredentials instanceof AwsSessionCredentials) {
             LOGGER.debug("Adding {} since Aws Sessions credentials are being used", SECURITY_TOKEN.name());
             conditions.put(
@@ -241,7 +251,7 @@ public class S3PostSigner { // TODO rename?
         }
     }
 
-    private Set<String[]> buildConditions(
+    private static Set<String[]> buildConditions(
             Map<ConditionField, Condition> conditions,
             AmzDate xAmzDate,
             String credentials) {

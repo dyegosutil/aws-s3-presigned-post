@@ -12,6 +12,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import static mendes.sutil.dyego.awspresignedpost.TestUtils.getAmazonCredentialsProvider;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.params.provider.Arguments.of;
 
@@ -26,7 +27,7 @@ public class WithSuccessActionRedirectPostParamIntegrationTests extends Integrat
             String redirectAwsConditionName
     ) {
         // Act
-        PresignedPost presignedPost = new S3PostSigner(getAmazonCredentialsProvider()).create(postParams);
+        PresignedPost presignedPost = S3PostSigner.create(postParams, getAmazonCredentialsProvider());
 
         Map<String, String> conditions = presignedPost.getConditions();
         Request request = createRequestFromConditions(conditions, presignedPost.getUrl());
@@ -51,7 +52,7 @@ public class WithSuccessActionRedirectPostParamIntegrationTests extends Integrat
             String redirectAwsConditionName
     ) {
         // Arrange
-        PresignedPost presignedPost = new S3PostSigner(getAmazonCredentialsProvider()).create(postParams);
+        PresignedPost presignedPost = S3PostSigner.create(postParams, getAmazonCredentialsProvider());
         Map<String, String> conditions = presignedPost.getConditions();
         conditions.putAll(formDataParts);
         Request request = createRequestFromConditions(conditions, presignedPost.getUrl());
