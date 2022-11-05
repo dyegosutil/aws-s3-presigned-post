@@ -1,4 +1,4 @@
-package mendes.sutil.dyego.awspresignedpost;
+package mendes.sutil.dyego.awspresignedpost.postparams;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

@@ -1,8 +1,8 @@
-package mendes.sutil.dyego.awspresignedpost.domain.conditions.helper;
+package mendes.sutil.dyego.awspresignedpost.conditions.helper;
 
-import mendes.sutil.dyego.awspresignedpost.domain.conditions.key.ExactKeyCondition;
-import mendes.sutil.dyego.awspresignedpost.domain.conditions.key.KeyStartingWithCondition;
-import mendes.sutil.dyego.awspresignedpost.domain.conditions.key.KeyCondition;
+import mendes.sutil.dyego.awspresignedpost.conditions.key.ExactKeyCondition;
+import mendes.sutil.dyego.awspresignedpost.conditions.key.KeyStartingWithCondition;
+import mendes.sutil.dyego.awspresignedpost.conditions.key.KeyCondition;
 
 /**
  * Provides helper methods to create instances of {@link KeyCondition}

@@ -2,12 +2,14 @@ package mendes.sutil.dyego.awspresignedpost;
 
 import com.google.gson.Gson;
 import com.google.gson.annotations.Expose;
-import mendes.sutil.dyego.awspresignedpost.domain.AmzDate;
-import mendes.sutil.dyego.awspresignedpost.domain.conditions.Condition;
-import mendes.sutil.dyego.awspresignedpost.domain.conditions.ConditionField;
-import mendes.sutil.dyego.awspresignedpost.domain.conditions.MetaCondition;
-import mendes.sutil.dyego.awspresignedpost.domain.conditions.MatchCondition;
-import mendes.sutil.dyego.awspresignedpost.domain.response.FreeTextPresignedPost;
+import mendes.sutil.dyego.awspresignedpost.conditions.Condition;
+import mendes.sutil.dyego.awspresignedpost.conditions.ConditionField;
+import mendes.sutil.dyego.awspresignedpost.conditions.MetaCondition;
+import mendes.sutil.dyego.awspresignedpost.conditions.MatchCondition;
+import mendes.sutil.dyego.awspresignedpost.result.FreeTextPresignedPost;
+import mendes.sutil.dyego.awspresignedpost.result.PresignedPost;
+import mendes.sutil.dyego.awspresignedpost.postparams.FreeTextPostParams;
+import mendes.sutil.dyego.awspresignedpost.postparams.PostParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.auth.credentials.AwsCredentials;
@@ -19,8 +21,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static mendes.sutil.dyego.awspresignedpost.domain.conditions.ConditionField.*;
-import static mendes.sutil.dyego.awspresignedpost.domain.conditions.MatchCondition.Operator.EQ;
+import static mendes.sutil.dyego.awspresignedpost.conditions.ConditionField.*;
+import static mendes.sutil.dyego.awspresignedpost.conditions.MatchCondition.Operator.EQ;
 
 public class S3PostSigner { // TODO rename?
 
@@ -129,9 +131,9 @@ public class S3PostSigner { // TODO rename?
      * not necessary to be added in the client using the pre signed post.
      * 
      * @return A Map containing the condition key and value to be used in the upload. The value is returned as it is if 
-     * the condition operator is {@link mendes.sutil.dyego.awspresignedpost.domain.conditions.MatchCondition.Operator#EQ}
+     * the condition operator is {@link MatchCondition.Operator#EQ}
      * or an empty string if the condition is 
-     * {@link mendes.sutil.dyego.awspresignedpost.domain.conditions.MatchCondition.Operator#STARTS_WITH}, since the value
+     * {@link MatchCondition.Operator#STARTS_WITH}, since the value
      * cannot be predicted.
      */
     private Map<String, String> keepOnlyNecessaryConditions(Map<ConditionField, Condition> conditionMap) {

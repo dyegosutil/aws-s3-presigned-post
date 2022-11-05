@@ -1,4 +1,4 @@
-package mendes.sutil.dyego.awspresignedpost.domain.response;
+package mendes.sutil.dyego.awspresignedpost.result;
 
 import java.util.AbstractMap;
 

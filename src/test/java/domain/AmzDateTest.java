@@ -1,6 +1,6 @@
 package domain;
 
-import mendes.sutil.dyego.awspresignedpost.domain.AmzDate;
+import mendes.sutil.dyego.awspresignedpost.AmzDate;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 

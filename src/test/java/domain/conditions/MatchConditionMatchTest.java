@@ -1,6 +1,6 @@
 package domain.conditions;
 
-import mendes.sutil.dyego.awspresignedpost.domain.conditions.MatchCondition;
+import mendes.sutil.dyego.awspresignedpost.conditions.MatchCondition;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

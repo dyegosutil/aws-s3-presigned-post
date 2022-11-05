@@ -1,4 +1,4 @@
-package mendes.sutil.dyego.awspresignedpost;
+package mendes.sutil.dyego.awspresignedpost.result;
 
 import java.util.Map;
 import java.util.Objects;
@@ -10,7 +10,7 @@ public class PresignedPost {
 
     private final Map<String, String> conditions;
 
-    PresignedPost(String url, Map<String, String> conditions) {
+    public PresignedPost(String url, Map<String, String> conditions) {
         Objects.requireNonNull(url);
         Objects.requireNonNull(conditions);
         this.url = url;

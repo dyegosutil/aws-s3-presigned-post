@@ -1,11 +1,11 @@
 package mendes.sutil.dyego.awspresignedpost.integrationtests;
 
-import mendes.sutil.dyego.awspresignedpost.PresignedPost;
-import mendes.sutil.dyego.awspresignedpost.PostParams;
+import mendes.sutil.dyego.awspresignedpost.result.PresignedPost;
+import mendes.sutil.dyego.awspresignedpost.postparams.PostParams;
 import mendes.sutil.dyego.awspresignedpost.S3PostSigner;
-import mendes.sutil.dyego.awspresignedpost.domain.conditions.key.ExactKeyCondition;
-import mendes.sutil.dyego.awspresignedpost.domain.conditions.key.KeyCondition;
-import mendes.sutil.dyego.awspresignedpost.domain.conditions.key.KeyStartingWithCondition;
+import mendes.sutil.dyego.awspresignedpost.conditions.key.ExactKeyCondition;
+import mendes.sutil.dyego.awspresignedpost.conditions.key.KeyCondition;
+import mendes.sutil.dyego.awspresignedpost.conditions.key.KeyStartingWithCondition;
 import okhttp3.Request;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import static mendes.sutil.dyego.awspresignedpost.TestUtils.EXPIRATION_DATE;
-import static mendes.sutil.dyego.awspresignedpost.domain.conditions.helper.KeyConditionHelper.*;
+import static mendes.sutil.dyego.awspresignedpost.conditions.helper.KeyConditionHelper.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.params.provider.Arguments.of;
 

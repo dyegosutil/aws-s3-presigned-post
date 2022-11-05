@@ -1,4 +1,4 @@
-package mendes.sutil.dyego.awspresignedpost.domain.tagging;
+package mendes.sutil.dyego.awspresignedpost.tagging;
 
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;

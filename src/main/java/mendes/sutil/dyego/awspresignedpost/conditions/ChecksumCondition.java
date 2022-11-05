@@ -1,4 +1,4 @@
-package mendes.sutil.dyego.awspresignedpost.domain.conditions;
+package mendes.sutil.dyego.awspresignedpost.conditions;
 
 public class ChecksumCondition extends MatchCondition {
 

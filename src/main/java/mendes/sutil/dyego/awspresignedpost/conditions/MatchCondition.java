@@ -1,4 +1,4 @@
-package mendes.sutil.dyego.awspresignedpost.domain.conditions;
+package mendes.sutil.dyego.awspresignedpost.conditions;
 
 public class MatchCondition extends Condition {
     private final Operator operator;

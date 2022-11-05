@@ -1,8 +1,8 @@
-package mendes.sutil.dyego.awspresignedpost.domain.conditions;
+package mendes.sutil.dyego.awspresignedpost.conditions;
 
 import java.util.Objects;
 
-import static mendes.sutil.dyego.awspresignedpost.domain.conditions.ConditionField.META;
+import static mendes.sutil.dyego.awspresignedpost.conditions.ConditionField.META;
 
 public class MetaCondition extends MatchCondition {
 

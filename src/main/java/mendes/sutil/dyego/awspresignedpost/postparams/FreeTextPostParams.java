@@ -1,6 +1,6 @@
-package mendes.sutil.dyego.awspresignedpost;
+package mendes.sutil.dyego.awspresignedpost.postparams;
 
-import mendes.sutil.dyego.awspresignedpost.domain.AmzExpirationDate;
+import mendes.sutil.dyego.awspresignedpost.AmzExpirationDate;
 import software.amazon.awssdk.regions.Region;
 
 import java.time.ZonedDateTime;
