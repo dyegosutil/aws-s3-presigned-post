@@ -20,6 +20,11 @@ otherwise it will return an error
 - Post Policy - https://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-HTTPPOSTConstructPolicy.html
 - https://docs.aws.amazon.com/AmazonS3/latest/API/RESTObjectPOST.html
 
+- Environment Variables necessary to run all integration tests
+```
+AWS_SESSION_TOKEN=value;AWS_REGION=eu-central-1;AWS_KEY=value;AWS_SECRET=value;AWS_KMS_S3_KEY=arn:aws:kms:eu-central-1:xxxxxxxxxxxx:key/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx;AWS_SESSION_SECRET=value;AWS_SESSION_KEY=ASIA...;AWS_BUCKET=muBucket;AWS_WRONG_REGION=eu-central-2
+```
+
 # Issues
 
 sometimes seems that due to the ```=``` in the end of the policy, there was a signature problem. Removing one of the 3 = symbols in the end of the request made it work. Investigate this better. Perhaps print the policy withouth any = in the end to avoid problems. But test this first.
@@ -189,3 +194,5 @@ lombok? @nonull? etc
 - Test logging in ECS
 - Add id to pre signed post generation to get meaningfull loggings, userId, etc
 - Have one more look in the logs, Input validation failures e.g. protocol violations, unacceptable encodings, invalid parameter names and values
+
+

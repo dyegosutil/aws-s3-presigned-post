@@ -1,16 +1,21 @@
 package mendes.sutil.dyego.awspresignedpost;
 
+import mendes.sutil.dyego.awspresignedpost.postparams.FreeTextPostParams;
 import mendes.sutil.dyego.awspresignedpost.postparams.PostParams;
+import mendes.sutil.dyego.awspresignedpost.result.FreeTextPresignedPost;
 import mendes.sutil.dyego.awspresignedpost.result.PresignedPost;
 import org.junit.jupiter.api.Test;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 
+import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import static mendes.sutil.dyego.awspresignedpost.TestUtils.*;
 import static mendes.sutil.dyego.awspresignedpost.conditions.helper.KeyConditionHelper.withAnyKey;
@@ -19,27 +24,33 @@ import static org.assertj.core.api.InstanceOfAssertFactories.STRING;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class S3PostSignerTest {
+public class S3PostSignerTest {
 
     public static final String ERROR_MESSAGE_NULL_AWS_CREDENTIALS = "AwsCredentialsProvider must provide non-null AwsCredentials";
+    public static final Region REGION = Region.EU_CENTRAL_1;
+    public static final String AWS_FAKE_SECRET = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY";
+    public static final String AWS_FAKE_KEY = "AKIAIOSFODNN7EXAMPLE";
 
     @Test
-    void fullTest() {
+    void shouldReturnCorrectPreSignedPost() {
+        // Arrange
         String bucket = "myBucket";
-        Region region = Region.EU_CENTRAL_1;
-        String awsKey = "AKIAIOSFODNN7EXAMPLE";
+
+        // Act
         PresignedPost presignedPost = S3PostSigner.create(
                 PostParams.builder(
-                        region,
+                        REGION,
                         EXPIRATION_DATE,
-                        "myBucket",
+                        bucket,
                         withAnyKey()
                 ).build(),
                 getAmazonCredentialsProvider(
-                        awsKey,
-                        "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+                        AWS_FAKE_KEY,
+                        AWS_FAKE_SECRET
                 )
         );
+
+        // Assert
         Map<String, String> actualConditions = presignedPost.getConditions();
         assertThat(actualConditions.size()).isEqualTo(6);
         assertThat(actualConditions).extractingByKey("policy", as(STRING)).isNotEmpty();
@@ -47,9 +58,47 @@ class S3PostSignerTest {
         assertThat(actualConditions).extractingByKey("x-amz-date", as(STRING)).isNotEmpty();
         assertThat(actualConditions).extractingByKey("x-amz-algorithm", as(STRING)).isEqualTo("AWS4-HMAC-SHA256");
         assertThat(actualConditions).extractingByKey("x-amz-credential", as(STRING))
-                .isEqualTo(awsKey + "/" + getCredentialDate() + "/" + region + "/s3/aws4_request");
+                .isEqualTo(AWS_FAKE_KEY + "/" + getCredentialDate() + "/" + REGION + "/s3/aws4_request");
         assertThat(actualConditions).containsEntry("key", "${filename}");
-        assertThat(presignedPost.getUrl()).isEqualTo("https://" + bucket + ".s3." + region + ".amazonaws.com");
+        assertThat(presignedPost.getUrl()).isEqualTo("https://" + bucket + ".s3." + REGION + ".amazonaws.com");
+    }
+
+    @Test
+    void shouldReturnCorrectFreeTextPreSignedPost() {
+        // Arrange
+        ZonedDateTime date = ZonedDateTime.of(2022, 1, 1, 1, 1, 1, 1, ZoneOffset.UTC);
+        ZonedDateTime expirationDate = Instant
+                .parse("2900-01-01T10:15:30Z")
+                .atZone(ZoneOffset.UTC);
+        Region region = Region.EU_CENTRAL_1;
+        Set<String[]> conditions = new HashSet<>();
+        conditions.add(new String[]{"eq", "$key", "test.txt"});
+        conditions.add(new String[]{"eq", "$x-amz-algorithm", "AWS4-HMAC-SHA256"});
+        conditions.add(new String[]{"eq", "$x-amz-date", getAmzDateFormatter().format(date)});
+        conditions.add(new String[]{"eq", "$bucket", "myBucket"});
+        conditions.add(new String[]{
+                "eq",
+                "$x-amz-credential",
+                AWS_FAKE_KEY + "/" + getYyyyMmDdDateFormatter().format(date) + "/" + region + "/s3/aws4_request"
+        });
+        FreeTextPostParams freeTextPostParams = new FreeTextPostParams(
+                region,
+                expirationDate,
+                date,
+                conditions
+        );
+
+        // Act
+        FreeTextPresignedPost preSignedPost = S3PostSigner.create(
+                freeTextPostParams,
+                getAmazonCredentialsProvider(AWS_FAKE_KEY, AWS_FAKE_SECRET)
+        );
+
+        // Assert
+        assertThat(preSignedPost.getPolicy().getKey()).isEqualTo("policy");
+        assertThat(preSignedPost.getPolicy().getValue()).isNotEmpty();
+        assertThat(preSignedPost.getxAmzSignature().getKey()).isEqualTo("x-amz-signature");
+        assertThat(preSignedPost.getxAmzSignature().getValue()).isNotEmpty();
     }
 
     private String getCredentialDate() {

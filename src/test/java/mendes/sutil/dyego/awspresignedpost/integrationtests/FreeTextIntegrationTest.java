@@ -1,7 +1,7 @@
 package mendes.sutil.dyego.awspresignedpost.integrationtests;
 
-import mendes.sutil.dyego.awspresignedpost.postparams.FreeTextPostParams;
 import mendes.sutil.dyego.awspresignedpost.S3PostSigner;
+import mendes.sutil.dyego.awspresignedpost.postparams.FreeTextPostParams;
 import mendes.sutil.dyego.awspresignedpost.result.FreeTextPresignedPost;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -13,10 +13,12 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.time.Clock;
-import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import static mendes.sutil.dyego.awspresignedpost.TestUtils.*;
@@ -28,9 +30,6 @@ public class FreeTextIntegrationTest extends IntegrationTests {
 
     private static final ZonedDateTime DATE = ZonedDateTime.now(Clock.systemUTC());
     private static final DateTimeFormatter YYYYMMDD_DATE_FORMATTER = getYyyyMmDdDateFormatter();
-    private static final DateTimeFormatter AMZ_DATE_FORMATTER = getAmzDateFormatter();
-    private static final String CREDENTIAL = getCredential();
-    private static final String DATE_FOR_POLICY = AMZ_DATE_FORMATTER.format(DATE);
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("freeTextConditionSessionTokenTestCases")
@@ -93,18 +92,9 @@ public class FreeTextIntegrationTest extends IntegrationTests {
         );
     }
 
-    private static FreeTextPostParams getFreeTextPostParams(Set<String[]> conditions) {
-        return new FreeTextPostParams(
-                REGION, // TODO Is this inverted?, check if it is the same order as other PostParam
-                EXPIRATION_DATE,
-                DATE,
-                conditions
-        );
-    }
-
     private static Set<String[]> getMandatoryConditions() {
         Set<String[]> conditions = getCommonConditions();
-        conditions.add(new String[]{"eq", "$x-amz-credential", CREDENTIAL});
+        conditions.add(new String[]{"eq", "$x-amz-credential", getCredential()});
         return conditions;
     }
 
@@ -127,7 +117,7 @@ public class FreeTextIntegrationTest extends IntegrationTests {
         Set<String[]> conditions = new HashSet<>();
         conditions.add(new String[]{"eq", "$key", "test.txt"});
         conditions.add(new String[]{"eq", "$x-amz-algorithm", "AWS4-HMAC-SHA256"});
-        conditions.add(new String[]{"eq", "$x-amz-date", DATE_FOR_POLICY});
+        conditions.add(new String[]{"eq", "$x-amz-date", getAmzDateFormatter().format(DATE)});
         conditions.add(new String[]{"eq", "$bucket", BUCKET});
         return conditions;
     }
@@ -135,18 +125,18 @@ public class FreeTextIntegrationTest extends IntegrationTests {
     private static Map<String, String> getMandatoryFormDataParts() {
         Map<String, String> formDataParts = new HashMap<>();
         formDataParts.put("key", "test.txt");
-        formDataParts.put("x-amz-credential", CREDENTIAL);
+        formDataParts.put("x-amz-credential", getCredential());
         formDataParts.put("x-amz-algorithm", "AWS4-HMAC-SHA256");
-        formDataParts.put("x-amz-date", DATE_FOR_POLICY);
+        formDataParts.put("x-amz-date", getAmzDateFormatter().format(DATE));
         return formDataParts;
     }
 
     private static Map<String, String> getFormDataPartsForUploadWithCustomerEncryptionKey() {
         Map<String, String> formDataParts = new HashMap<>();
         formDataParts.put("key", "test.txt");
-        formDataParts.put("x-amz-credential", CREDENTIAL);
+        formDataParts.put("x-amz-credential", getCredential());
         formDataParts.put("x-amz-algorithm", "AWS4-HMAC-SHA256");
-        formDataParts.put("x-amz-date", DATE_FOR_POLICY);
+        formDataParts.put("x-amz-date", getAmzDateFormatter().format(DATE));
         formDataParts.put("x-amz-server-side-encryption-customer-algorithm", "AES256");
         formDataParts.put("x-amz-server-side-encryption-customer-key", encodeToBase64(encryptionKey256bits));
         formDataParts.put("x-amz-server-side-encryption-customer-key-MD5", generateEncryptionKeyMD5DigestAsBase64(encryptionKey256bits));
@@ -159,7 +149,7 @@ public class FreeTextIntegrationTest extends IntegrationTests {
         formDataParts.put("key", "test.txt");
         formDataParts.put("x-amz-credential", getSessionCredential());
         formDataParts.put("x-amz-algorithm", "AWS4-HMAC-SHA256");
-        formDataParts.put("x-amz-date", DATE_FOR_POLICY);
+        formDataParts.put("x-amz-date", getAmzDateFormatter().format(DATE));
         formDataParts.put("x-amz-security-token", System.getenv("AWS_SESSION_TOKEN"));
         return formDataParts;
     }
@@ -182,24 +172,13 @@ public class FreeTextIntegrationTest extends IntegrationTests {
                 .build();
     }
 
-    private static DateTimeFormatter getYyyyMmDdDateFormatter() {
-        return DateTimeFormatter
-                .ofPattern("yyyyMMdd", Locale.ENGLISH)
-                .withZone(ZoneOffset.UTC);
-    }
-
-    private static DateTimeFormatter getAmzDateFormatter() {
-        return DateTimeFormatter
-                .ofPattern("yyyyMMdd'T'HHmmss'Z'", Locale.ENGLISH)
-                .withZone(ZoneOffset.UTC);
-    }
-
     private static String getCredential() {
         return String.format(
                 "%s/%s/%s/s3/aws4_request",
                 System.getenv("AWS_KEY"),
                 YYYYMMDD_DATE_FORMATTER.format(DATE),
-                System.getenv("AWS_REGION"));
+                System.getenv("AWS_REGION")
+        );
     }
 
     private static String getSessionCredential() {
@@ -215,6 +194,15 @@ public class FreeTextIntegrationTest extends IntegrationTests {
                 "https://%s.s3.%s.amazonaws.com",
                 System.getenv("AWS_BUCKET"),
                 System.getenv("AWS_REGION")
+        );
+    }
+
+    private static FreeTextPostParams getFreeTextPostParams(Set<String[]> conditions) {
+        return new FreeTextPostParams(
+                REGION, // TODO Is this inverted?, check if it is the same order as other PostParam
+                EXPIRATION_DATE,
+                DATE,
+                conditions
         );
     }
 }
