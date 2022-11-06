@@ -1,4 +1,4 @@
-package mendes.sutil.dyego.awspresignedpost.tagging;
+package mendes.sutil.dyego.awspresignedpost;
 
 import jakarta.xml.bind.annotation.XmlElement;
 
@@ -12,11 +12,14 @@ public class Tag {
         this.value = value;
     }
 
-    @SuppressWarnings("unused") // Used by JAXB
-    @XmlElement(name = "Key")
     private final String key;
-
-    @SuppressWarnings("unused") // Used by JAXB
-    @XmlElement(name = "Value")
     private final String value;
+
+    public String getKey() {
+        return key;
+    }
+
+    public String getValue() {
+        return value;
+    }
 }
