@@ -21,7 +21,6 @@ dependencies {
     implementation("com.sun.xml.bind:jaxb-impl:4.0.1")
     implementation("org.slf4j:slf4j-api:2.0.3")
 
-    testImplementation("org.junit.jupiter:junit-jupiter-api:$jupiterVersion") // TODO is it really needed?
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$jupiterVersion") // TODO is it really needed?
     testImplementation("com.squareup.okhttp3:okhttp:4.10.0") // TODO test other levels.
     testImplementation("org.assertj:assertj-core:3.23.1")
