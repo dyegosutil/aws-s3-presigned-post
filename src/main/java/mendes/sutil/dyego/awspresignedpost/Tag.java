@@ -1,7 +1,5 @@
 package mendes.sutil.dyego.awspresignedpost;
 
-import jakarta.xml.bind.annotation.XmlElement;
-
 /**
  * Represents an AWS S3 Tag
  */
