@@ -7,8 +7,7 @@ import mendes.sutil.dyego.awspresignedpost.conditions.helper.KeyConditionHelper;
 import mendes.sutil.dyego.awspresignedpost.conditions.key.ExactKeyCondition;
 import mendes.sutil.dyego.awspresignedpost.conditions.key.KeyCondition;
 import mendes.sutil.dyego.awspresignedpost.conditions.key.KeyStartingWithCondition;
-import mendes.sutil.dyego.awspresignedpost.tagging.Tag;
-import mendes.sutil.dyego.awspresignedpost.tagging.Tagging;
+import mendes.sutil.dyego.awspresignedpost.Tag;
 import software.amazon.awssdk.regions.Region;
 
 import java.time.ZonedDateTime;
@@ -190,12 +189,28 @@ public final class PostParams {
         }
 
         /**
-         * Add tags if the method {@link Builder#withTag(String, String)} was used
+         * Add tags if the method {@link Builder#withTag(String, String)} was used.
+         * Plain text is used due to simplicity of xml and to avoid an overkill of using a library
          */
         private void addTags() {
             if(!tags.isEmpty()) {
-                String taggingXml = new Tagging(tags).toXml();
-                withTaggingCondition(taggingXml);
+                StringBuilder taggingXml = new StringBuilder();
+                taggingXml.append("<Tagging>");
+                taggingXml.append("<TagSet>");
+                tags.forEach(tag -> {
+                    taggingXml.append("<Tag>");
+                    taggingXml.append("<Key>");
+                    taggingXml.append(tag.getKey());
+                    taggingXml.append("</Key>");
+                    taggingXml.append("<Value>");
+                    taggingXml.append(tag.getValue());
+                    taggingXml.append("</Value>");
+                    taggingXml.append("</Tag>");
+                });
+                taggingXml.append("/TagSet");
+                taggingXml.append("</Tagging>");
+
+                withTaggingCondition(taggingXml.toString());
             }
         }
 
