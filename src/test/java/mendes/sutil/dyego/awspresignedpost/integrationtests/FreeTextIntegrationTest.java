@@ -25,7 +25,7 @@ import static mendes.sutil.dyego.awspresignedpost.TestUtils.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.params.provider.Arguments.of;
 
-//@Disabled
+@Disabled
 public class FreeTextIntegrationTest extends IntegrationTests {
 
     private static final ZonedDateTime DATE = ZonedDateTime.now(Clock.systemUTC());
