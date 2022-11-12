@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 import static mendes.sutil.dyego.awspresignedpost.conditions.ConditionField.*;
 import static mendes.sutil.dyego.awspresignedpost.conditions.MatchCondition.Operator.EQ;
 
-public final class S3PostSigner { // TODO rename?
+public final class S3PostSigner {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(S3PostSigner.class);
 

@@ -55,7 +55,8 @@ public final class PostParams {
      * // TODO add additional information because this method is too cool
      *
      * @param region Region to be used in the signature
-     * @param expirationDate Date until when the pre-signed post can be used.
+     * @param expirationDate Date indicating util when the pre-signed post can be used. Ultimately, the value passed
+     *                       here will be converted to ISO8601 UTC format in the policy as per specified by AWS.
      * @param exactKeyCondition Specifies which is the exact value that should be used to perform the upload. For
      *                          convenience, use the {@link KeyConditionHelper#withKey(String)} to build the condition.
      * @param bucket The bucket when the file should be uploaded to.
@@ -67,7 +68,6 @@ public final class PostParams {
             String bucket,
             ExactKeyCondition exactKeyCondition
     ){
-        // TODO Enforce UTC expirationDate? Test what happens if this is expired in another timezone and the lib creates the pre-signed in UTC
         Objects.requireNonNull(expirationDate, "Argument expirationDate must not be null");
         return new Builder(
                 Objects.requireNonNull(region, "Argument region must not be null"),
@@ -82,7 +82,8 @@ public final class PostParams {
      * // TODO add additional information because this method is too cool
      *
      * @param region Region to be used in the signature
-     * @param expirationDate Date until when the pre-signed post can be used.
+     * @param expirationDate Date indicating util when the pre-signed post can be used. Ultimately, the value passed
+     *      *                       here will be converted to ISO8601 UTC format in the policy as per specified by AWS.
      * @param keyStartingWithCondition Specifies which is the exact value that should be used to perform the upload. For
      *                          convenience, use the {@link KeyConditionHelper#withKeyStartingWith(String)}
      *                          {@link KeyConditionHelper#withKeyStartingWith(String)} or to build the condition.
