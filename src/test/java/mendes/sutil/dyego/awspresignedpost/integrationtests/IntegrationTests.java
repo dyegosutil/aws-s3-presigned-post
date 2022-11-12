@@ -32,7 +32,7 @@ public class IntegrationTests {
     private static final Logger LOGGER = LoggerFactory.getLogger(IntegrationTests.class);
     public static final Region REGION = Region.of(System.getenv("AWS_REGION"));
 
-    protected static final ZonedDateTime EXPIRATION_DATE = Instant.now(Clock.systemUTC()) // TODO check if clock should be a parameter, check documentation to see how expiration time should be received, check what would happen if different zoneids are used for expiration aand for date in the policy
+    protected static final ZonedDateTime EXPIRATION_DATE = Instant.now(Clock.systemUTC())
             .plus(1, ChronoUnit.MINUTES)
             .atZone(ZoneOffset.UTC);
 

@@ -17,7 +17,6 @@ public class AmzExpirationDate {
     private final ZonedDateTime expirationDate;
 
     public AmzExpirationDate(ZonedDateTime expirationDate) {
-        // TODO Possible enforce UTC
         this.expirationDate = expirationDate;
     }
 
