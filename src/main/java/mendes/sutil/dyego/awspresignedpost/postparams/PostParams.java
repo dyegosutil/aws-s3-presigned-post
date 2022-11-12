@@ -1,6 +1,5 @@
 package mendes.sutil.dyego.awspresignedpost.postparams;
 
-import lombok.Getter;
 import mendes.sutil.dyego.awspresignedpost.AmzExpirationDate;
 import mendes.sutil.dyego.awspresignedpost.conditions.*;
 import mendes.sutil.dyego.awspresignedpost.conditions.helper.KeyConditionHelper;
@@ -22,7 +21,6 @@ import static mendes.sutil.dyego.awspresignedpost.conditions.MatchCondition.Oper
  * authentication.
  */
 // TODO should it really be final?
-@Getter
 public final class PostParams {
 
     // TODO which fields are alwyas going to be there?
@@ -817,6 +815,22 @@ public final class PostParams {
 
         // TODO
         // Content-Types values for a starts-with condition that include commas are interpreted as lists. Each value in the list must meet the condition for the whole condition to pass.
+    }
+
+    public String getBucket() {
+        return bucket;
+    }
+
+    public Region getRegion() {
+        return region;
+    }
+
+    public AmzExpirationDate getAmzExpirationDate() {
+        return amzExpirationDate;
+    }
+
+    public Map<ConditionField, Condition> getConditions() {
+        return conditions;
     }
 }
 
