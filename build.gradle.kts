@@ -3,7 +3,6 @@ val jupiterVersion = "5.9.0"
 plugins {
     id("java")
     idea
-    id("io.freefair.lombok") version "6.5.0.2" // TODO double check if it will be really needed
 }
 
 group = "org.example"
@@ -14,7 +13,7 @@ repositories {
 }
 
 dependencies {
-    implementation(platform("software.amazon.awssdk:bom:2.18.6"))
+    implementation(platform("software.amazon.awssdk:bom:2.18.11"))
     implementation("software.amazon.awssdk:regions")
     implementation("software.amazon.awssdk:auth")
     implementation("com.google.code.gson:gson:2.10")
