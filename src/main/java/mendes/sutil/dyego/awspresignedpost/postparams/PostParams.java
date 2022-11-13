@@ -7,6 +7,7 @@ import mendes.sutil.dyego.awspresignedpost.conditions.key.ExactKeyCondition;
 import mendes.sutil.dyego.awspresignedpost.conditions.key.KeyCondition;
 import mendes.sutil.dyego.awspresignedpost.conditions.key.KeyStartingWithCondition;
 import mendes.sutil.dyego.awspresignedpost.Tag;
+import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 
 import java.time.ZonedDateTime;
@@ -21,6 +22,7 @@ import static mendes.sutil.dyego.awspresignedpost.conditions.MatchCondition.Oper
  * authentication.
  */
 // TODO should it really be final?
+// TODO Rename to PostConditions?
 public final class PostParams {
 
     // TODO which fields are alwyas going to be there?
@@ -76,16 +78,20 @@ public final class PostParams {
     }
 
     /**
-     * Accepts all the minimum necessary parameters to generate a pre-signed valid pre-signed POST.
-     * // TODO add additional information because this method is too cool
+     * TODO add additional information because this method is too cool
+     * Used to instantiate the {@link Builder} object to be used to provide all the conditions that must be fulfilled
+     * by for the AWS S3 post upload to be successful. This method accepts all the minimum necessary parameters to
+     * generate a valid pre-signed POST. After the instantiation, optional conditions can be added using the methods
+     * like {@link Builder#withContentLengthRange(long, long)} or {@link Builder#withContentTypeStartingWith(String)}.
+     * When said methods are called, validations are done to guarantee that conflicting conditions are not added.
      *
-     * @param region Region to be used in the signature
-     * @param expirationDate Date indicating util when the pre-signed post can be used. Ultimately, the value passed
-     *      *                       here will be converted to ISO8601 UTC format in the policy as per specified by AWS.
+     * @param region                   Region to be used in the signature
+     * @param expirationDate           Date indicating util when the pre-signed post can be used. Ultimately, the value passed
+     *                                 here will be converted to ISO8601 UTC format in the policy as per specified by AWS.
      * @param keyStartingWithCondition Specifies which is the exact value that should be used to perform the upload. For
-     *                          convenience, use the {@link KeyConditionHelper#withKeyStartingWith(String)}
-     *                          {@link KeyConditionHelper#withKeyStartingWith(String)} or to build the condition.
-     * @param bucket The bucket when the file should be uploaded to.
+     *                                 convenience, use the {@link KeyConditionHelper#withKeyStartingWith(String)}
+     *                                 {@link KeyConditionHelper#withKeyStartingWith(String)} or to build the condition.
+     * @param bucket                   The bucket when the file should be uploaded to.
      * @return A PostParams builder which allows more fine-grained conditions to be added
      */
     public static Builder builder(
@@ -153,10 +159,17 @@ public final class PostParams {
             this.bucket = bucket;
         }
 
+        /**
+         * Builds the {@link PostParams} object.
+         * <br><br>
+         * Some conditions require other conditions to be present for the pre signed post to be valid. This method
+         * validates if said conditions where added, failing fast otherwise
+         *
+         * @return The {@link PostParams} to be used while
+         * calling {@link mendes.sutil.dyego.awspresignedpost.S3PostSigner#create(PostParams, AwsCredentialsProvider)}
+         */
         public PostParams build(){
-            validateConditions();
-            // TODO Identify mandatory fields and prevent building it if they are missing?
-            // TODO Make sure it is build only if it will work and nothing is missing - if possible
+            validateDependentConditions();
             addTags();
             return new PostParams(
                     bucket,
@@ -166,7 +179,7 @@ public final class PostParams {
             );
         }
 
-        private void validateConditions() {
+        private void validateDependentConditions() {
             conditions.keySet().forEach(
                     conditionField -> {
                         Set<ConditionField> requiredConditions = dependentConditionFields.get(conditionField);
