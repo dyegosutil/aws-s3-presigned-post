@@ -21,6 +21,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.util.Objects.requireNonNull;
 import static mendes.sutil.dyego.awspresignedpost.conditions.ConditionField.*;
 import static mendes.sutil.dyego.awspresignedpost.conditions.MatchCondition.Operator.EQ;
 
@@ -34,17 +35,19 @@ public final class S3PostSigner {
      * <a href="https://docs.aws.amazon.com/general/latest/gr/sigv4_signing.html">Aws Signature Version 4 specification</a>
      * <br><br>
      * This method performs several validations to prevent the generation of a faulty or invalid pre signed post
-     * TODO Add validations: start-with and with, required/dependent conditions
      *
-     * @param postParams Contains the information to be used to generate the pre signed post
+     * @param postParams Contains the conditions to be used to generate the pre signed post
+     * @param awsCredentialsProvider Contains the AWS credentials to be used to generate the pre signed post. If session
+     *                               credentials are received, the methods adds the {@link ConditionField#SECURITY_TOKEN}
+     *                               to the pre signed post
      * @return The object containing all the necessary params to be used to upload a file using pre signed post
      */
-    public static PresignedPost create(final PostParams postParams, final AwsCredentialsProvider provider) {
-        final AwsCredentials awsCredentials = validateAwsCredentials(provider);
-        final AmzDate amzDate = new AmzDate();
-        LOGGER.debug("Date used to generate pre signed post {}", amzDate.formatForPolicy());
-        Map<ConditionField, Condition> conditions = postParams.getConditions();
-        logConditions(conditions);
+    public static PresignedPost create(final PostParams postParams, final AwsCredentialsProvider awsCredentialsProvider) {
+        requireNonNull(postParams, "PostParam cannot be null");
+        final AwsCredentials awsCredentials = validateAwsCredentials(awsCredentialsProvider);
+
+        final AmzDate amzDate = getAmzDate();
+        Map<ConditionField, Condition> conditions = getConditions(postParams);
         addSessionTokenIfNeeded(conditions, awsCredentials);
 
         final String bucket = postParams.getBucket();
@@ -71,6 +74,18 @@ public final class S3PostSigner {
                 createUrl(bucket,region),
                 createConditionsMap(credentials,signature, amzDate, policyB64, keyUploadValue, returnConditions)
         );
+    }
+
+    private static Map<ConditionField, Condition> getConditions(PostParams postParams) {
+        Map<ConditionField, Condition> conditions = postParams.getConditions();
+        LOGGER.debug("Conditions to generate pre signed post {}", concatenateConditionField(conditions));
+        return conditions;
+    }
+
+    private static AmzDate getAmzDate() {
+        AmzDate amzDate = new AmzDate();
+        LOGGER.debug("Date used to generate pre signed post {}", amzDate.formatForPolicy());
+        return amzDate;
     }
 
     /**
@@ -107,7 +122,7 @@ public final class S3PostSigner {
     }
 
     private static AwsCredentials validateAwsCredentials(AwsCredentialsProvider provider) {
-        return Objects.requireNonNull(
+        return requireNonNull(
                 provider.resolveCredentials(),
                 "AwsCredentialsProvider must provide non-null AwsCredentials"
         );
@@ -121,10 +136,6 @@ public final class S3PostSigner {
         final String regionId = region.id();
         final String date = amzDate.formatForCredentials();
         return accessKeyId+"/"+date+"/"+regionId+"/s3/aws4_request";
-    }
-
-    private static void logConditions(Map<ConditionField, Condition> conditions) {
-        LOGGER.debug("Conditions to generate pre signed post {}", concatenateConditionField(conditions));
     }
 
     private static String concatenateConditionField(Map<ConditionField, Condition> condition) {
@@ -231,9 +242,10 @@ public final class S3PostSigner {
         );
     }
 
-    // TODO tel that token will be added auto
-    private static void addSessionTokenIfNeeded(Map<ConditionField, Condition> conditions,
-                                                final AwsCredentials awsCredentials) {
+    private static void addSessionTokenIfNeeded(
+            Map<ConditionField, Condition> conditions,
+            final AwsCredentials awsCredentials
+    ) {
         if (awsCredentials instanceof AwsSessionCredentials) {
             LOGGER.debug("Adding {} since Aws Sessions credentials are being used", SECURITY_TOKEN.name());
             conditions.put(
@@ -258,7 +270,6 @@ public final class S3PostSigner {
         return result;
     }
 
-    //    @RequiredArgsConstructor
     private record Policy(@Expose String expiration, @Expose Set<String[]> conditions) { // record TODO does not work with java8, change it
     } // TODO should not this be a set
 }
