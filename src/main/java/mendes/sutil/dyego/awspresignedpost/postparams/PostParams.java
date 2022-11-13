@@ -206,7 +206,7 @@ public final class PostParams {
                     taggingXml.append("</Value>");
                     taggingXml.append("</Tag>");
                 });
-                taggingXml.append("/TagSet");
+                taggingXml.append("</TagSet>");
                 taggingXml.append("</Tagging>");
 
                 withTaggingCondition(taggingXml.toString());

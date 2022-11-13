@@ -59,7 +59,7 @@ public class S3PostSignerTest {
         assertThat(actualConditions).extractingByKey("x-amz-algorithm", as(STRING)).isEqualTo("AWS4-HMAC-SHA256");
         assertThat(actualConditions).extractingByKey("x-amz-credential", as(STRING))
                 .isEqualTo(AWS_FAKE_KEY + "/" + getCredentialDate() + "/" + REGION + "/s3/aws4_request");
-        assertThat(actualConditions).containsEntry("key", "${filename}");
+        assertThat(actualConditions).containsEntry("key", "");
         assertThat(presignedPost.getUrl()).isEqualTo("https://" + bucket + ".s3." + REGION + ".amazonaws.com");
     }
 

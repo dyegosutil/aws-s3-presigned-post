@@ -210,16 +210,8 @@ public final class S3PostSigner {
         return "";
     }
 
-    /**
-     * // TODO remove the "${filename}"
-     */
     private static String getKeyUploadValue(Map<String, String> returnConditions) {
-        String keyValue = returnConditions.get(KEY.valueForApiCall);
-        if (keyValue.isEmpty()) {
-            return "${filename}";
-        } else {
-            return keyValue;
-        }
+        return returnConditions.get(KEY.valueForApiCall);
     }
 
     private static String generateSignature(

@@ -69,52 +69,51 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
         String tagging = "<Tagging><TagSet><Tag><Key>MyTestTag</Key><Value>MyTagValue</Value></Tag></TagSet></Tagging>";
         return Stream.of(
                 // content-length-range
-                // TODO can content-length-range be handled by free text input?
                 of(
                         "Should succeed while uploading file to S3 when it's size is between the minimum and maximum specified values in the policy",
-                        createDefaultPostParamBuilder()
+                        createDefaultPostParamBuilderSpecifyingKey()
                                 .withContentLengthRange(7, 20)
                                 .build()
                 ),
                 // content-length-range
                 of(
                         "Should succeed while uploading file to S3 when it's size is of the exact size specified values in the policy",
-                        createDefaultPostParamBuilder()
+                        createDefaultPostParamBuilderSpecifyingKey()
                                 .withContentLengthRange(14, 14)
                                 .build()
                 ),
                 // Cache-Control
                 of(
                         "Should succeed while uploading file to S3 when the cache-control specified is the same as the one in the policy",
-                        createDefaultPostParamBuilder()
+                        createDefaultPostParamBuilderSpecifyingKey()
                                 .withCacheControl("public, max-age=7200")
                                 .build()
                 ),
                 // Content-Type
                 of(
                         "Should succeed while uploading file to S3 when the exact Content-Type specified is the same as the one in the policy",
-                        createDefaultPostParamBuilder()
+                        createDefaultPostParamBuilderSpecifyingKey()
                                 .withContentType("text/plain")
                                 .build()
                 ),
                 // Content Disposition
                 of(
                         "Should succeed while uploading file to S3 using the exact content disposition set in the policy",
-                        createDefaultPostParamBuilder()
+                        createDefaultPostParamBuilderSpecifyingKey()
                                 .withContentDisposition("inline")
                                 .build()
                 ),
                 // Content-Encoding
                 of(
                         "Should succeed while uploading file to S3 using the exact content encoding set in the policy",
-                        createDefaultPostParamBuilder()
+                        createDefaultPostParamBuilderSpecifyingKey()
                                 .withContentEncoding("compress")
                                 .build()
                 ),
                 // Expires
                 of(
                         "Should succeed while uploading file to S3 using the exact Expires condition set in the policy",
-                        createDefaultPostParamBuilder()
+                        createDefaultPostParamBuilderSpecifyingKey()
                                 .withExpires("Wed, 21 Oct 2015 07:28:00 GMT")
                                 .build(),
                         null,
@@ -124,21 +123,21 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                 // acl
                 of(
                         "Should succeed while uploading file to S3 when the acl specified is the same as the one in the policy",
-                        createDefaultPostParamBuilder()
+                        createDefaultPostParamBuilderSpecifyingKey()
                                 .withAcl(PRIVATE)
                                 .build()
                 ),
                 // tagging
                 of(
                         "Should succeed while uploading file to S3 when it's free text tagging value is the same as the one specified in the policy",
-                        createDefaultPostParamBuilder()
+                        createDefaultPostParamBuilderSpecifyingKey()
                                 .withTagging(tagging)
                                 .build()
                 ),
                 // tagging
                 of(
                         "Should succeed while uploading file to S3 when it's tagging is the same as the one specified in the policy",
-                        createDefaultPostParamBuilder()
+                        createDefaultPostParamBuilderSpecifyingKey()
                                 .withTag("myTagKey", "myTagValue")
                                 .withTag("myTagKey2", "myTagValue2")
                                 .build()
@@ -146,14 +145,14 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                 // meta
                 of(
                         "Should succeed while uploading file to S3 when the 1 meta specified is the same as the one in the policy",
-                        createDefaultPostParamBuilder()
+                        createDefaultPostParamBuilderSpecifyingKey()
                                 .withMeta("my_meta_data", "value for my meta-data")
                                 .build()
                 ),
                 // meta
                 of(
                         "Should succeed while uploading file to S3 when the 2 metas specified are the same as the ones in the policy",
-                        createDefaultPostParamBuilder()
+                        createDefaultPostParamBuilderSpecifyingKey()
                                 .withMeta("my_meta_data", "value for my meta-data")
                                 .withMeta("my_meta_data2", "value for my meta-data2")
                                 .build()
@@ -162,21 +161,21 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                 // storage-class
                 of(
                         "Should succeed while uploading file to S3 when the storage class specified is the same as the one in the policy",
-                        createDefaultPostParamBuilder()
+                        createDefaultPostParamBuilderSpecifyingKey()
                                 .withStorageClass(STANDARD)
                                 .build()
                 ),
                 // website-redirect-location
                 of(
                         "Should succeed while uploading file to S3 when the website-redirect-location specified is the same as the one in the policy which redirects to a file in the same bucket",
-                        createDefaultPostParamBuilder()
+                        createDefaultPostParamBuilderSpecifyingKey()
                                 .withWebsiteRedirectLocation("/anotherPage.html")
                                 .build()
                 ),
                 // website-redirect-location
                 of(
                         "Should succeed while uploading file to S3 when the website-redirect-location specified is the same as the one in the policy which redirects to another website",
-                        createDefaultPostParamBuilder()
+                        createDefaultPostParamBuilderSpecifyingKey()
                                 .withWebsiteRedirectLocation("https://www.google.com")
                                 .build()
                 ),
@@ -185,7 +184,7 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                         "Should succeed while uploading file to S3 when the checksum algorithm is SHA256, " +
                                 "the checksum specified is the same as the one in the policy and the checksum is the" +
                                 " same as the one generated by aws",
-                        createDefaultPostParamBuilder()
+                        createDefaultPostParamBuilderSpecifyingKey()
                                 .withChecksumSha256(generateChecksumSha256Base64Encoded())
                                 .build()
                 ),
@@ -194,7 +193,7 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                         "Should succeed while uploading file to S3 when the checksum algorithm is SHA1, " +
                                 "the checksum specified is the same as the one in the policy and the checksum is the" +
                                 " same as the one generated by aws",
-                        createDefaultPostParamBuilder()
+                        createDefaultPostParamBuilderSpecifyingKey()
                                 .withChecksumSha1(generateChecksumSha1Base64Encoded())
                                 .build()
                 ),
@@ -203,7 +202,7 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                         "Should succeed while uploading file to S3 when the checksum algorithm is CRC32, " +
                                 "the checksum specified is the same as the one in the policy and the checksum is the" +
                                 " same as the one generated by aws",
-                        createDefaultPostParamBuilder()
+                        createDefaultPostParamBuilderSpecifyingKey()
                                 .withChecksumCrc32("DR7n6g==")
                                 .build()
                 ),
@@ -212,7 +211,7 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                         "Should succeed while uploading file to S3 when the checksum algorithm is CRC32C, " +
                                 "the checksum specified is the same as the one in the policy and the checksum is the" +
                                 " same as the one generated by aws",
-                        createDefaultPostParamBuilder()
+                        createDefaultPostParamBuilderSpecifyingKey()
                                 .withChecksumCrc32c("fPxmpw==")
                                 .build()
                 ),
@@ -220,21 +219,21 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                 // x-amz-server-side-encryption
                 of(
                         "Should succeed while uploading file to S3 when the server-side-encryption specified is AWS_KMS and is the same as the one in the policy",
-                        createDefaultPostParamBuilder()
+                        createDefaultPostParamBuilderSpecifyingKey()
                                 .withServerSideEncryption(PostParams.Builder.EncryptionAlgorithm.AWS_KMS)
                                 .build()
                 ),
                 // x-amz-server-side-encryption
                 of(
                         "Should succeed while uploading file to S3 when the server-side-encryption specified is AES256 and is the same as the one in the policy",
-                        createDefaultPostParamBuilder()
+                        createDefaultPostParamBuilderSpecifyingKey()
                                 .withServerSideEncryption(PostParams.Builder.EncryptionAlgorithm.AES256)
                                 .build()
                 ),
                 // server-side-encryption-aws-kms-key-id
                 of(
                         "Should succeed while uploading file to S3 when the server-side-encryption-aws-kms-key-id specified is the same as the one in the policy",
-                        createDefaultPostParamBuilder()
+                        createDefaultPostParamBuilderSpecifyingKey()
                                 .withServerSideEncryption(PostParams.Builder.EncryptionAlgorithm.AWS_KMS)
                                 .withServerSideEncryptionAwsKmsKeyId(System.getenv("AWS_KMS_S3_KEY"))
                                 .build()
@@ -243,7 +242,7 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                 of(
                         "Should succeed while uploading file to S3 when the base64 encoded json " +
                                 "server-side-encryption-context specified is the same as the one in the policy",
-                        createDefaultPostParamBuilder()
+                        createDefaultPostParamBuilderSpecifyingKey()
                                 .withServerSideEncryption(PostParams.Builder.EncryptionAlgorithm.AWS_KMS)
                                 .withServerSideEncryptionContext("ewogICJ0ZXN0IjogInRlc3QiCn0=")
                                 .build()
@@ -251,7 +250,7 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                 // server-side-encryption-bucket-key-enabled
                 of(
                         "Should succeed while uploading file to S3 when the server-side-encryption-bucket-key-enabled set as true specified is the same as the one in the policy",
-                        createDefaultPostParamBuilder()
+                        createDefaultPostParamBuilderSpecifyingKey()
                                 .withServerSideEncryption(PostParams.Builder.EncryptionAlgorithm.AWS_KMS)
                                 .withServerSideEncryptionBucketKeyEnabled()
                                 .build()
@@ -261,7 +260,7 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                 // x-amz-server-side-encryption-customer-key-MD5
                 of(
                         "Should succeed while uploading file to S3 when customer-provided encryption conditions specified are the same as the ones in the policy",
-                        createDefaultPostParamBuilder()
+                        createDefaultPostParamBuilderSpecifyingKey()
                                 .withServerSideEncryptionCustomerAlgorithmAES256()
                                 .withServerSideEncryptionCustomerKey(encodeToBase64(encryptionKey256bits))
                                 .withServerSideEncryptionCustomerKeyMD5(generateEncryptionKeyMD5DigestAsBase64(encryptionKey256bits))
