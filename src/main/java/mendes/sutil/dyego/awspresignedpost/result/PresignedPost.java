@@ -3,8 +3,6 @@ package mendes.sutil.dyego.awspresignedpost.result;
 import java.util.Map;
 import java.util.Objects;
 
-
-// TODO say that it will return the ${filename} for key or change it to not return the ${filename}
 public class PresignedPost {
     private final String url;
 

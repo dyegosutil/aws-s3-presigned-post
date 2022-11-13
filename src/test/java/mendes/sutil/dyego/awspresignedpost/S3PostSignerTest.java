@@ -95,10 +95,8 @@ public class S3PostSignerTest {
         );
 
         // Assert
-        assertThat(preSignedPost.getPolicy().getKey()).isEqualTo("policy");
-        assertThat(preSignedPost.getPolicy().getValue()).isNotEmpty();
-        assertThat(preSignedPost.getxAmzSignature().getKey()).isEqualTo("x-amz-signature");
-        assertThat(preSignedPost.getxAmzSignature().getValue()).isNotEmpty();
+        assertThat(preSignedPost.getPolicy()).isNotEmpty();
+        assertThat(preSignedPost.getxAmzSignature()).isNotEmpty();
     }
 
     private String getCredentialDate() {

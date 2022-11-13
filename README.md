@@ -4,6 +4,9 @@
 Generating S3 post data for uploading files into public access s3 buckets is not included in this library since it is pretty straight forward. 
 That is, the only parameters necessary are the ```key``` and ```file```.
 
+# TODO
+- double check if more debug log is needed
+
 # How to use
 
 ## Notes
@@ -37,9 +40,6 @@ sometimes seems that due to the ```=``` in the end of the policy, there was a si
 - Add formatting standards according to what is accepted by the community
 - scan for any vulnerabilities in dependencies or code betterment.
 - Use Value Objects
-
-TODO
-Add logging
 
 TODO
 Add adapted desc of this text:
