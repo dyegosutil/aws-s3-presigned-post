@@ -71,7 +71,7 @@ public class WithSuccessActionRedirectPostParamIntegrationTests extends Integrat
                         "Should succeed while uploading file to S3 when using the same " +
                                 "success_action_redirect specified in the policy and having the correct return from the " +
                                 "http client",
-                        createDefaultPostParamBuilder()
+                        createDefaultPostParamBuilderSpecifyingKey()
                                 .withSuccessActionRedirect("https://www.google.com")
                                 .build(),
                         "success_action_redirect"
@@ -81,7 +81,7 @@ public class WithSuccessActionRedirectPostParamIntegrationTests extends Integrat
                         "Should succeed while uploading file to S3 when using the same " +
                                 "redirect specified in the policy and having the correct return from the " +
                                 "http client",
-                        createDefaultPostParamBuilder()
+                        createDefaultPostParamBuilderSpecifyingKey()
                                 .withRedirect("https://www.google.com")
                                 .build(),
                         "redirect"

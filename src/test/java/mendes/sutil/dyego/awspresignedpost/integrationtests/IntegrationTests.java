@@ -21,12 +21,8 @@ import java.util.Map;
 import java.util.Objects;
 
 import static mendes.sutil.dyego.awspresignedpost.conditions.helper.KeyConditionHelper.withAnyKey;
+import static mendes.sutil.dyego.awspresignedpost.conditions.helper.KeyConditionHelper.withKey;
 
-/**
- * TODO Check to use S3 local?
- * // Reading credentials from ENV-variables
- *         AwsCredentialsProvider awsCredentialsProvider = DefaultCredentialsProvider.builder().build();
- */
 public class IntegrationTests {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(IntegrationTests.class);
@@ -92,16 +88,24 @@ public class IntegrationTests {
 
     /**
      * Creates a {@link PostParams.Builder} with the minimum mandatory parameters
-     *
-     * @return A {@link PostParams.Builder}
      */
-    protected static PostParams.Builder createDefaultPostParamBuilder() {
+    protected static PostParams.Builder createDefaultPostParamBuilder() { // todo remove?
         return PostParams
                 .builder(
                         REGION,
                         EXPIRATION_DATE,
                         BUCKET,
                         withAnyKey()
+                );
+    }
+
+    protected static PostParams.Builder createDefaultPostParamBuilderSpecifyingKey() {
+        return PostParams
+                .builder(
+                        REGION,
+                        EXPIRATION_DATE,
+                        BUCKET,
+                        withKey("test.txt")
                 );
     }
 

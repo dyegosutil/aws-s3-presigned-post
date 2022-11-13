@@ -20,7 +20,7 @@ public class SessionTokenIntegrationTests extends IntegrationTests {
     @DisplayName("Should succeed while uploading file to S3 using the same session token added in the policy")
     void arrangeThatAwsSessionCredentialIsUsed_actUploadingTheFile_assertSuccess() {
         // Arrange
-        PostParams postParams = createDefaultPostParamBuilder().build();
+        PostParams postParams = createDefaultPostParamBuilderSpecifyingKey().build();
         PresignedPost presignedPost = S3PostSigner.create(postParams, getAmazonCredentialsProviderWithAwsSessionCredentials());
 
         Map<String, String> conditions = presignedPost.getConditions();

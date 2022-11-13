@@ -43,7 +43,7 @@ public class WithSuccessActionStatusPostParamIntegrationTests extends Integratio
     @Test
     void arrangeThatWrongSuccessActionStatusConditionsIsUsed_actUploadingTheFile_assertTheReturnIsTheExpected() {
         // Arrange
-        PostParams postParams = createDefaultPostParamBuilder()
+        PostParams postParams = createDefaultPostParamBuilderSpecifyingKey()
                 .withSuccessActionStatus(PostParams.Builder.SuccessActionStatus.OK)
                 .build();
         PresignedPost presignedPost = S3PostSigner.create(postParams, getAmazonCredentialsProvider());
@@ -63,7 +63,7 @@ public class WithSuccessActionStatusPostParamIntegrationTests extends Integratio
                 of(
                         "Should succeed while uploading file to S3 when the success_action_status specified is " +
                                 "the same as the one in the policy and status code returned in the response should be 200",
-                        createDefaultPostParamBuilder()
+                        createDefaultPostParamBuilderSpecifyingKey()
                                 .withSuccessActionStatus(PostParams.Builder.SuccessActionStatus.OK)
                                 .build(),
                         200
@@ -71,7 +71,7 @@ public class WithSuccessActionStatusPostParamIntegrationTests extends Integratio
                 of(
                         "Should succeed while uploading file to S3 when the success_action_status specified is " +
                                 "the same as the one in the policy and status code returned in the response should be 201",
-                        createDefaultPostParamBuilder()
+                        createDefaultPostParamBuilderSpecifyingKey()
                                 .withSuccessActionStatus(PostParams.Builder.SuccessActionStatus.CREATED)
                                 .build(),
                         201
@@ -79,7 +79,7 @@ public class WithSuccessActionStatusPostParamIntegrationTests extends Integratio
                 of(
                         "Should succeed while uploading file to S3 when the success_action_status specified is " +
                                 "the same as the one in the policy and status code returned in the response should be 204",
-                        createDefaultPostParamBuilder()
+                        createDefaultPostParamBuilderSpecifyingKey()
                                 .withSuccessActionStatus(PostParams.Builder.SuccessActionStatus.NO_CONTENT)
                                 .build(),
                         204
