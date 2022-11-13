@@ -1,46 +1,19 @@
 package mendes.sutil.dyego.awspresignedpost.result;
 
-import java.util.AbstractMap;
-
-/**
- * TODO change to map
- */
 public class FreeTextPresignedPost {
-    private final Pair xAmzSignature; // TODO Find a patter for all of them, putting the x in front or not
-    private final Pair policy;
+    private final String xAmzSignature;
+    private final String policy;
 
     public FreeTextPresignedPost(final String signature, final String policy) {
-        this.xAmzSignature = new Pair("x-amz-signature", signature);
-        this.policy = new Pair("policy", policy);
+        this.xAmzSignature = signature;
+        this.policy = policy;
     }
 
-    // TODO Rename to a better name? Param?
-    public static class Pair extends AbstractMap.SimpleImmutableEntry<String, String> {
-        public Pair(String key, String value) {
-            super(key, value);
-        }
-
-        @Override
-        public String getKey() {
-            return super.getKey();
-        }
-
-        @Override
-        public String getValue() {
-            return super.getValue();
-        }
-
-        @Override
-        public String toString() {
-            return "key='"+getKey()+"' value='"+getValue()+"'}";
-        }
-    }
-
-    public Pair getxAmzSignature() {
+    public String getxAmzSignature() {
         return xAmzSignature;
     }
 
-    public Pair getPolicy() {
+    public String getPolicy() {
         return policy;
     }
 }

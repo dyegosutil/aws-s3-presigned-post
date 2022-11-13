@@ -26,8 +26,6 @@ public class TestUtils {
             .atZone(ZoneOffset.UTC);
 
     /**
-     * TODO check if this is really necessary, if it could be just done using not aws lib code
-     *
      * @return The AwsCredentialsProvider to be used to create the pre-signed post
      */
     public static AwsCredentialsProvider getAmazonCredentialsProvider() {

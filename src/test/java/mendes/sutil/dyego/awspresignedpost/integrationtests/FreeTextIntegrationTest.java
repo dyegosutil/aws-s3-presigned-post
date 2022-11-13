@@ -72,8 +72,8 @@ public class FreeTextIntegrationTest extends IntegrationTests {
     }
 
     private static Map<String, String> getFormData(FreeTextPresignedPost preSignedPost, Map<String, String> formDataParts) {
-        formDataParts.put("x-amz-signature", preSignedPost.getxAmzSignature().getValue());
-        formDataParts.put("policy", preSignedPost.getPolicy().getValue());
+        formDataParts.put("x-amz-signature", preSignedPost.getxAmzSignature());
+        formDataParts.put("policy", preSignedPost.getPolicy());
         return formDataParts;
     }
 

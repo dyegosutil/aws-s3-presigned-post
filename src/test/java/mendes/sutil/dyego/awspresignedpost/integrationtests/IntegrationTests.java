@@ -89,7 +89,7 @@ public class IntegrationTests {
     /**
      * Creates a {@link PostParams.Builder} with the minimum mandatory parameters
      */
-    protected static PostParams.Builder createDefaultPostParamBuilder() { // todo remove?
+    protected static PostParams.Builder createDefaultPostParamBuilder() {
         return PostParams
                 .builder(
                         REGION,
