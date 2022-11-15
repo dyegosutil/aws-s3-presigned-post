@@ -57,16 +57,6 @@ public class TestUtils {
         ).build();
     }
 
-    // todo not a working exmaple, see if a working example is needed here
-    public static FreeTextPostParams createFreeTextPostParams() {
-        return new FreeTextPostParams(
-                Region.AP_EAST_1,
-                ZonedDateTime.now(),
-                ZonedDateTime.now(),
-                Collections.singleton(new String[]{"eq", "$bucket", "myBucket"})
-        );
-    }
-
     public static DateTimeFormatter getAmzDateFormatter() {
         return DateTimeFormatter
                 .ofPattern("yyyyMMdd'T'HHmmss'Z'", Locale.ENGLISH)
