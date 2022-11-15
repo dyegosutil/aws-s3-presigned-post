@@ -263,7 +263,7 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                         createDefaultPostParamBuilderSpecifyingKey()
                                 .withServerSideEncryptionCustomerAlgorithmAES256()
                                 .withServerSideEncryptionCustomerKey(encodeToBase64(encryptionKey256bits))
-                                .withServerSideEncryptionCustomerKeyMD5(generateEncryptionKeyMD5DigestAsBase64(encryptionKey256bits))
+                                .withServerSideEncryptionCustomerKeyMD5(generateEncryptionKeyMD5DigestAsBase64())
                                 .build()
                 )
         );
@@ -691,12 +691,12 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                         createDefaultPostParamBuilder()
                                 .withServerSideEncryptionCustomerAlgorithmAES256()
                                 .withServerSideEncryptionCustomerKey(encodeToBase64(encryptionKey256bits))
-                                .withServerSideEncryptionCustomerKeyMD5(generateEncryptionKeyMD5DigestAsBase64(encryptionKey256bits))
+                                .withServerSideEncryptionCustomerKeyMD5(generateEncryptionKeyMD5DigestAsBase64())
                                 .build(),
                         createFormDataPartsWithKeyCondition(
                                 "x-amz-server-side-encryption-customer-algorithm", "AES256",
                                 "x-amz-server-side-encryption-customer-key", "wrongBase64value",
-                                "x-amz-server-side-encryption-customer-key-MD5", generateEncryptionKeyMD5DigestAsBase64(encryptionKey256bits)
+                                "x-amz-server-side-encryption-customer-key-MD5", generateEncryptionKeyMD5DigestAsBase64()
                         ),
                         false
                 ),
@@ -708,7 +708,7 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
                         createDefaultPostParamBuilder()
                                 .withServerSideEncryptionCustomerAlgorithmAES256()
                                 .withServerSideEncryptionCustomerKey(encodeToBase64(encryptionKey256bits))
-                                .withServerSideEncryptionCustomerKeyMD5(generateEncryptionKeyMD5DigestAsBase64(encryptionKey256bits))
+                                .withServerSideEncryptionCustomerKeyMD5(generateEncryptionKeyMD5DigestAsBase64())
                                 .build(),
                         createFormDataPartsWithKeyCondition(
                                 "x-amz-server-side-encryption-customer-algorithm", "AES256",

@@ -21,13 +21,8 @@ import static mendes.sutil.dyego.awspresignedpost.conditions.MatchCondition.Oper
  * A pre-signed POST request that can be executed at a later time without requiring additional signing or
  * authentication.
  */
-// TODO should it really be final?
-// TODO Rename to PostConditions?
-public final class PostParams {
+public class PostParams {
 
-    // TODO which fields are alwyas going to be there?
-    // TODO Double check if key is really mandatory, if it goes in the signature. If the file can be uploaded without
-    //  having key in the signature
     private final String bucket;
     private final Region region;
 

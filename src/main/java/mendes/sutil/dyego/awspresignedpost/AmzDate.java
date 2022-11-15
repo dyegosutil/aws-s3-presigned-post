@@ -21,7 +21,7 @@ public class AmzDate {
 
      private final ZonedDateTime date;
 
-    public AmzDate() { // TODO simplify this? I think of() is in order
+    public AmzDate() {
         this.date = ZonedDateTime.now(Clock.systemUTC());
     }
 

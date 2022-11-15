@@ -1,6 +1,6 @@
 package mendes.sutil.dyego.awspresignedpost.conditions;
 
-public enum ConditionField { // TODO move it
+public enum ConditionField {
 
     KEY("$key"),
     ALGORITHM("$x-amz-algorithm"),
