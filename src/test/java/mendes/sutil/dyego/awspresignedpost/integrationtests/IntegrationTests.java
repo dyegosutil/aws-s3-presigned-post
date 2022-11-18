@@ -151,7 +151,7 @@ public class IntegrationTests {
     protected static String generateEncryptionKeyMD5DigestAsBase64() {
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
-            md.update(IntegrationTests.encryptionKey256bits.getBytes());
+            md.update(encryptionKey256bits.getBytes());
             return encodeToBase64(md.digest());
         } catch (NoSuchAlgorithmException e) {
             LOGGER.error("Error while generating MD5 digest", e);

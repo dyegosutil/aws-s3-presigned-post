@@ -164,7 +164,7 @@ public class MandatoryPostParamsIntegrationTests extends IntegrationTests {
                         createFormDataParts("key", "test.txt"),
                         false
                 ),
-                // expiration date - Already tested in PostParamsTest#shouldThrowExceptionWhenBuilderWithKeyStartingWithExpirationDateIsExpired
+                // expiration date - Already tested in PostParamsTest
                 // key starts-with
                 of(
                         "Should succeed while uploading file to S3 when key correctly starts-with the value specified in the policy",
