@@ -199,7 +199,7 @@ public class FreeTextIntegrationTest extends IntegrationTests {
 
     private static FreeTextPostParams getFreeTextPostParams(Set<String[]> conditions) {
         return new FreeTextPostParams(
-                REGION, // TODO Is this inverted?, check if it is the same order as other PostParam
+                REGION,
                 EXPIRATION_DATE,
                 DATE,
                 conditions

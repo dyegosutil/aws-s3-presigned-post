@@ -1,12 +1,12 @@
 package mendes.sutil.dyego.awspresignedpost.postparams;
 
 import mendes.sutil.dyego.awspresignedpost.AmzExpirationDate;
+import mendes.sutil.dyego.awspresignedpost.Tag;
 import mendes.sutil.dyego.awspresignedpost.conditions.*;
 import mendes.sutil.dyego.awspresignedpost.conditions.helper.KeyConditionHelper;
 import mendes.sutil.dyego.awspresignedpost.conditions.key.ExactKeyCondition;
 import mendes.sutil.dyego.awspresignedpost.conditions.key.KeyCondition;
 import mendes.sutil.dyego.awspresignedpost.conditions.key.KeyStartingWithCondition;
-import mendes.sutil.dyego.awspresignedpost.Tag;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 
@@ -76,11 +76,10 @@ public class PostParams {
     }
 
     /**
-     * TODO add additional information because this method is too cool
      * Used to instantiate the {@link Builder} object to be used to provide all the conditions that must be fulfilled
-     * by for the AWS S3 post upload to be successful. This method accepts all the minimum necessary parameters to
-     * generate a valid pre-signed POST. After the instantiation, optional conditions can be added using the methods
-     * like {@link Builder#withContentLengthRange(long, long)} or {@link Builder#withContentTypeStartingWith(String)}.
+     * for the AWS S3 post upload to be successful. This method accepts all the minimum necessary parameters to
+     * generate a valid pre-signed POST. After the instantiation, optional conditions can be added using the variation of
+     * methods like {@link Builder#withContentLengthRange(long, long)} or {@link Builder#withContentTypeStartingWith(String)}.
      * When said methods are called, validations are done to guarantee that conflicting conditions are not added.
      *
      * @param region                   Region to be used in the signature
@@ -98,7 +97,6 @@ public class PostParams {
             String bucket,
             KeyStartingWithCondition keyStartingWithCondition
     ){
-        // TODO Enforce UTC expirationDate? Test what happens if this is expired in another timezone and the lib creates the pre-signed in UTC
         Objects.requireNonNull(expirationDate, "Argument expirationDate must not be null");
         return new Builder(
                 Objects.requireNonNull(region, "Argument region must not be null"),
@@ -144,17 +142,25 @@ public class PostParams {
             );
         }
 
-        private Builder(Region region, AmzExpirationDate amzExpirationDate, KeyCondition keyCondition, String bucket) {
-            // TODO add validation for expiration date?
+        private Builder(Region region, AmzExpirationDate expirationDate, KeyCondition keyCondition, String bucket) {
             Objects.requireNonNull(region);
-            Objects.requireNonNull(amzExpirationDate);
+            validateExpirationDate(expirationDate);
             Objects.requireNonNull(keyCondition);
             Objects.requireNonNull(bucket);
             this.region = region;
-            this.amzExpirationDate = amzExpirationDate;
+            this.amzExpirationDate = expirationDate;
             this.conditions.put(KEY, keyCondition);
             this.conditions.put(BUCKET, new MatchCondition(BUCKET, EQ, bucket));
             this.bucket = bucket;
+        }
+
+        private void validateExpirationDate(AmzExpirationDate expirationDate) {
+            Objects.requireNonNull(expirationDate);
+            if(expirationDate.isExpired()) {
+                throw new IllegalArgumentException(
+                        "The condition expiration date "+expirationDate.formatForPolicy()+" already expired"
+                );
+            }
         }
 
         /**

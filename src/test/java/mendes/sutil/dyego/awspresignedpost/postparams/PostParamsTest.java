@@ -4,7 +4,6 @@ import mendes.sutil.dyego.awspresignedpost.AmzExpirationDate;
 import mendes.sutil.dyego.awspresignedpost.conditions.*;
 import mendes.sutil.dyego.awspresignedpost.conditions.key.ExactKeyCondition;
 import mendes.sutil.dyego.awspresignedpost.conditions.key.KeyStartingWithCondition;
-import mendes.sutil.dyego.awspresignedpost.postparams.PostParams;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.Test;
@@ -13,7 +12,11 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import software.amazon.awssdk.regions.Region;
 
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Map;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -32,9 +35,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.params.provider.Arguments.of;
 
-/**
- * TODO Add correspondent tests of shouldTestIfConditionsWereAdded for the mandatory params.
- */
 class PostParamsTest {
 
     @ParameterizedTest(name = "{0}")
@@ -87,8 +87,8 @@ class PostParamsTest {
     }
 
     @ParameterizedTest(name = "{0}")
-    @MethodSource("shouldTestIfCheckConditionWasAddedTestCases")
-    void shouldTestIfCheckConditionsWereAdded(
+    @MethodSource("shouldTestIfChecksumConditionWasAddedTestCases")
+    void shouldTestIfChecksumConditionsWereAdded(
             String testName,
             Supplier<PostParams.Builder> builderSupplier,
             ConditionField expectedConditionField
@@ -226,6 +226,44 @@ class PostParamsTest {
         assertThat(postParams.getConditions()).containsValue(new ContentLengthRangeCondition(100,200));
     }
 
+    @Test
+    void shouldThrowExceptionWhenBuilderWithKeyStartingWithExpirationDateIsExpired() {
+        ZonedDateTime expirationDateInThePast = getExpirationDateInThePast();
+        String formattedDateTimeInThePast = new AmzExpirationDate(expirationDateInThePast).formatForPolicy();
+
+        assertThatThrownBy(() ->  PostParams
+                .builder(
+                        Region.AP_EAST_1,
+                        expirationDateInThePast,
+                        "testBucket",
+                        withAnyKey()
+                ))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("The condition expiration date " + formattedDateTimeInThePast + " already expired");
+    }
+
+    @Test
+    void shouldThrowExceptionWhenBuilderWithKeyExpirationDateIsExpired() {
+        ZonedDateTime expirationDateInThePast = getExpirationDateInThePast();
+        String formattedDateTimeInThePast = new AmzExpirationDate(expirationDateInThePast).formatForPolicy();
+
+        assertThatThrownBy(() ->  PostParams
+                .builder(
+                        Region.AP_EAST_1,
+                        expirationDateInThePast,
+                        "testBucket",
+                        withKey("myFile.txt")
+                ))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("The condition expiration date " + formattedDateTimeInThePast + " already expired");
+    }
+
+    private ZonedDateTime getExpirationDateInThePast() {
+        return Instant.now(Clock.systemUTC())
+                .minus(1, ChronoUnit.SECONDS)
+                .atZone(ZoneOffset.UTC);
+    }
+
     private static Stream<Arguments> createBuilderWithNullArgExactKeyConditionTestCases() {
         return Stream.of(
                 of(
@@ -300,7 +338,7 @@ class PostParamsTest {
         );
     }
 
-    private static Stream<Arguments> shouldTestIfCheckConditionWasAddedTestCases() {
+    private static Stream<Arguments> shouldTestIfChecksumConditionWasAddedTestCases() {
         return Stream.of(
                 of(
                         "Should assert that condition withChecksumSha256 was added",
