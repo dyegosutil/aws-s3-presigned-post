@@ -165,16 +165,7 @@ public class MandatoryPostParamsIntegrationTests extends IntegrationTests {
                         createFormDataParts("key", "test.txt"),
                         false
                 ),
-                // expiration date
-                of(
-                        "Should fail while uploading file to S3 when the expiration date has passed",
-                        REGION,
-                        getInvalidExpirationDate(),
-                        BUCKET,
-                        withKey("test.txt"),
-                        createFormDataParts("key", "test.txt"),
-                        false
-                ),
+                // expiration date - Already tested in PostParamsTest
                 // key starts-with
                 of(
                         "Should succeed while uploading file to S3 when key correctly starts-with the value specified in the policy",
@@ -210,7 +201,7 @@ public class MandatoryPostParamsIntegrationTests extends IntegrationTests {
     }
 
     private static ZonedDateTime getInvalidExpirationDate() {
-        return Instant.now(Clock.systemUTC()) // TODO check if clock should be a parameter, check documentation to see how expiration time should be received, check what would happen if different zoneids are used for expiration aand for date in the policy
+        return Instant.now(Clock.systemUTC())
                 .minus(1, ChronoUnit.MILLIS)
                 .atZone(ZoneOffset.UTC);
     }

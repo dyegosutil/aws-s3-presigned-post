@@ -32,7 +32,7 @@ public class FreeTextIntegrationTest extends IntegrationTests {
     private static final DateTimeFormatter YYYYMMDD_DATE_FORMATTER = getYyyyMmDdDateFormatter();
 
     @ParameterizedTest(name = "{0}")
-    @MethodSource("freeTextConditionSessionTokenTestCases")
+    @MethodSource("freeTextPostParamsTestCases")
     void freeTextConditionSessionTokenTest(
             String testDescription,
             Map<String, String> formDataParts
@@ -42,7 +42,7 @@ public class FreeTextIntegrationTest extends IntegrationTests {
         ).isTrue();
     }
 
-    private static Stream<Arguments> freeTextConditionSessionTokenTestCases() {
+    private static Stream<Arguments> freeTextPostParamsTestCases() {
         return Stream.of(
                 getSimpleUploadTestCase(),
                 getAwsStsTokenTestCase(),
@@ -98,11 +98,11 @@ public class FreeTextIntegrationTest extends IntegrationTests {
         return conditions;
     }
 
-    private static Set<String[]> getConditionsForUploadWithCustomerEncryptionKey() { // TODO have a general look in the free text part to see if there is anything else (code, functionality) that should be extracted out of it, meaning that otherwise it would not work for certainc ases
+    private static Set<String[]> getConditionsForUploadWithCustomerEncryptionKey() {
         Set<String[]> conditions = getMandatoryConditions();
         conditions.add(new String[]{"eq", "$x-amz-server-side-encryption-customer-algorithm", "AES256"});
         conditions.add(new String[]{"eq", "$x-amz-server-side-encryption-customer-key", encodeToBase64(encryptionKey256bits)});
-        conditions.add(new String[]{"eq", "$x-amz-server-side-encryption-customer-key-MD5", generateEncryptionKeyMD5DigestAsBase64(encryptionKey256bits)});
+        conditions.add(new String[]{"eq", "$x-amz-server-side-encryption-customer-key-MD5", generateEncryptionKeyMD5DigestAsBase64()});
         return conditions;
     }
 
@@ -139,7 +139,7 @@ public class FreeTextIntegrationTest extends IntegrationTests {
         formDataParts.put("x-amz-date", getAmzDateFormatter().format(DATE));
         formDataParts.put("x-amz-server-side-encryption-customer-algorithm", "AES256");
         formDataParts.put("x-amz-server-side-encryption-customer-key", encodeToBase64(encryptionKey256bits));
-        formDataParts.put("x-amz-server-side-encryption-customer-key-MD5", generateEncryptionKeyMD5DigestAsBase64(encryptionKey256bits));
+        formDataParts.put("x-amz-server-side-encryption-customer-key-MD5", generateEncryptionKeyMD5DigestAsBase64());
 
         return formDataParts;
     }
@@ -199,7 +199,7 @@ public class FreeTextIntegrationTest extends IntegrationTests {
 
     private static FreeTextPostParams getFreeTextPostParams(Set<String[]> conditions) {
         return new FreeTextPostParams(
-                REGION, // TODO Is this inverted?, check if it is the same order as other PostParam
+                REGION,
                 EXPIRATION_DATE,
                 DATE,
                 conditions

@@ -174,13 +174,12 @@ public final class S3PostSigner {
     }
 
     /**
-     * TODO review?
-     * Removes the {@link ConditionField#CONTENT_LENGTH_RANGE} and {@link ConditionField#BUCKET} since they are 
+     * Removes the {@link ConditionField#CONTENT_LENGTH_RANGE} and {@link ConditionField#BUCKET} since they are
      * not necessary to be added in the client using the pre signed post.
-     * 
-     * @return A Map containing the condition key and value to be used in the upload. The value is returned as it is if 
+     *
+     * @return A Map containing the condition key and value to be used in the upload. The value is returned as it is if
      * the condition operator is {@link MatchCondition.Operator#EQ}
-     * or an empty string if the condition is 
+     * or an empty string if the condition is
      * {@link MatchCondition.Operator#STARTS_WITH}, since the value
      * cannot be predicted.
      */
@@ -200,7 +199,8 @@ public final class S3PostSigner {
     }
 
     private static String getUploadKey(MatchCondition matchCondition) {
-        if (matchCondition instanceof MetaCondition metaCondition) {
+        if (matchCondition instanceof MetaCondition) {
+            MetaCondition metaCondition = (MetaCondition) matchCondition;
             return metaCondition.getConditionField().valueForApiCall + metaCondition.getMetaName();
         }
         return matchCondition.getConditionField().valueForApiCall;
@@ -247,7 +247,7 @@ public final class S3PostSigner {
             final AwsCredentials awsCredentials
     ) {
         if (awsCredentials instanceof AwsSessionCredentials) {
-            LOGGER.debug("Adding {} since Aws Sessions credentials are being used", SECURITY_TOKEN.name());
+            LOGGER.debug("Adding {} since Aws Session credential is being used", SECURITY_TOKEN.name());
             conditions.put(
                     SECURITY_TOKEN,
                     new MatchCondition(SECURITY_TOKEN, EQ, ((AwsSessionCredentials) awsCredentials).sessionToken())
@@ -263,13 +263,23 @@ public final class S3PostSigner {
 
         conditions.forEach((key,condition)-> result.add(condition.asAwsPolicyCondition()));
 
-        result.add(new String[]{"eq", ALGORITHM.valueForAwsPolicy, "AWS4-HMAC-SHA256"}); // TODO use EQ?
-        result.add(new String[]{"eq", DATE.valueForAwsPolicy, xAmzDate.formatForPolicy()});
-        result.add(new String[]{"eq", CREDENTIAL.valueForAwsPolicy, credentials});
+        result.add(new String[]{EQ.awsOperatorValue, ALGORITHM.valueForAwsPolicy, "AWS4-HMAC-SHA256"});
+        result.add(new String[]{EQ.awsOperatorValue, DATE.valueForAwsPolicy, xAmzDate.formatForPolicy()});
+        result.add(new String[]{EQ.awsOperatorValue, CREDENTIAL.valueForAwsPolicy, credentials});
 
         return result;
     }
 
-    private record Policy(@Expose String expiration, @Expose Set<String[]> conditions) { // record TODO does not work with java8, change it
-    } // TODO should not this be a set
+    private static class Policy {
+        @Expose
+        private String expiration;
+
+        @Expose
+        private Set<String[]> conditions;
+
+        public Policy(String expiration, Set<String[]> conditions) {
+            this.expiration = expiration;
+            this.conditions = conditions;
+        }
+    }
 }

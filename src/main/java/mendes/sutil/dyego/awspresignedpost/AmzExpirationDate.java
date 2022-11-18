@@ -1,5 +1,7 @@
 package mendes.sutil.dyego.awspresignedpost;
 
+import java.time.Clock;
+import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -35,5 +37,11 @@ public class AmzExpirationDate {
     @Override
     public int hashCode() {
         return Objects.hash(expirationDate);
+    }
+
+    public boolean isExpired() {
+        ZonedDateTime dateTimeNow = Instant.now(Clock.systemUTC())
+                .atZone(ZoneOffset.UTC);
+        return expirationDate.isBefore(dateTimeNow);
     }
 }

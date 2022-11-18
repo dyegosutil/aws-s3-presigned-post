@@ -1,19 +1,20 @@
 val jupiterVersion = "5.9.0"
 
 plugins {
-    id("java")
+    java
     idea
 }
 
 group = "org.example"
 version = "1.0-SNAPSHOT"
+java.sourceCompatibility = JavaVersion.VERSION_1_8
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    implementation(platform("software.amazon.awssdk:bom:2.18.11"))
+    implementation(platform("software.amazon.awssdk:bom:2.18.16"))
     implementation("software.amazon.awssdk:regions")
     implementation("software.amazon.awssdk:auth")
     implementation("com.google.code.gson:gson:2.10")

@@ -8,7 +8,6 @@ import java.util.Locale;
 
 /**
  * Used in the policy, signature and subsequently in the request
- * TODO Think about creating the domains Policy and Signature
  */
 public class AmzDate {
     private static final DateTimeFormatter AMZ_DATE_FORMATTER =
@@ -22,7 +21,7 @@ public class AmzDate {
 
      private final ZonedDateTime date;
 
-    public AmzDate() { // TODO simplify this? I think of() is in order
+    public AmzDate() {
         this.date = ZonedDateTime.now(Clock.systemUTC());
     }
 

@@ -13,7 +13,7 @@ public abstract class Condition {
 
     public ConditionField getConditionField() {
         return conditionField;
-    } // TODO protected?
+    }
 
     /**
      * Generates this condition's correspondent String array to be added to the policy

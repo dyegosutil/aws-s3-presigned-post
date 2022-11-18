@@ -12,10 +12,7 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static mendes.sutil.dyego.awspresignedpost.TestUtils.*;
 import static mendes.sutil.dyego.awspresignedpost.conditions.helper.KeyConditionHelper.withAnyKey;
@@ -124,6 +121,15 @@ public class S3PostSignerTest {
         ))
                 .isInstanceOf(NullPointerException.class)
                 .hasMessage(ERROR_MESSAGE_NULL_AWS_CREDENTIALS);
+    }
+
+    public FreeTextPostParams createFreeTextPostParams() {
+        return new FreeTextPostParams(
+                Region.AP_EAST_1,
+                ZonedDateTime.now(),
+                ZonedDateTime.now(),
+                Collections.singleton(new String[]{"eq", "$bucket", "myBucket"})
+        );
     }
 
     private AwsCredentialsProvider mockAwsCredentialsProvider() {

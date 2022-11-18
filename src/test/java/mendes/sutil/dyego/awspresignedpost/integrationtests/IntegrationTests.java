@@ -116,7 +116,6 @@ public class IntegrationTests {
         return formDataParts;
     }
 
-    // TODO make this better, repeated code here
     protected static Map<String, String> createFormDataPartsWithKeyCondition(String key, String value, String key2, String value2) {
         Map<String, String> formDataParts = new HashMap<>();
         formDataParts.put(key, value);
@@ -141,7 +140,7 @@ public class IntegrationTests {
         return formDataParts;
     }
 
-    protected static String encodeToBase64(String valueToBeBase64Encoded) { // TODO insert notNull annotation?
+    protected static String encodeToBase64(String valueToBeBase64Encoded) {
         return Base64.getEncoder().encodeToString(valueToBeBase64Encoded.getBytes(StandardCharsets.UTF_8));
     }
 
@@ -149,10 +148,10 @@ public class IntegrationTests {
         return Base64.getEncoder().encodeToString(valueToBeBase64Encoded);
     }
 
-    protected static String generateEncryptionKeyMD5DigestAsBase64(String encryptionKey) {
+    protected static String generateEncryptionKeyMD5DigestAsBase64() {
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
-            md.update(encryptionKey.getBytes());
+            md.update(encryptionKey256bits.getBytes());
             return encodeToBase64(md.digest());
         } catch (NoSuchAlgorithmException e) {
             LOGGER.error("Error while generating MD5 digest", e);
@@ -160,7 +159,6 @@ public class IntegrationTests {
         }
     }
 
-    // TODO possiblly shorter the name?
     protected Request createRequestFromConditions(Map<String, String> conditions, String url) {
         MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
         conditions.forEach(builder::addFormDataPart);

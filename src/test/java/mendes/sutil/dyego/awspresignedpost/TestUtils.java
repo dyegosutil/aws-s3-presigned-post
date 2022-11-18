@@ -1,6 +1,5 @@
 package mendes.sutil.dyego.awspresignedpost;
 
-import mendes.sutil.dyego.awspresignedpost.postparams.FreeTextPostParams;
 import mendes.sutil.dyego.awspresignedpost.postparams.PostParams;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
@@ -14,7 +13,6 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.Collections;
 import java.util.Locale;
 
 import static mendes.sutil.dyego.awspresignedpost.conditions.helper.KeyConditionHelper.withAnyKey;
@@ -22,7 +20,7 @@ import static mendes.sutil.dyego.awspresignedpost.conditions.helper.KeyCondition
 public class TestUtils {
 
     public static final ZonedDateTime EXPIRATION_DATE = Instant.now(Clock.systemUTC())
-            .plus(10, ChronoUnit.MINUTES)
+            .plus(1, ChronoUnit.MINUTES)
             .atZone(ZoneOffset.UTC);
 
     /**
@@ -55,16 +53,6 @@ public class TestUtils {
                 "myBucket",
                 withAnyKey()
         ).build();
-    }
-
-    // todo not a working exmaple, see if a working example is needed here
-    public static FreeTextPostParams createFreeTextPostParams() {
-        return new FreeTextPostParams(
-                Region.AP_EAST_1,
-                ZonedDateTime.now(),
-                ZonedDateTime.now(),
-                Collections.singleton(new String[]{"eq", "$bucket", "myBucket"})
-        );
     }
 
     public static DateTimeFormatter getAmzDateFormatter() {
