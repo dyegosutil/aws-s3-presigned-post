@@ -41,21 +41,27 @@ sometimes seems that due to the ```=``` in the end of the policy, there was a si
 - scan for any vulnerabilities in dependencies or code betterment.
 - Use Value Objects
 
-TODO
-Add adapted desc of this text:
-The following table describes a list of fields that you can use within a form. Among other fields, there is a signature field that you can use to authenticate requests. There are fields for you to specify the signature calculation algorithm (x-amz-algorithm), the credential scope (x-amz-credential) that you used to generate the signing key, and the date (x-amz-date) used to calculate the signature. Amazon S3 uses this information to re-create the signature. If the signatures match, Amazon S3 processes the request.
 
-TODO
-Also important to add:
+to be done: Add adapted desc of this text:
+The following table describes a list of fields that you can use within a form.
+Among other fields, there is a signature field that you can use to authenticate requests.
+There are fields for you to specify the signature calculation algorithm (x-amz-algorithm),
+the credential scope (x-amz-credential) that you used to generate the signing key, 
+and the date (x-amz-date) used to calculate the signature. 
+Amazon S3 uses this information to re-create the signature. 
+If the signatures match, Amazon S3 processes the request.
+
+
+to be done :Also important to add:
 All this is for authenticated requests
 
-TODO
+
 
 The {filename} variable does not work for eq. Only for startsWith.
 The reason is that in the policy we cannot simply specify "". It has to have a value. Otherwise the signature check will fail. Amazon will check in the end name_of_user_file == "" And the signature will fail. Hence the value has to be passed by the one calling the lib.
 For the startWith, it is okay since you will specify at list on character in front of the user file name.
 
-TODO
+
 Add info from this page
 https://docs.aws.amazon.com/general/latest/gr/signature-version-4.html
 
@@ -80,26 +86,22 @@ AWS_REGION = Ex: 'eu-central-1' any regition that can be used with Region.of(). 
 AWS_WRONG_REGION = This should be a bucket which is not the one you have configured the bucket for. Any value that can be used with Region.of()
 AWS_SESSION_TOKEN ?  
 ```
- TODO AWS_SESSION_TOKEN above
+ 
 
 Also is necessary to remove the @Disabled annotation from the test zzz
 
-TODO
-Add good logging and documentation for it so that if they want to set the valuedConditions
-them selves they can know what is wrong? Well they can use postman, but put some errors or warnings if possible
+to be done: inform how to activate logging
 
-TODO
-add log of IKIA inside token but without shwoing it full - show only A********Y
 If you want to allow the user upload any key use ```withAnyKey()``` and submit as key name ```${filename}```
 
-TODO
+
 Add examples of how to use each one of the options, content type, range, etc.
 
 Check where info should not be null?
 
 how to make your library to be found by searches on google.
 
-TODO 
+
 Expalin that this is the return when you set 201 as response
 
 ```xml
@@ -118,8 +120,6 @@ explain that if it is being used temporary credentials, it will be added automat
 
 ## How to get a session token
 aws-vault exec default --duration=12h -- env | egrep '^AWS_(ACCESS_KEY_ID|SECRET_ACCESS_KEY|SESSION_TOKEN)'
-
-TODO check if a simple url can be sent instead of a object with all the data.
 
 Important notes:
 - Even if you you are not adding a withSessionToken, if the credentials are temporary, a condition ```x-amz-security-token``` will be adde dot the policy and you will have to add it to the request.

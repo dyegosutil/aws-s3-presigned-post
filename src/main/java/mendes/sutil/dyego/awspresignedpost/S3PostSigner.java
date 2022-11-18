@@ -199,7 +199,8 @@ public final class S3PostSigner {
     }
 
     private static String getUploadKey(MatchCondition matchCondition) {
-        if (matchCondition instanceof MetaCondition metaCondition) {
+        if (matchCondition instanceof MetaCondition) {
+            MetaCondition metaCondition = (MetaCondition) matchCondition;
             return metaCondition.getConditionField().valueForApiCall + metaCondition.getMetaName();
         }
         return matchCondition.getConditionField().valueForApiCall;
@@ -246,7 +247,7 @@ public final class S3PostSigner {
             final AwsCredentials awsCredentials
     ) {
         if (awsCredentials instanceof AwsSessionCredentials) {
-            LOGGER.debug("Adding {} since Aws Sessions credentials are being used", SECURITY_TOKEN.name());
+            LOGGER.debug("Adding {} since Aws Session credential is being used", SECURITY_TOKEN.name());
             conditions.put(
                     SECURITY_TOKEN,
                     new MatchCondition(SECURITY_TOKEN, EQ, ((AwsSessionCredentials) awsCredentials).sessionToken())
@@ -269,6 +270,16 @@ public final class S3PostSigner {
         return result;
     }
 
-    private record Policy(@Expose String expiration, @Expose Set<String[]> conditions) { // record TODO does not work with java8, change it
-    } // TODO should not this be a set
+    private static class Policy {
+        @Expose
+        private String expiration;
+
+        @Expose
+        private Set<String[]> conditions;
+
+        public Policy(String expiration, Set<String[]> conditions) {
+            this.expiration = expiration;
+            this.conditions = conditions;
+        }
+    }
 }

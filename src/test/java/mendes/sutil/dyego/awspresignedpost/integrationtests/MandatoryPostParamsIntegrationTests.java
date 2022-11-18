@@ -27,7 +27,6 @@ import static mendes.sutil.dyego.awspresignedpost.conditions.helper.KeyCondition
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.params.provider.Arguments.of;
 
-@Disabled
 public class MandatoryPostParamsIntegrationTests extends IntegrationTests {
 
     @Test
