@@ -453,20 +453,6 @@ class PostParamsTest {
                         EQ
                 ),
                 of(
-                        "Should assert that condition withRedirectStartingWith was added",
-                        (Supplier<PostParams.Builder>) () -> createBuilder()
-                                .withRedirectStartingWith("test"),
-                        REDIRECT,
-                        STARTS_WITH
-                ),
-                of(
-                        "Should assert that condition withRedirect was added",
-                        (Supplier<PostParams.Builder>) () -> createBuilder()
-                                .withRedirect("test"),
-                        REDIRECT,
-                        EQ
-                ),
-                of(
                         "Should assert that condition withSuccessActionStatus was added",
                         (Supplier<PostParams.Builder>) () -> createBuilder()
                                 .withSuccessActionStatus(SuccessActionStatus.OK),
@@ -716,22 +702,6 @@ class PostParamsTest {
                                         .withSuccessActionRedirect("test")
                                         .withSuccessActionRedirectStartingWith("test"),
                         getExceptionMessage(SUCCESS_ACTION_REDIRECT)
-                ),
-                of(
-                        "Should assert that there is no conflicting STARTS_WITH and EQ REDIRECT conditions",
-                        (ThrowableAssert.ThrowingCallable) () ->
-                                createBuilder()
-                                        .withRedirectStartingWith("test")
-                                        .withRedirect("test"),
-                        getExceptionMessage(REDIRECT)
-                ),
-                of(
-                        "Should assert that there is no conflicting EQ and STARTS_WITH REDIRECT conditions",
-                        (ThrowableAssert.ThrowingCallable) () ->
-                                createBuilder()
-                                        .withRedirect("test")
-                                        .withRedirectStartingWith("test"),
-                        getExceptionMessage(REDIRECT)
                 ),
                 of(
                         "Should assert that there is no conflicting STARTS_WITH and EQ ACL conditions",

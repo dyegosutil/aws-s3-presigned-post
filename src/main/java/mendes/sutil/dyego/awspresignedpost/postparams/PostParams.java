@@ -13,6 +13,8 @@ import software.amazon.awssdk.regions.Region;
 import java.time.ZonedDateTime;
 import java.util.*;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static mendes.sutil.dyego.awspresignedpost.conditions.ConditionField.*;
 import static mendes.sutil.dyego.awspresignedpost.conditions.MatchCondition.Operator.EQ;
 import static mendes.sutil.dyego.awspresignedpost.conditions.MatchCondition.Operator.STARTS_WITH;
@@ -118,27 +120,27 @@ public class PostParams {
             dependentConditionFields = new HashMap<>();
             dependentConditionFields.put(
                     SERVER_SIDE_ENCRYPTION_AWS_KMS_KEY_ID,
-                    new TreeSet<>(List.of(SERVER_SIDE_ENCRYPTION))
+                    new TreeSet<>(singletonList(SERVER_SIDE_ENCRYPTION))
             );
             dependentConditionFields.put(
                     SERVER_SIDE_ENCRYPTION_CONTEXT,
-                    new TreeSet<>(List.of(SERVER_SIDE_ENCRYPTION))
+                    new TreeSet<>(singletonList(SERVER_SIDE_ENCRYPTION))
             );
             dependentConditionFields.put(
                     SERVER_SIDE_ENCRYPTION_BUCKET_KEY_ENABLED,
-                    new TreeSet<>(List.of(SERVER_SIDE_ENCRYPTION))
+                    new TreeSet<>(singletonList(SERVER_SIDE_ENCRYPTION))
             );
             dependentConditionFields.put(
                     SERVER_SIDE_ENCRYPTION_CUSTOMER_ALGORITHM,
-                    new TreeSet<>(List.of(SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY, SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY_MD5))
+                    new TreeSet<>(asList(SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY, SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY_MD5))
             );
             dependentConditionFields.put(
                     SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY,
-                    new TreeSet<>(List.of(SERVER_SIDE_ENCRYPTION_CUSTOMER_ALGORITHM, SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY_MD5))
+                    new TreeSet<>(asList(SERVER_SIDE_ENCRYPTION_CUSTOMER_ALGORITHM, SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY_MD5))
             );
             dependentConditionFields.put(
                     SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY_MD5,
-                    new TreeSet<>(List.of(SERVER_SIDE_ENCRYPTION_CUSTOMER_ALGORITHM, SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY))
+                    new TreeSet<>(asList(SERVER_SIDE_ENCRYPTION_CUSTOMER_ALGORITHM, SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY))
             );
         }
 
@@ -264,7 +266,7 @@ public class PostParams {
         }
 
         private Builder assertUniquenessAndAdd(ChecksumCondition checksumCondition) {
-            new HashSet<>(Arrays.asList(CHECKSUM_CRC32, CHECKSUM_CRC32C, CHECKSUM_SHA1, CHECKSUM_SHA256)).forEach(a -> {
+            new HashSet<>(asList(CHECKSUM_CRC32, CHECKSUM_CRC32C, CHECKSUM_SHA1, CHECKSUM_SHA256)).forEach(a -> {
                 if(conditions.containsKey(a)) {
                     throw new IllegalArgumentException("Only one checksum condition CRC32, CRC32C, SHA1 or SHA256 can be added at the same time");
                 }
@@ -326,7 +328,6 @@ public class PostParams {
             return this;
         }
 
-        // TODO Rename AWS mentions in the lib to Amazon S3
         /**
          * Used to define how should be the response code returned by AWS when the upload is successful. The enum
          * received as parameter here will be converted to 200, 201 or 204. Same values that should be used while using
@@ -521,14 +522,13 @@ public class PostParams {
 
         /**
          * Allows specifying which is the exact success_action_redirect condition of the file being uploaded.
-         * <p>
+         * <br><br>
          * This condition is used to redirect the user to another page after the upload. AWS will add query parameters
          * into the end of the url such as
-         * https://www.mydomain.com/?bucket=mybucket&key=test.txt&etag=%2254b0c58c7ce9f2a8b551351102ee0938%22
-         * <p>
-         * Example: https://www.mydomain.com // TODO suppress
+         * {@code https://www.mydomain.com/?bucket=mybucket&key=test.txt&etag=%2254b0c58c7ce9f2a8b551351102ee0938%22}
+         * <br><br>
          *
-         * @param value success_action_redirect value to be added to the policy
+         * @param value success_action_redirect value to be added to the policy, ex: {@code https://www.mydomain.com}
          * @return The {@link Builder} object
          */
         public Builder withSuccessActionRedirect(String value) {
@@ -538,53 +538,17 @@ public class PostParams {
         /**
          * Allows specifying how should be the beginning of the success_action_redirect for this upload.
          * This condition is used to redirect the user to another page after the upload
-         * <p>
+         * <br><br>
          * This condition is used to redirect the user to another page after the upload. AWS will add correspondent
          * query parameters into the end of the url such as
-         * https://www.mydomain.com/?bucket=mybucket&key=test.txt&etag=%2254b0c58c7ce9f2a8b551351102ee0938%22
-         * <p>
-         * Example: https://www.mydomain. // TODO suppress
+         * {@code https://www.mydomain.com/?bucket=mybucket&key=test.txt&etag=%2254b0c58c7ce9f2a8b551351102ee0938%22}
+         * <br><br>
          *
-         * @param value success_action_redirect condition value to be added to the policy
+         * @param value success_action_redirect condition value to be added to the policy, ex: {@code https://www.mydomain.com}
          * @return The {@link Builder} object
          */
         public Builder withSuccessActionRedirectStartingWith(String value) {
             return withStartingWithCondition(SUCCESS_ACTION_REDIRECT, value);
-        }
-
-        /**
-         * Allows specifying which is the exact redirect condition of the file being uploaded.
-         * <p>
-         * This condition is used to redirect the user to another page after the upload. AWS will add query parameters
-         * into the end of the url such as
-         * https://www.mydomain.com/?bucket=mybucket&key=test.txt&etag=%2254b0c58c7ce9f2a8b551351102ee0938%22
-         * <p>
-         * Example: https://www.mydomain.com // TODO suppress
-         *
-         * @param value redirect value to be added to the policy
-         * @return The {@link Builder} object
-         */
-        @Deprecated // TODO think about removing it
-        public Builder withRedirect(String value) {
-            return withCondition(REDIRECT, value);
-        }
-
-        /**
-         * Allows specifying how should be the beginning of the redirect for this upload.
-         * This condition is used to redirect the user to another page after the upload
-         * <p>
-         * This condition is used to redirect the user to another page after the upload. AWS will add correspondent
-         * query parameters into the end of the url such as
-         * https://www.mydomain.com/?bucket=mybucket&key=test.txt&etag=%2254b0c58c7ce9f2a8b551351102ee0938%22
-         * <p>
-         * Example: https://www.mydomain. // TODO suppress
-         *
-         * @param value redirect condition value to be added to the policy
-         * @return The {@link Builder} object
-         */
-        @Deprecated // TODO think about removing it
-        public Builder withRedirectStartingWith(String value) {
-            return withStartingWithCondition(REDIRECT, value);
         }
 
         /**

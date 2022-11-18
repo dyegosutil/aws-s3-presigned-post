@@ -748,7 +748,7 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
 
     private static String generateChecksumBase64Encoded(String algorithm) {
         try {
-            File file = new File("src/test/resources/test.txt");   //TODO shold be configuration?
+            File file = new File("src/test/resources/test.txt");
             MessageDigest messageDigest = MessageDigest.getInstance(algorithm);
             byte[] shaChecksum = generateFileChecksum(messageDigest, file);
             return Base64.getEncoder().encodeToString(shaChecksum);
