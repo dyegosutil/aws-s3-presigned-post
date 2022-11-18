@@ -75,16 +75,6 @@ public class WithSuccessActionRedirectPostParamIntegrationTests extends Integrat
                                 .withSuccessActionRedirect("https://www.google.com")
                                 .build(),
                         "success_action_redirect"
-                ),
-                // redirect
-                of(
-                        "Should succeed while uploading file to S3 when using the same " +
-                                "redirect specified in the policy and having the correct return from the " +
-                                "http client",
-                        createDefaultPostParamBuilderSpecifyingKey()
-                                .withRedirect("https://www.google.com")
-                                .build(),
-                        "redirect"
                 )
         );
     }
@@ -123,39 +113,6 @@ public class WithSuccessActionRedirectPostParamIntegrationTests extends Integrat
                                 .build(),
                         createFormDataPartsWithKeyCondition("success_action_redirect", String.format("https://%s.s3.eu-central-1.amazonaws.com", BUCKET)),
                         "success_action_redirect"
-                ),
-                // redirect
-                of(
-                        "Should fail while uploading file to S3 when not using the same " +
-                                "redirect specified in the policy and having the correct return from the " +
-                                "http client",
-                        createDefaultPostParamBuilder()
-                                .withRedirect("https://www.google.com")
-                                .build(),
-                        createFormDataPartsWithKeyCondition("redirect", String.format("https://%s.s3.eu-central-1.amazonaws.com", BUCKET)),
-                        "redirect"
-                ),
-                // redirect
-                of(
-                        "Should fail while uploading file to S3 when using a different initial string" +
-                                "redirect than specified in the policy and having the unsuccessful return " +
-                                "from the http client",
-                        createDefaultPostParamBuilder()
-                                .withRedirectStartingWith("https://www.google")
-                                .build(),
-                        createFormDataPartsWithKeyCondition("redirect", String.format("https://%s.s3.eu-central-1.amazonaws.com", BUCKET)),
-                        "redirect"
-                ),
-                // redirect
-                of(
-                        "Should succeed while uploading file to S3 when using the same initial string" +
-                                "redirect than specified in the policy and having the unsuccessful return " +
-                                "from the http client",
-                        createDefaultPostParamBuilder()
-                                .withRedirectStartingWith("https://www.google")
-                                .build(),
-                        createFormDataPartsWithKeyCondition("redirect", "https://www.google.com"),
-                        "redirect"
                 )
         );
     }

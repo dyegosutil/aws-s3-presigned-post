@@ -13,7 +13,6 @@ public enum ConditionField {
     CONTENT_ENCODING("$Content-Encoding"),
     EXPIRES("$Expires"),
     SUCCESS_ACTION_REDIRECT("$success_action_redirect"),
-    REDIRECT("$redirect"),
     SUCCESS_ACTION_STATUS("$success_action_status"),
     DATE("$x-amz-date"),
     BUCKET("$bucket"),
