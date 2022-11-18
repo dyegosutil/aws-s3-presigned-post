@@ -136,7 +136,7 @@ class PostParamsTest {
         PostParams.Builder builder = PostParams
                 .builder(
                         Region.AP_EAST_1,
-                        ZonedDateTime.now(),
+                        EXPIRATION_DATE,
                         "testBucket",
                         withAnyKey()
                 );
@@ -864,7 +864,7 @@ class PostParamsTest {
         return PostParams
                 .builder(
                         Region.AP_EAST_1,
-                        ZonedDateTime.now(),
+                        EXPIRATION_DATE,
                         "testBucket",
                         withAnyKey()
                 );
