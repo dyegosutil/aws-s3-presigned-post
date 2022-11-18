@@ -33,12 +33,21 @@ public enum ConditionField {
     SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY("$x-amz-server-side-encryption-customer-key"),
     SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY_MD5("$x-amz-server-side-encryption-customer-key-MD5"),
     CONTENT_LENGTH_RANGE("content-length-range");
-    
+
+    /**
+     * Generally starting with '$', indicates a condition to be fulfilled for the upload to be successful. This value
+     * is placed in the policy and sent to S3 AWS in the 'policy' field
+     */
     public final String valueForAwsPolicy;
+
+    /**
+     * Does not start with '$', indicates a condition to be fulfilled for the upload to be successful. This value
+     * is the one to be used as parameters in the client used to perform the POST to S3 AWS
+     */
     public final String valueForApiCall;
 
     ConditionField(String valueForAwsPolicy) {
         this.valueForAwsPolicy = valueForAwsPolicy;
-        this.valueForApiCall = valueForAwsPolicy.replace("$",""); // TODO add comment
+        this.valueForApiCall = valueForAwsPolicy.replace("$","");
     }
 }

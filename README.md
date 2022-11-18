@@ -4,7 +4,7 @@
 Generating S3 post data for uploading files into public access s3 buckets is not included in this library since it is pretty straight forward. 
 That is, the only parameters necessary are the ```key``` and ```file```.
 
-# TODO
+# To be done
 - double check if more debug log is needed
 
 # How to use

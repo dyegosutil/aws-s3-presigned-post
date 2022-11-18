@@ -159,7 +159,6 @@ public class IntegrationTests {
         }
     }
 
-    // TODO possiblly shorter the name?
     protected Request createRequestFromConditions(Map<String, String> conditions, String url) {
         MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
         conditions.forEach(builder::addFormDataPart);

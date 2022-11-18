@@ -174,13 +174,12 @@ public final class S3PostSigner {
     }
 
     /**
-     * TODO review?
-     * Removes the {@link ConditionField#CONTENT_LENGTH_RANGE} and {@link ConditionField#BUCKET} since they are 
+     * Removes the {@link ConditionField#CONTENT_LENGTH_RANGE} and {@link ConditionField#BUCKET} since they are
      * not necessary to be added in the client using the pre signed post.
-     * 
-     * @return A Map containing the condition key and value to be used in the upload. The value is returned as it is if 
+     *
+     * @return A Map containing the condition key and value to be used in the upload. The value is returned as it is if
      * the condition operator is {@link MatchCondition.Operator#EQ}
-     * or an empty string if the condition is 
+     * or an empty string if the condition is
      * {@link MatchCondition.Operator#STARTS_WITH}, since the value
      * cannot be predicted.
      */

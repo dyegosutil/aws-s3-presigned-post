@@ -46,15 +46,18 @@ public class PostParams {
     }
 
     /**
-     * Accepts all the minimum necessary parameters to generate a pre-signed valid pre-signed POST.
-     * // TODO add additional information because this method is too cool
+     * Used to instantiate the {@link Builder} object to be used to provide all the conditions that must be fulfilled
+     * by for the AWS S3 post upload to be successful. This method accepts all the minimum necessary parameters to
+     * generate a valid pre-signed POST. After the instantiation, optional conditions can be added using the methods
+     * like {@link Builder#withContentLengthRange(long, long)} or {@link Builder#withContentTypeStartingWith(String)}.
+     * When said methods are called, validations are done to guarantee that conflicting conditions are not added.
      *
-     * @param region Region to be used in the signature
-     * @param expirationDate Date indicating util when the pre-signed post can be used. Ultimately, the value passed
-     *                       here will be converted to ISO8601 UTC format in the policy as per specified by AWS.
+     * @param region            Region to be used in the signature
+     * @param expirationDate    Date indicating util when the pre-signed post can be used. Ultimately, the value passed
+     *                          here will be converted to ISO8601 UTC format in the policy as per specified by AWS.
      * @param exactKeyCondition Specifies which is the exact value that should be used to perform the upload. For
      *                          convenience, use the {@link KeyConditionHelper#withKey(String)} to build the condition.
-     * @param bucket The bucket when the file should be uploaded to.
+     * @param bucket            The bucket when the file should be uploaded to.
      * @return A PostParams builder which allows more fine-grained conditions to be added
      */
     public static Builder builder(
