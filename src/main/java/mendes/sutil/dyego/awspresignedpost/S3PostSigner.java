@@ -262,9 +262,9 @@ public final class S3PostSigner {
 
         conditions.forEach((key,condition)-> result.add(condition.asAwsPolicyCondition()));
 
-        result.add(new String[]{"eq", ALGORITHM.valueForAwsPolicy, "AWS4-HMAC-SHA256"}); // TODO use EQ?
-        result.add(new String[]{"eq", DATE.valueForAwsPolicy, xAmzDate.formatForPolicy()});
-        result.add(new String[]{"eq", CREDENTIAL.valueForAwsPolicy, credentials});
+        result.add(new String[]{EQ.awsOperatorValue, ALGORITHM.valueForAwsPolicy, "AWS4-HMAC-SHA256"});
+        result.add(new String[]{EQ.awsOperatorValue, DATE.valueForAwsPolicy, xAmzDate.formatForPolicy()});
+        result.add(new String[]{EQ.awsOperatorValue, CREDENTIAL.valueForAwsPolicy, credentials});
 
         return result;
     }
