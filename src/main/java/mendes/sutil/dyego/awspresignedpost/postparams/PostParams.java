@@ -593,13 +593,12 @@ public class PostParams {
          * </Tagging>
          * }
          * </pre>
-         * @param value The xml containing the tags to be added
+         * @param xml The xml containing the tags to be added
          * @return The {@link Builder} object
          */
-        public Builder withTagging(String value) {
-            Objects.requireNonNull(value);
-            //TODO adde isXml check
-            return assertUniquenessAndAddTagging(value);
+        public Builder withTagging(String xml) {
+            Objects.requireNonNull(xml);
+            return assertUniquenessAndAddTagging(xml);
         }
 
         /**
@@ -755,8 +754,6 @@ public class PostParams {
             return withCondition(SERVER_SIDE_ENCRYPTION_BUCKET_KEY_ENABLED, "true");
         }
 
-
-        // TODO check if this conditions conflict with the 4 earlier ones
         /**
          * Specifies the algorithm to use to when encrypting the object.
          * @return The {@link Builder} object

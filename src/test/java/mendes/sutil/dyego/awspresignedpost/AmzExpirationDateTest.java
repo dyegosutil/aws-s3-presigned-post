@@ -13,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class AmzExpirationDateTest {
 
     @Test
-    void pira() {
+    void isExpiredTest() {
         // Arrange
         ZonedDateTime dateTimeInThePast = Instant.now(Clock.systemUTC())
                 .minus(1, ChronoUnit.SECONDS)

@@ -5,9 +5,15 @@ Generating S3 post data for uploading files into public access s3 buckets is not
 That is, the only parameters necessary are the ```key``` and ```file```.
 
 # To be done
+- Check test coverage
 - double check if more debug log is needed
+- Use local stack to test locally?
+- either name the tests givenEmptySetOfConditions_whenCreatingFreeTextPostParams_thenThrowIllegalArgumentException or shoudl....
 
 # How to use
+
+To accept any value for a certain condition, use the ```with*StartingWith``` passing an empty string ```""``` such as ```withAclStartingWith("")```, ```withContentEncodingStartingWith("")```, etc
+In next releases, the method ```withAny*``` will be made available such as  ```withAnyAcl```, ```withAnyContentEncoding```, etc
 
 ## Notes
 
@@ -71,7 +77,7 @@ Add list of features
 
 ## Running locally
 
-The IT tests use AWS_KMS_S3_KEY to test the server-serid encryption.
+The Integration Tests use AWS_KMS_S3_KEY to test the server-serid encryption.
 The best way to configure it is to run the IT xyz which will create a encription key
 it is does exist yet for s3. Go to KMS in AWS and copy the key from there. It should
 be in the following format: "arn:aws:kms:region:acct-id:key/key-id"
