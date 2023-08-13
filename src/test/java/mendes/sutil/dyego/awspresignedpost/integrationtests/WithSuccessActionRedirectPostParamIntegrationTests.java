@@ -19,101 +19,95 @@ import static org.junit.jupiter.params.provider.Arguments.of;
 @Disabled
 public class WithSuccessActionRedirectPostParamIntegrationTests extends IntegrationTests {
 
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("getRedirectUploadConditionsTestCases")
-    void shouldTestUploadUsingRedirectCondition(
-            String testDescription,
-            PostParams postParams,
-            String redirectAwsConditionName
-    ) {
-        // Act
-        PresignedPost presignedPost = S3PostSigner.create(postParams, getAmazonCredentialsProvider());
+  @ParameterizedTest(name = "{0}")
+  @MethodSource("getRedirectUploadConditionsTestCases")
+  void shouldTestUploadUsingRedirectCondition(
+      String testDescription, PostParams postParams, String redirectAwsConditionName) {
+    // Act
+    PresignedPost presignedPost = S3PostSigner.create(postParams, getAmazonCredentialsProvider());
 
-        Map<String, String> conditions = presignedPost.getConditions();
-        Request request = createRequestFromConditions(conditions, presignedPost.getUrl());
+    Map<String, String> conditions = presignedPost.getConditions();
+    Request request = createRequestFromConditions(conditions, presignedPost.getUrl());
 
-        // Act
-        String redirectInResponse = postFileIntoS3ReturningRedirect(request);
+    // Act
+    String redirectInResponse = postFileIntoS3ReturningRedirect(request);
 
-        // Arrange
-        assertThat(redirectInResponse).isEqualTo(conditions.get(redirectAwsConditionName));
-    }
+    // Arrange
+    assertThat(redirectInResponse).isEqualTo(conditions.get(redirectAwsConditionName));
+  }
 
-    /**
-     * When the upload is not successful, the redirect in the response is in the following format
-     * [bucket].s3.region.amazonaws.com
-     */
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("getCustomizedRedirectUploadConditionsTestCases")
-    void shouldTestUploadUsingCustomizedRedirectCondition(
-            String testDescription,
-            PostParams postParams,
-            Map<String, String> formDataParts,
-            String redirectAwsConditionName
-    ) {
-        // Arrange
-        PresignedPost presignedPost = S3PostSigner.create(postParams, getAmazonCredentialsProvider());
-        Map<String, String> conditions = presignedPost.getConditions();
-        conditions.putAll(formDataParts);
-        Request request = createRequestFromConditions(conditions, presignedPost.getUrl());
+  /**
+   * When the upload is not successful, the redirect in the response is in the following format
+   * [bucket].s3.region.amazonaws.com
+   */
+  @ParameterizedTest(name = "{0}")
+  @MethodSource("getCustomizedRedirectUploadConditionsTestCases")
+  void shouldTestUploadUsingCustomizedRedirectCondition(
+      String testDescription,
+      PostParams postParams,
+      Map<String, String> formDataParts,
+      String redirectAwsConditionName) {
+    // Arrange
+    PresignedPost presignedPost = S3PostSigner.create(postParams, getAmazonCredentialsProvider());
+    Map<String, String> conditions = presignedPost.getConditions();
+    conditions.putAll(formDataParts);
+    Request request = createRequestFromConditions(conditions, presignedPost.getUrl());
 
-        // Act
-        String redirectInResponse = postFileIntoS3ReturningRedirect(request);
+    // Act
+    String redirectInResponse = postFileIntoS3ReturningRedirect(request);
 
-        // Assert
-        assertThat(redirectInResponse).isEqualTo(conditions.get(redirectAwsConditionName));
-    }
+    // Assert
+    assertThat(redirectInResponse).isEqualTo(conditions.get(redirectAwsConditionName));
+  }
 
-    public static Stream<Arguments> getRedirectUploadConditionsTestCases() {
-        return Stream.of(
-                // success_action_redirect
-                of(
-                        "Should succeed while uploading file to S3 when using the same " +
-                                "success_action_redirect specified in the policy and having the correct return from the " +
-                                "http client",
-                        createDefaultPostParamBuilderSpecifyingKey()
-                                .withSuccessActionRedirect("https://www.google.com")
-                                .build(),
-                        "success_action_redirect"
-                )
-        );
-    }
+  public static Stream<Arguments> getRedirectUploadConditionsTestCases() {
+    return Stream.of(
+        // success_action_redirect
+        of(
+            "Should succeed while uploading file to S3 when using the same success_action_redirect"
+                + " specified in the policy and having the correct return from the http client",
+            createDefaultPostParamBuilderSpecifyingKey()
+                .withSuccessActionRedirect("https://www.google.com")
+                .build(),
+            "success_action_redirect"));
+  }
 
-    public static Stream<Arguments> getCustomizedRedirectUploadConditionsTestCases() {
-        return Stream.of(
-                // success_action_redirect
-                of(
-                        "Should fail while uploading file to S3 when using a different " +
-                                "success_action_redirect specified in the policy and having the unsuccessful return " +
-                                "from the http client",
-                        createDefaultPostParamBuilder()
-                                .withSuccessActionRedirect("https://www.google.com")
-                                .build(),
-                        createFormDataPartsWithKeyCondition("success_action_redirect", String.format("https://%s.s3.eu-central-1.amazonaws.com", BUCKET)),
-                        "success_action_redirect"
-                ),
-                // success_action_redirect
-                of(
-                        "Should succeed while uploading file to S3 when using the same initial string " +
-                                "success_action_redirect specified in the policy and having the correct return from the " +
-                                "http client",
-                        createDefaultPostParamBuilder()
-                                .withSuccessActionRedirectStartingWith("https://www.google.")
-                                .build(),
-                        createFormDataPartsWithKeyCondition("success_action_redirect", "https://www.google.com.br"),
-                        "success_action_redirect"
-                ),
-                // success_action_redirect
-                of(
-                        "Should fail while uploading file to S3 when using a different initial string" +
-                                "success_action_redirect than specified in the policy and having the unsuccessful return " +
-                                "from the http client",
-                        createDefaultPostParamBuilder()
-                                .withSuccessActionRedirectStartingWith("https://www.google")
-                                .build(),
-                        createFormDataPartsWithKeyCondition("success_action_redirect", String.format("https://%s.s3.eu-central-1.amazonaws.com", BUCKET)),
-                        "success_action_redirect"
-                )
-        );
-    }
+  public static Stream<Arguments> getCustomizedRedirectUploadConditionsTestCases() {
+    return Stream.of(
+        // success_action_redirect
+        of(
+            "Should fail while uploading file to S3 when using a different success_action_redirect"
+                + " specified in the policy and having the unsuccessful return from the http"
+                + " client",
+            createDefaultPostParamBuilder()
+                .withSuccessActionRedirect("https://www.google.com")
+                .build(),
+            createFormDataPartsWithKeyCondition(
+                "success_action_redirect",
+                String.format("https://%s.s3.eu-central-1.amazonaws.com", BUCKET)),
+            "success_action_redirect"),
+        // success_action_redirect
+        of(
+            "Should succeed while uploading file to S3 when using the same initial string"
+                + " success_action_redirect specified in the policy and having the correct return"
+                + " from the http client",
+            createDefaultPostParamBuilder()
+                .withSuccessActionRedirectStartingWith("https://www.google.")
+                .build(),
+            createFormDataPartsWithKeyCondition(
+                "success_action_redirect", "https://www.google.com.br"),
+            "success_action_redirect"),
+        // success_action_redirect
+        of(
+            "Should fail while uploading file to S3 when using a different initial"
+                + " stringsuccess_action_redirect than specified in the policy and having the"
+                + " unsuccessful return from the http client",
+            createDefaultPostParamBuilder()
+                .withSuccessActionRedirectStartingWith("https://www.google")
+                .build(),
+            createFormDataPartsWithKeyCondition(
+                "success_action_redirect",
+                String.format("https://%s.s3.eu-central-1.amazonaws.com", BUCKET)),
+            "success_action_redirect"));
+  }
 }

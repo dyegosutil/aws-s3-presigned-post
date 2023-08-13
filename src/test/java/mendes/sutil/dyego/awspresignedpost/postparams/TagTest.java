@@ -6,16 +6,15 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 class TagTest {
 
+  // Act
+  @Test
+  public void shouldTestTag() {
+
     // Act
-    @Test
-    public void shouldTestTag() {
+    Tag tag = new Tag("testKey", "testValue");
 
-        // Act
-        Tag tag = new Tag("testKey", "testValue");
-
-        // Assert
-        assertThat(tag.getKey()).isEqualTo("testKey");
-        assertThat(tag.getValue()).isEqualTo("testValue");
-    }
-
+    // Assert
+    assertThat(tag.getKey()).isEqualTo("testKey");
+    assertThat(tag.getValue()).isEqualTo("testValue");
+  }
 }
