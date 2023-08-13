@@ -8,8 +8,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class OperatorTest {
 
     @Test
-    void toStringTest() {
-
+    void shouldGetToStringValueFromOperator() {
         // Act
         MatchCondition.Operator exactCondition = MatchCondition.Operator.EQ;
         MatchCondition.Operator startsWithCondition = MatchCondition.Operator.STARTS_WITH;

@@ -13,8 +13,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ConditionTest {
 
     @Test
-    @DisplayName("Test uniqueness of ContentLengthRangeCondition")
-    void testUniquenessOfContentLengthRangeCondition() {
+    @DisplayName("Should test uniqueness of ContentLengthRangeCondition")
+    void shouldTestUniquenessOfContentLengthRangeCondition() {
         // Arrange
         Map<ContentLengthRangeCondition, String> map = new HashMap<>();
 
@@ -27,8 +27,8 @@ class ConditionTest {
     }
 
     @Test
-    @DisplayName("Test uniqueness of MatchCondition")
-    void testUniquenessOfMatchCondition() {
+    @DisplayName("Should test uniqueness of MatchCondition")
+    void shouldTestUniquenessOfMatchCondition() {
         // Arrange
         Map<MatchCondition, String> map = new HashMap<>();
 
@@ -42,8 +42,8 @@ class ConditionTest {
     }
 
     @Test
-    @DisplayName("Test uniqueness of MetaCondition")
-    void testUniquenessOfMetaCondition() {
+    @DisplayName("Should test uniqueness of MetaCondition")
+    void shouldTestUniquenessOfMetaCondition() {
         // Arrange
         Map<MetaCondition, String> map = new HashMap<>();
 

@@ -22,7 +22,7 @@ public class WithSuccessActionStatusPostParamIntegrationTests extends Integratio
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("getTestCasesForWithSuccessActionStatus")
-    void arrangeThatSuccessActionStatusConditionsIsUsed_actUploadingTheFile_assertTheReturnIsTheExpected(
+    void shouldUploadFileUsingSuccessActionStatus(
             String testDescription,
             PostParams postParams,
             int expectedResponseCode
@@ -41,7 +41,7 @@ public class WithSuccessActionStatusPostParamIntegrationTests extends Integratio
     }
 
     @Test
-    void arrangeThatWrongSuccessActionStatusConditionsIsUsed_actUploadingTheFile_assertTheReturnIsTheExpected() {
+    void shouldNotUploadFileUsingWrongSuccessActionStatus() {
         // Arrange
         PostParams postParams = createDefaultPostParamBuilderSpecifyingKey()
                 .withSuccessActionStatus(PostParams.Builder.SuccessActionStatus.OK)

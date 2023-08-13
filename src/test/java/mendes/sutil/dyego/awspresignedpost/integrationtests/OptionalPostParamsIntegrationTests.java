@@ -34,7 +34,7 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("optionalPostParamsTestCases")
-    void arrangeThatOptionalConditionsReturnedFromPresignedPostAreUsed_actUploadingTheFile_assertTheReturnIsSuccess(
+    void shouldTestUploadWithOptionalParams(
             String testDescription,
             PostParams postParams
     ) {
@@ -46,7 +46,7 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("OptionalCustomizedPostParamsTestCases")
-    void arrangeThatOptionalCustomizedConditionsReturnedFromPresignedPostAreUsed_actUploadingTheFile_assertTheReturnIsTheExpected(
+    void shouldTestUploadWithCustomizedOptionalParams(
             String testDescription,
             PostParams postParams,
             Map<String, String> customizedUploadConditions,

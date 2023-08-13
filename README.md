@@ -5,9 +5,9 @@ Generating S3 post data for uploading files into public access s3 buckets is not
 That is, the only parameters necessary are the ```key``` and ```file```.
 
 # To be done
-- double check if more debug log is needed
-- Use local stack to test locally?
 - either name the tests givenEmptySetOfConditions_whenCreatingFreeTextPostParams_thenThrowIllegalArgumentException or shoudl....
+- check package names and move tests to correct packages
+- Make sure the AKIA, ASIAn temp credentials can be used
 
 # How to use
 
