@@ -1,4 +1,4 @@
-val jupiterVersion = "5.9.0"
+val jupiterVersion = "5.10.0"
 
 plugins {
     java
