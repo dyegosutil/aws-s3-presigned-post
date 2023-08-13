@@ -186,7 +186,7 @@ HAVE A look in well know libraries souce code to see what they are using
 - Add final where it should be
 
 
-- Test logging in ECS
+- Test logging in ECS.
 - Add id to pre signed post generation to get meaningfull loggings, userId, etc
 - Have one more look in the logs, Input validation failures e.g. protocol violations, unacceptable encodings, invalid parameter names and values
 
