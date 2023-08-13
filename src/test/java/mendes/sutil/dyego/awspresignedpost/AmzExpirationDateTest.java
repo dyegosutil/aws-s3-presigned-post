@@ -7,21 +7,23 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class AmzExpirationDateTest {
 
     @Test
-    void isExpiredTest() {
+    void shouldTestAmzExpirationDate() {
         // Arrange
-        ZonedDateTime dateTimeInThePast = Instant.now(Clock.systemUTC())
+        ZonedDateTime zonedDateTime = Instant.now(Clock.systemUTC())
                 .minus(1, ChronoUnit.SECONDS)
                 .atZone(ZoneOffset.UTC);
-        AmzExpirationDate amzExpirationDate = new AmzExpirationDate(dateTimeInThePast);
+        AmzExpirationDate amzExpirationDate = new AmzExpirationDate(zonedDateTime);
 
         // Act & Assert
         assertThat(amzExpirationDate.isExpired()).isTrue();
+        assertThat(amzExpirationDate.hashCode()).isEqualTo(Objects.hash(zonedDateTime));
     }
 
 }
