@@ -7,28 +7,28 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 class MetaConditionTest {
 
-  @Test
-  public void shouldGetAwsPolicyCondition() {
-    // Arrange
-    MetaCondition metaCondition = new MetaCondition(EQ, "myMetaName", "myMetaValue");
+    @Test
+    public void shouldGetAwsPolicyCondition() {
+        // Arrange
+        MetaCondition metaCondition = new MetaCondition(EQ, "myMetaName", "myMetaValue");
 
-    // Act
-    String[] awsPolicyCondition = metaCondition.asAwsPolicyCondition();
+        // Act
+        String[] awsPolicyCondition = metaCondition.asAwsPolicyCondition();
 
-    // Assert
-    assertThat(awsPolicyCondition)
-        .isEqualTo(new String[] {"eq", "$x-amz-meta-myMetaName", "myMetaValue"});
-  }
+        // Assert
+        assertThat(awsPolicyCondition)
+                .isEqualTo(new String[] {"eq", "$x-amz-meta-myMetaName", "myMetaValue"});
+    }
 
-  @Test
-  public void shouldGetMetaName() {
-    // Arrange
-    MetaCondition metaCondition = new MetaCondition(EQ, "myMetaName", "myMetaValue");
+    @Test
+    public void shouldGetMetaName() {
+        // Arrange
+        MetaCondition metaCondition = new MetaCondition(EQ, "myMetaName", "myMetaValue");
 
-    // Act
-    String metaName = metaCondition.getMetaName();
+        // Act
+        String metaName = metaCondition.getMetaName();
 
-    // Assert
-    assertThat(metaName).isEqualTo("myMetaName");
-  }
+        // Assert
+        assertThat(metaName).isEqualTo("myMetaName");
+    }
 }

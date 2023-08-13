@@ -4,22 +4,22 @@ import java.util.Map;
 import java.util.Objects;
 
 public class PresignedPost {
-  private final String url;
+    private final String url;
 
-  private final Map<String, String> conditions;
+    private final Map<String, String> conditions;
 
-  public PresignedPost(String url, Map<String, String> conditions) {
-    Objects.requireNonNull(url);
-    Objects.requireNonNull(conditions);
-    this.url = url;
-    this.conditions = conditions;
-  }
+    public PresignedPost(String url, Map<String, String> conditions) {
+        Objects.requireNonNull(url);
+        Objects.requireNonNull(conditions);
+        this.url = url;
+        this.conditions = conditions;
+    }
 
-  public String getUrl() {
-    return url;
-  }
+    public String getUrl() {
+        return url;
+    }
 
-  public Map<String, String> getConditions() {
-    return conditions;
-  }
+    public Map<String, String> getConditions() {
+        return conditions;
+    }
 }

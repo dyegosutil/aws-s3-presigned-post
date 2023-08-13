@@ -19,40 +19,41 @@ import static mendes.sutil.dyego.awspresignedpost.conditions.KeyConditionHelper.
 
 public class TestUtils {
 
-  public static final ZonedDateTime EXPIRATION_DATE =
-      Instant.now(Clock.systemUTC()).plus(1, ChronoUnit.MINUTES).atZone(ZoneOffset.UTC);
+    public static final ZonedDateTime EXPIRATION_DATE =
+            Instant.now(Clock.systemUTC()).plus(1, ChronoUnit.MINUTES).atZone(ZoneOffset.UTC);
 
-  /**
-   * @return The AwsCredentialsProvider to be used to create the pre-signed post
-   */
-  public static AwsCredentialsProvider getAmazonCredentialsProvider() {
-    return StaticCredentialsProvider.create(
-        AwsBasicCredentials.create(System.getenv("AWS_KEY"), System.getenv("AWS_SECRET")));
-  }
+    /**
+     * @return The AwsCredentialsProvider to be used to create the pre-signed post
+     */
+    public static AwsCredentialsProvider getAmazonCredentialsProvider() {
+        return StaticCredentialsProvider.create(
+                AwsBasicCredentials.create(System.getenv("AWS_KEY"), System.getenv("AWS_SECRET")));
+    }
 
-  public static AwsCredentialsProvider getAmazonCredentialsProvider(
-      String awsKey, String awsSecret) {
-    return StaticCredentialsProvider.create(AwsBasicCredentials.create(awsKey, awsSecret));
-  }
+    public static AwsCredentialsProvider getAmazonCredentialsProvider(
+            String awsKey, String awsSecret) {
+        return StaticCredentialsProvider.create(AwsBasicCredentials.create(awsKey, awsSecret));
+    }
 
-  public static AwsCredentialsProvider getAmazonCredentialsProviderWithAwsSessionCredentials() {
-    return StaticCredentialsProvider.create(
-        AwsSessionCredentials.create(
-            System.getenv("AWS_SESSION_KEY"),
-            System.getenv("AWS_SESSION_SECRET"),
-            System.getenv("AWS_SESSION_TOKEN")));
-  }
+    public static AwsCredentialsProvider getAmazonCredentialsProviderWithAwsSessionCredentials() {
+        return StaticCredentialsProvider.create(
+                AwsSessionCredentials.create(
+                        System.getenv("AWS_SESSION_KEY"),
+                        System.getenv("AWS_SESSION_SECRET"),
+                        System.getenv("AWS_SESSION_TOKEN")));
+    }
 
-  public static PostParams createPostParamsWithKeyStartingWith() {
-    return PostParams.builder(Region.AP_EAST_1, EXPIRATION_DATE, "myBucket", withAnyKey()).build();
-  }
+    public static PostParams createPostParamsWithKeyStartingWith() {
+        return PostParams.builder(Region.AP_EAST_1, EXPIRATION_DATE, "myBucket", withAnyKey())
+                .build();
+    }
 
-  public static DateTimeFormatter getAmzDateFormatter() {
-    return DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss'Z'", Locale.ENGLISH)
-        .withZone(ZoneOffset.UTC);
-  }
+    public static DateTimeFormatter getAmzDateFormatter() {
+        return DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss'Z'", Locale.ENGLISH)
+                .withZone(ZoneOffset.UTC);
+    }
 
-  public static DateTimeFormatter getYyyyMmDdDateFormatter() {
-    return DateTimeFormatter.ofPattern("yyyyMMdd", Locale.ENGLISH).withZone(ZoneOffset.UTC);
-  }
+    public static DateTimeFormatter getYyyyMmDdDateFormatter() {
+        return DateTimeFormatter.ofPattern("yyyyMMdd", Locale.ENGLISH).withZone(ZoneOffset.UTC);
+    }
 }
