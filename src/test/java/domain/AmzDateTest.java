@@ -9,7 +9,7 @@ import java.time.*;
 class AmzDateTest {
 
     @Test
-    void formatForPolicyTest() {
+    void shouldGetFormatForPolicyValue() {
         // Arrange
         String instantExpected = "2022-02-22T10:15:30Z";
         Clock clock = Clock.fixed(Instant.parse(instantExpected), ZoneOffset.UTC);
@@ -23,7 +23,7 @@ class AmzDateTest {
     }
 
     @Test
-    void formatForCredentialsTest() {
+    void shouldGetFormatForCredentialsValue() {
         // Arrange
         String instantExpected = "2022-02-22T10:15:30Z";
         Clock clock = Clock.fixed(Instant.parse(instantExpected), ZoneOffset.UTC);
@@ -37,7 +37,7 @@ class AmzDateTest {
     }
 
     @Test
-    void formatForSigningKeyTest() {
+    void shouldGetFormatForSigningKeyValue() {
         // Arrange
         String instantExpected = "2022-02-22T10:15:30Z";
         Clock clock = Clock.fixed(Instant.parse(instantExpected), ZoneOffset.UTC);

@@ -8,7 +8,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ExactKeyConditionTest {
 
     @Test
-    public void shouldSetValueCorrectly() {
+    public void shouldSetValueOfExactKeyCondition() {
         // Arrange
         String expectedExactKeyValue = "my_key_name.txt";
 

@@ -21,7 +21,7 @@ public class WithSuccessActionRedirectPostParamIntegrationTests extends Integrat
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("getRedirectUploadConditionsTestCases")
-    void arrangeThatRedirectIsUsed_actUploadingTheFile_assertSuccess(
+    void shouldTestUploadUsingRedirectCondition(
             String testDescription,
             PostParams postParams,
             String redirectAwsConditionName
@@ -41,11 +41,11 @@ public class WithSuccessActionRedirectPostParamIntegrationTests extends Integrat
 
     /**
      * When the upload is not successful, the redirect in the response is in the following format
-     * https://bucket.s3.region.amazonaws.com
+     * [bucket].s3.region.amazonaws.com
      */
     @ParameterizedTest(name = "{0}")
     @MethodSource("getCustomizedRedirectUploadConditionsTestCases")
-    void arrangeThatCustomizedRedirectIsUsed_actUploadingTheFile_assertExpectedResult(
+    void shouldTestUploadUsingCustomizedRedirectCondition(
             String testDescription,
             PostParams postParams,
             Map<String, String> formDataParts,

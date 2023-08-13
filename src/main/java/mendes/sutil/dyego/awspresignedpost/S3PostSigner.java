@@ -63,6 +63,7 @@ public final class S3PostSigner {
                 )
         );
         final String policyJson = new Gson().toJson(policy);
+        LOGGER.debug("PolicyJson: {}", policyJson);
         final String policyB64 = Base64.getEncoder().encodeToString(policyJson.getBytes(StandardCharsets.UTF_8));
         final String signature = generateSignature(postParams.getRegion(), amzDate, policyB64, awsCredentials);
 
@@ -72,7 +73,7 @@ public final class S3PostSigner {
 
         return new PresignedPost(
                 createUrl(bucket,region),
-                createConditionsMap(credentials,signature, amzDate, policyB64, keyUploadValue, returnConditions)
+                createConditionsMap(credentials, signature, amzDate, policyB64, keyUploadValue, returnConditions)
         );
     }
 

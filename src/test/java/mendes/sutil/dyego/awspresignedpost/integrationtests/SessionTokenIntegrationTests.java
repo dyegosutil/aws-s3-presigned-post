@@ -18,7 +18,7 @@ public class SessionTokenIntegrationTests extends IntegrationTests {
 
     @Test
     @DisplayName("Should succeed while uploading file to S3 using the same session token added in the policy")
-    void arrangeThatAwsSessionCredentialIsUsed_actUploadingTheFile_assertSuccess() {
+    void shouldUploadFileWithSessionToken() {
         // Arrange
         PostParams postParams = createDefaultPostParamBuilderSpecifyingKey().build();
         PresignedPost presignedPost = S3PostSigner.create(postParams, getAmazonCredentialsProviderWithAwsSessionCredentials());
@@ -35,7 +35,7 @@ public class SessionTokenIntegrationTests extends IntegrationTests {
 
     @Test
     @DisplayName("Should fail while uploading file to S3 using a different session token added in the policy")
-    void arrangeThatWrongAwsSessionCredentialIsUsed_actUploadingTheFile_assertSuccess() {
+    void shouldNotUploadFileWithWrongSessionToken() {
         // Arrange
         PostParams postParams = createDefaultPostParamBuilder().build();
         PresignedPost presignedPost = S3PostSigner.create(postParams, getAmazonCredentialsProviderWithAwsSessionCredentials());

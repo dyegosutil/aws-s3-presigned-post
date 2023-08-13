@@ -7,18 +7,13 @@ import mendes.sutil.dyego.awspresignedpost.conditions.key.KeyStartingWithConditi
 import mendes.sutil.dyego.awspresignedpost.postparams.PostParams;
 import mendes.sutil.dyego.awspresignedpost.result.PresignedPost;
 import okhttp3.Request;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import software.amazon.awssdk.regions.Region;
 
-import java.time.Clock;
-import java.time.Instant;
-import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -27,11 +22,11 @@ import static mendes.sutil.dyego.awspresignedpost.conditions.helper.KeyCondition
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.params.provider.Arguments.of;
 
-@Disabled
+//@Disabled
 public class MandatoryPostParamsIntegrationTests extends IntegrationTests {
 
     @Test
-    void arrangeThatConditionsReturnedFromPresignedPostAreUsed_actUploadingTheFile_assertTheReturnIsSuccess() {
+    void shouldUploadFileWithMandatoryParams() {
         // Arrange
         PostParams postParams = PostParams
                 .builder(
@@ -53,13 +48,13 @@ public class MandatoryPostParamsIntegrationTests extends IntegrationTests {
     }
 
     /**
-     * @param customizedUploadConditions Used for specifying different values then the ones provided by the presigned
-     *                                   post, that is either values for "startWith" conditions or wrong values for
+     * @param customizedUploadConditions Used for specifying different values than the ones provided by the pre-signed
+     *                                   post, which are either values for "startWith" conditions or wrong values for
      *                                   asserting failure
      */
     @ParameterizedTest(name = "{0}")
     @MethodSource("getCustomizedUploadConditionsTestCases")
-    void arrangeCustomizedPresignedPostConditions_actUploadTheFile_assertExpectedResult(
+    void shouldTryToPerformUploadMatchingWithExpectedResult(
             String testDescription,
             Region region,
             ZonedDateTime expirationDate,
@@ -198,11 +193,5 @@ public class MandatoryPostParamsIntegrationTests extends IntegrationTests {
                         true
                 )
         );
-    }
-
-    private static ZonedDateTime getInvalidExpirationDate() { // TODO remove?
-        return Instant.now(Clock.systemUTC())
-                .minus(1, ChronoUnit.MILLIS)
-                .atZone(ZoneOffset.UTC);
     }
 }

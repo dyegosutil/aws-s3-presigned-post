@@ -18,7 +18,7 @@ class FreeTextPostParamsTest {
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("getTestCases")
-    void givenNullArguments_whenCreatingFreeTextPostParams_thenThrowIllegalArgumentException(
+    void shouldThrowExceptionWhenUsingNullArgumentsCreatingFreeTextPostParams(
             String testCaseName,
             Supplier<FreeTextPostParams> supplier
     ) {
@@ -28,7 +28,7 @@ class FreeTextPostParamsTest {
     }
 
     @Test
-    void givenEmptySetOfConditions_whenCreatingFreeTextPostParams_thenThrowIllegalArgumentException() {
+    void shouldThrowExceptionWhenUsingEmptySetOfConditionsCreatingFreeTextPostParams() {
 
         // when
         assertThatThrownBy(

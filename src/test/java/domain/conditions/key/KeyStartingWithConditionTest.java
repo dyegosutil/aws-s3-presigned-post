@@ -8,7 +8,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class KeyStartingWithConditionTest {
 
     @Test
-    void pira() {
+    void shouldSetValueOfKeyStartingWithCondition() {
         // Arrange
         final String value = "/user/leo";
 

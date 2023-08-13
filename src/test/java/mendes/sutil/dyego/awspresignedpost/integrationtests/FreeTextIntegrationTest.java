@@ -33,7 +33,7 @@ public class FreeTextIntegrationTest extends IntegrationTests {
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("freeTextPostParamsTestCases")
-    void freeTextConditionSessionTokenTest(
+    void shouldTestFreeTextConditionSessionToken(
             String testDescription,
             Map<String, String> formDataParts
     ) {
