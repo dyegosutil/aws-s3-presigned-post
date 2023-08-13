@@ -34,44 +34,41 @@ public class FreeTextIntegrationTest extends IntegrationTests {
     @ParameterizedTest(name = "{0}")
     @MethodSource("freeTextPostParamsTestCases")
     void shouldTestFreeTextConditionSessionToken(
-            String testDescription,
-            Map<String, String> formDataParts
-    ) {
-        assertThat(
-                uploadToAws(formDataParts, getUrl())
-        ).isTrue();
+            String testDescription, Map<String, String> formDataParts) {
+        assertThat(uploadToAws(formDataParts, getUrl())).isTrue();
     }
 
     private static Stream<Arguments> freeTextPostParamsTestCases() {
         return Stream.of(
                 getSimpleUploadTestCase(),
                 getAwsStsTokenTestCase(),
-                getEncryptionWithCustomerKeyTestCase()
-        );
+                getEncryptionWithCustomerKeyTestCase());
     }
 
     private static Arguments getEncryptionWithCustomerKeyTestCase() {
-        FreeTextPostParams freeTextPostParams = getFreeTextPostParams(getConditionsForUploadWithCustomerEncryptionKey());
-        PresignedFreeTextPost preSignedPost = S3PostSigner.create(freeTextPostParams, getAmazonCredentialsProvider());
+        FreeTextPostParams freeTextPostParams =
+                getFreeTextPostParams(getConditionsForUploadWithCustomerEncryptionKey());
+        PresignedFreeTextPost preSignedPost =
+                S3PostSigner.create(freeTextPostParams, getAmazonCredentialsProvider());
         return of(
-                "Should upload file using free text post params where file encryption is used with key specified by the user. One of the most complex cases",
-                getFormData(preSignedPost, getFormDataPartsForUploadWithCustomerEncryptionKey())
-        );
+                "Should upload file using free text post params where file encryption is used with"
+                        + " key specified by the user. One of the most complex cases",
+                getFormData(preSignedPost, getFormDataPartsForUploadWithCustomerEncryptionKey()));
     }
 
     private static Arguments getAwsStsTokenTestCase() {
         FreeTextPostParams freeTextPostParams = getFreeTextPostParams(getConditionsForAwsSts());
-        PresignedFreeTextPost preSignedPost = S3PostSigner.create(
-                freeTextPostParams,
-                getAmazonCredentialsProviderWithAwsSessionCredentials()
-        );
+        PresignedFreeTextPost preSignedPost =
+                S3PostSigner.create(
+                        freeTextPostParams,
+                        getAmazonCredentialsProviderWithAwsSessionCredentials());
         return of(
                 "Should upload file using free text post params where aws sts token is used",
-                getFormData(preSignedPost, getFormDataPartsAwsSts())
-        );
+                getFormData(preSignedPost, getFormDataPartsAwsSts()));
     }
 
-    private static Map<String, String> getFormData(PresignedFreeTextPost preSignedPost, Map<String, String> formDataParts) {
+    private static Map<String, String> getFormData(
+            PresignedFreeTextPost preSignedPost, Map<String, String> formDataParts) {
         formDataParts.put("x-amz-signature", preSignedPost.getxAmzSignature());
         formDataParts.put("policy", preSignedPost.getPolicy());
         return formDataParts;
@@ -82,43 +79,53 @@ public class FreeTextIntegrationTest extends IntegrationTests {
      */
     private static Arguments getSimpleUploadTestCase() {
         FreeTextPostParams freeTextPostParams = getFreeTextPostParams(getMandatoryConditions());
-        PresignedFreeTextPost preSignedPost = S3PostSigner.create(
-                freeTextPostParams,
-                getAmazonCredentialsProvider()
-        );
+        PresignedFreeTextPost preSignedPost =
+                S3PostSigner.create(freeTextPostParams, getAmazonCredentialsProvider());
         return of(
-                "Should upload file using free text post params where mandatory params are used. This is the simplest upload condition possible",
-                getFormData(preSignedPost, getMandatoryFormDataParts())
-        );
+                "Should upload file using free text post params where mandatory params are used."
+                        + " This is the simplest upload condition possible",
+                getFormData(preSignedPost, getMandatoryFormDataParts()));
     }
 
     private static Set<String[]> getMandatoryConditions() {
         Set<String[]> conditions = getCommonConditions();
-        conditions.add(new String[]{"eq", "$x-amz-credential", getCredential()});
+        conditions.add(new String[] {"eq", "$x-amz-credential", getCredential()});
         return conditions;
     }
 
     private static Set<String[]> getConditionsForUploadWithCustomerEncryptionKey() {
         Set<String[]> conditions = getMandatoryConditions();
-        conditions.add(new String[]{"eq", "$x-amz-server-side-encryption-customer-algorithm", "AES256"});
-        conditions.add(new String[]{"eq", "$x-amz-server-side-encryption-customer-key", encodeToBase64(encryptionKey256bits)});
-        conditions.add(new String[]{"eq", "$x-amz-server-side-encryption-customer-key-MD5", generateEncryptionKeyMD5DigestAsBase64()});
+        conditions.add(
+                new String[] {"eq", "$x-amz-server-side-encryption-customer-algorithm", "AES256"});
+        conditions.add(
+                new String[] {
+                    "eq",
+                    "$x-amz-server-side-encryption-customer-key",
+                    encodeToBase64(encryptionKey256bits)
+                });
+        conditions.add(
+                new String[] {
+                    "eq",
+                    "$x-amz-server-side-encryption-customer-key-MD5",
+                    generateEncryptionKeyMD5DigestAsBase64()
+                });
         return conditions;
     }
 
     private static Set<String[]> getConditionsForAwsSts() {
         Set<String[]> conditions = getCommonConditions();
-        conditions.add(new String[]{"eq", "$x-amz-credential", getSessionCredential()});
-        conditions.add(new String[]{"eq", "$x-amz-security-token", System.getenv("AWS_SESSION_TOKEN")});
+        conditions.add(new String[] {"eq", "$x-amz-credential", getSessionCredential()});
+        conditions.add(
+                new String[] {"eq", "$x-amz-security-token", System.getenv("AWS_SESSION_TOKEN")});
         return conditions;
     }
 
     private static Set<String[]> getCommonConditions() {
         Set<String[]> conditions = new HashSet<>();
-        conditions.add(new String[]{"eq", "$key", "test.txt"});
-        conditions.add(new String[]{"eq", "$x-amz-algorithm", "AWS4-HMAC-SHA256"});
-        conditions.add(new String[]{"eq", "$x-amz-date", getAmzDateFormatter().format(DATE)});
-        conditions.add(new String[]{"eq", "$bucket", BUCKET});
+        conditions.add(new String[] {"eq", "$key", "test.txt"});
+        conditions.add(new String[] {"eq", "$x-amz-algorithm", "AWS4-HMAC-SHA256"});
+        conditions.add(new String[] {"eq", "$x-amz-date", getAmzDateFormatter().format(DATE)});
+        conditions.add(new String[] {"eq", "$bucket", BUCKET});
         return conditions;
     }
 
@@ -138,8 +145,11 @@ public class FreeTextIntegrationTest extends IntegrationTests {
         formDataParts.put("x-amz-algorithm", "AWS4-HMAC-SHA256");
         formDataParts.put("x-amz-date", getAmzDateFormatter().format(DATE));
         formDataParts.put("x-amz-server-side-encryption-customer-algorithm", "AES256");
-        formDataParts.put("x-amz-server-side-encryption-customer-key", encodeToBase64(encryptionKey256bits));
-        formDataParts.put("x-amz-server-side-encryption-customer-key-MD5", generateEncryptionKeyMD5DigestAsBase64());
+        formDataParts.put(
+                "x-amz-server-side-encryption-customer-key", encodeToBase64(encryptionKey256bits));
+        formDataParts.put(
+                "x-amz-server-side-encryption-customer-key-MD5",
+                generateEncryptionKeyMD5DigestAsBase64());
 
         return formDataParts;
     }
@@ -160,16 +170,15 @@ public class FreeTextIntegrationTest extends IntegrationTests {
     }
 
     private Request createRequest(Map<String, String> formDataParts, String url) {
-        MultipartBody.Builder builder = new MultipartBody.Builder()
-                .setType(MultipartBody.FORM);
+        MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
         formDataParts.forEach(builder::addFormDataPart);
         // file has to be the last parameter according to aws
-        builder.addFormDataPart("file", "test.txt", RequestBody.create("this is a test".getBytes(), MediaType.parse("text/plain")));
+        builder.addFormDataPart(
+                "file",
+                "test.txt",
+                RequestBody.create("this is a test".getBytes(), MediaType.parse("text/plain")));
         MultipartBody multipartBody = builder.build();
-        return new Request.Builder()
-                .url(url)
-                .post(multipartBody)
-                .build();
+        return new Request.Builder().url(url).post(multipartBody).build();
     }
 
     private static String getCredential() {
@@ -177,8 +186,7 @@ public class FreeTextIntegrationTest extends IntegrationTests {
                 "%s/%s/%s/s3/aws4_request",
                 System.getenv("AWS_KEY"),
                 YYYYMMDD_DATE_FORMATTER.format(DATE),
-                System.getenv("AWS_REGION")
-        );
+                System.getenv("AWS_REGION"));
     }
 
     private static String getSessionCredential() {
@@ -192,17 +200,10 @@ public class FreeTextIntegrationTest extends IntegrationTests {
     private String getUrl() {
         return String.format(
                 "https://%s.s3.%s.amazonaws.com",
-                System.getenv("AWS_BUCKET"),
-                System.getenv("AWS_REGION")
-        );
+                System.getenv("AWS_BUCKET"), System.getenv("AWS_REGION"));
     }
 
     private static FreeTextPostParams getFreeTextPostParams(Set<String[]> conditions) {
-        return new FreeTextPostParams(
-                REGION,
-                EXPIRATION_DATE,
-                DATE,
-                conditions
-        );
+        return new FreeTextPostParams(REGION, EXPIRATION_DATE, DATE, conditions);
     }
 }

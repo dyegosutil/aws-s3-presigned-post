@@ -19,8 +19,8 @@ class ConditionTest {
         Map<ContentLengthRangeCondition, String> map = new HashMap<>();
 
         // Act
-        map.put(new ContentLengthRangeCondition(345, 345),"test");
-        map.put(new ContentLengthRangeCondition(222, 222),"test2");
+        map.put(new ContentLengthRangeCondition(345, 345), "test");
+        map.put(new ContentLengthRangeCondition(222, 222), "test2");
 
         // Assert
         assertThat(map.size()).isEqualTo(1);
@@ -32,10 +32,9 @@ class ConditionTest {
         // Arrange
         Map<MatchCondition, String> map = new HashMap<>();
 
-
         // Act
-        map.put(new MatchCondition(ConditionField.CONTENT_TYPE, EQ, "test"),"test");
-        map.put(new MatchCondition(ConditionField.CONTENT_TYPE, STARTS_WITH, "test2"),"test2");
+        map.put(new MatchCondition(ConditionField.CONTENT_TYPE, EQ, "test"), "test");
+        map.put(new MatchCondition(ConditionField.CONTENT_TYPE, STARTS_WITH, "test2"), "test2");
 
         // Assert
         assertThat(map.size()).isEqualTo(1);
@@ -48,8 +47,8 @@ class ConditionTest {
         Map<MetaCondition, String> map = new HashMap<>();
 
         // Act
-        map.put(new MetaCondition(EQ, "myMeta","test"),"test");
-        map.put(new MetaCondition(STARTS_WITH, "myMeta","test2"),"test");
+        map.put(new MetaCondition(EQ, "myMeta", "test"), "test");
+        map.put(new MetaCondition(STARTS_WITH, "myMeta", "test2"), "test");
 
         // Assert
         assertThat(map.size()).isEqualTo(1);

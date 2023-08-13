@@ -20,17 +20,16 @@ public class MatchCondition extends Condition {
 
     @Override
     public String[] asAwsPolicyCondition() {
-        return new String[]{
-                getConditionOperator().awsOperatorValue,
-                conditionField.valueForAwsPolicy,
-                getValue()
+        return new String[] {
+            getConditionOperator().awsOperatorValue, conditionField.valueForAwsPolicy, getValue()
         };
     }
 
     @Override
     public boolean equals(Object o) {
         if (o == null) return false;
-        return o instanceof MatchCondition && ((MatchCondition) o).getConditionField() == this.conditionField;
+        return o instanceof MatchCondition
+                && ((MatchCondition) o).getConditionField() == this.conditionField;
     }
 
     public enum Operator {

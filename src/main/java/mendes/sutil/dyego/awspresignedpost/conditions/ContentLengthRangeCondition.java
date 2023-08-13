@@ -1,8 +1,6 @@
 package mendes.sutil.dyego.awspresignedpost.conditions;
 
-/**
- * Used to specify minimum and maximum size condition to accept the upload of a file
- */
+/** Used to specify minimum and maximum size condition to accept the upload of a file */
 public class ContentLengthRangeCondition extends Condition {
 
     private final long minimumValue;
@@ -24,10 +22,10 @@ public class ContentLengthRangeCondition extends Condition {
 
     @Override
     public String[] asAwsPolicyCondition() {
-        return new String[]{
-                getConditionField().valueForAwsPolicy,
-                String.valueOf(getMinimumValue()),
-                String.valueOf(getMaximumValue())
+        return new String[] {
+            getConditionField().valueForAwsPolicy,
+            String.valueOf(getMinimumValue()),
+            String.valueOf(getMaximumValue())
         };
     }
 }

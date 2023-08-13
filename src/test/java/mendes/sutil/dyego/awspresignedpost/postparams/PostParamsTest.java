@@ -42,44 +42,44 @@ class PostParamsTest {
             String testName,
             Supplier<PostParams.Builder> builderSupplier,
             ConditionField expectedConditionField,
-            MatchCondition.Operator expectedOperator
+            MatchCondition.Operator expectedOperator) {
 
-    ) {
         // Arrange & Act
         Map<ConditionField, Condition> conditions = builderSupplier.get().build().getConditions();
 
         // Assert
-        assertThat(conditions).containsValue(new MatchCondition(expectedConditionField, expectedOperator, "test"));
+        assertThat(conditions)
+                .containsValue(
+                        new MatchCondition(expectedConditionField, expectedOperator, "test"));
     }
 
     @Test
     void shouldTestIfConditionsWereAddedForConditionsServerSideEncryptionCustomer() {
         // Arrange
-        PostParams postParams = createBuilder()
-                .withServerSideEncryptionCustomerAlgorithmAES256()
-                .withServerSideEncryptionCustomerKey("test")
-                .withServerSideEncryptionCustomerKeyMD5("test")
-                .build();
+        PostParams postParams =
+                createBuilder()
+                        .withServerSideEncryptionCustomerAlgorithmAES256()
+                        .withServerSideEncryptionCustomerKey("test")
+                        .withServerSideEncryptionCustomerKeyMD5("test")
+                        .build();
 
         // Act
         Map<ConditionField, Condition> conditions = postParams.getConditions();
 
         // Assert
-        Assertions.assertThat(conditions).containsValues(
-                new MatchCondition(SERVER_SIDE_ENCRYPTION_CUSTOMER_ALGORITHM, EQ, "AES256"),
-                new MatchCondition(SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY, EQ, "test"),
-                new MatchCondition(SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY_MD5, EQ, "test")
-        );
+        Assertions.assertThat(conditions)
+                .containsValues(
+                        new MatchCondition(SERVER_SIDE_ENCRYPTION_CUSTOMER_ALGORITHM, EQ, "AES256"),
+                        new MatchCondition(SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY, EQ, "test"),
+                        new MatchCondition(SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY_MD5, EQ, "test"));
     }
-
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("shouldThrowAnErrorIfRequiredConditionsWereNotAdded")
     void shouldThrowAnErrorIfRequiredConditionsWereNotAdded(
             String testName,
             ThrowableAssert.ThrowingCallable prohibitedDoubleConditionCall,
-            String exceptionMessage
-    ) {
+            String exceptionMessage) {
         assertThatThrownBy(prohibitedDoubleConditionCall)
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage(exceptionMessage);
@@ -90,9 +90,8 @@ class PostParamsTest {
     void shouldTestIfChecksumConditionsWereAdded(
             String testName,
             Supplier<PostParams.Builder> builderSupplier,
-            ConditionField expectedConditionField
+            ConditionField expectedConditionField) {
 
-    ) {
         // Arrange & act
         Map<ConditionField, Condition> conditions = builderSupplier.get().build().getConditions();
 
@@ -106,15 +105,13 @@ class PostParamsTest {
     void shouldTestIfMetaConditionsWereAdded(
             String testName,
             Supplier<PostParams.Builder> builderSupplier,
-            MatchCondition.Operator expectedOperator
+            MatchCondition.Operator expectedOperator) {
 
-    ) {
         // Arrange & act
         Map<ConditionField, Condition> conditions = builderSupplier.get().build().getConditions();
 
         // Assert
-        assertThat(conditions)
-                .containsValue(new MetaCondition(expectedOperator, "test", "test"));
+        assertThat(conditions).containsValue(new MetaCondition(expectedOperator, "test", "test"));
     }
 
     @ParameterizedTest(name = "{0}")
@@ -122,8 +119,7 @@ class PostParamsTest {
     void shouldAssertSingleMutuallyExclusiveConditions(
             String testName,
             ThrowableAssert.ThrowingCallable prohibitedDoubleConditionCall,
-            String exceptionMessage
-    ) {
+            String exceptionMessage) {
         assertThatThrownBy(prohibitedDoubleConditionCall)
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage(exceptionMessage);
@@ -132,13 +128,8 @@ class PostParamsTest {
     @Test
     void createBuilderTest() {
         // Act
-        PostParams.Builder builder = PostParams
-                .builder(
-                        Region.AP_EAST_1,
-                        EXPIRATION_DATE,
-                        "testBucket",
-                        withAnyKey()
-                );
+        PostParams.Builder builder =
+                PostParams.builder(Region.AP_EAST_1, EXPIRATION_DATE, "testBucket", withAnyKey());
 
         // Assert
         assertThat(builder).isNotNull();
@@ -148,14 +139,9 @@ class PostParamsTest {
     void createPostParamTest() {
         AmzExpirationDate amzExpirationDate = new AmzExpirationDate(EXPIRATION_DATE);
         // Act
-        PostParams postParams = PostParams
-                .builder(
-                        Region.AP_EAST_1,
-                        EXPIRATION_DATE,
-                        "testBucket",
-                        withAnyKey()
-                ).build();
-
+        PostParams postParams =
+                PostParams.builder(Region.AP_EAST_1, EXPIRATION_DATE, "testBucket", withAnyKey())
+                        .build();
 
         // Assert
         assertThat(postParams.getRegion()).isEqualTo(Region.AP_EAST_1);
@@ -170,16 +156,8 @@ class PostParamsTest {
             ZonedDateTime expirationDate,
             String bucket,
             KeyStartingWithCondition keyCondition,
-            String errorMessage
-    ) {
-        assertThatThrownBy(() ->
-                PostParams.builder(
-                        region,
-                        expirationDate,
-                        bucket,
-                        keyCondition
-                )
-        )
+            String errorMessage) {
+        assertThatThrownBy(() -> PostParams.builder(region, expirationDate, bucket, keyCondition))
                 .isInstanceOf(NullPointerException.class)
                 .hasMessage(errorMessage);
     }
@@ -191,16 +169,8 @@ class PostParamsTest {
             ZonedDateTime expirationDate,
             String bucket,
             ExactKeyCondition keyCondition,
-            String errorMessage
-    ) {
-        assertThatThrownBy(() ->
-                PostParams.builder(
-                        region,
-                        expirationDate,
-                        bucket,
-                        keyCondition
-                )
-        )
+            String errorMessage) {
+        assertThatThrownBy(() -> PostParams.builder(region, expirationDate, bucket, keyCondition))
                 .isInstanceOf(NullPointerException.class)
                 .hasMessage(errorMessage);
     }
@@ -208,56 +178,58 @@ class PostParamsTest {
     @Test
     void contentLengthRangeConditionTest() {
         // Act
-        PostParams postParams = PostParams
-                .builder(
-                        Region.AP_EAST_1,
-                        EXPIRATION_DATE,
-                        "testBucket",
-                        withAnyKey()
-                )
-                .withContentLengthRange(100,200)
-                .build();
+        PostParams postParams =
+                PostParams.builder(Region.AP_EAST_1, EXPIRATION_DATE, "testBucket", withAnyKey())
+                        .withContentLengthRange(100, 200)
+                        .build();
 
         // Assert
-        assertThat(postParams.getConditions()).containsValue(new ContentLengthRangeCondition(100,200));
+        assertThat(postParams.getConditions())
+                .containsValue(new ContentLengthRangeCondition(100, 200));
     }
 
     @Test
     void shouldThrowExceptionWhenBuilderWithKeyStartingWithExpirationDateIsExpired() {
         ZonedDateTime expirationDateInThePast = getExpirationDateInThePast();
-        String formattedDateTimeInThePast = new AmzExpirationDate(expirationDateInThePast).formatForPolicy();
+        String formattedDateTimeInThePast =
+                new AmzExpirationDate(expirationDateInThePast).formatForPolicy();
 
-        assertThatThrownBy(() ->  PostParams
-                .builder(
-                        Region.AP_EAST_1,
-                        expirationDateInThePast,
-                        "testBucket",
-                        withAnyKey()
-                ))
+        assertThatThrownBy(
+                        () ->
+                                PostParams.builder(
+                                        Region.AP_EAST_1,
+                                        expirationDateInThePast,
+                                        "testBucket",
+                                        withAnyKey()))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("The condition expiration date " + formattedDateTimeInThePast + " already expired");
+                .hasMessage(
+                        "The condition expiration date "
+                                + formattedDateTimeInThePast
+                                + " already expired");
     }
 
     @Test
     void shouldThrowExceptionWhenBuilderWithKeyExpirationDateIsExpired() {
         ZonedDateTime expirationDateInThePast = getExpirationDateInThePast();
-        String formattedDateTimeInThePast = new AmzExpirationDate(expirationDateInThePast).formatForPolicy();
+        String formattedDateTimeInThePast =
+                new AmzExpirationDate(expirationDateInThePast).formatForPolicy();
 
-        assertThatThrownBy(() ->  PostParams
-                .builder(
-                        Region.AP_EAST_1,
-                        expirationDateInThePast,
-                        "testBucket",
-                        withKey("myFile.txt")
-                ))
+        assertThatThrownBy(
+                        () ->
+                                PostParams.builder(
+                                        Region.AP_EAST_1,
+                                        expirationDateInThePast,
+                                        "testBucket",
+                                        withKey("myFile.txt")))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("The condition expiration date " + formattedDateTimeInThePast + " already expired");
+                .hasMessage(
+                        "The condition expiration date "
+                                + formattedDateTimeInThePast
+                                + " already expired");
     }
 
     private ZonedDateTime getExpirationDateInThePast() {
-        return Instant.now(Clock.systemUTC())
-                .minus(1, ChronoUnit.SECONDS)
-                .atZone(ZoneOffset.UTC);
+        return Instant.now(Clock.systemUTC()).minus(1, ChronoUnit.SECONDS).atZone(ZoneOffset.UTC);
     }
 
     private static Stream<Arguments> createBuilderWithNullArgExactKeyConditionTestCases() {
@@ -267,30 +239,25 @@ class PostParamsTest {
                         ZonedDateTime.now(),
                         "testBucket",
                         withKey("test"),
-                        "Argument region must not be null"
-                ),
+                        "Argument region must not be null"),
                 of(
                         Region.AP_EAST_1,
                         null,
                         "testBucket",
                         withKey("test"),
-                        "Argument expirationDate must not be null"
-                ),
+                        "Argument expirationDate must not be null"),
                 of(
                         Region.AP_EAST_1,
                         ZonedDateTime.now(),
                         null,
                         withKey("test"),
-                        "Argument bucket must not be null"
-                ),
+                        "Argument bucket must not be null"),
                 of(
                         Region.AP_EAST_1,
                         ZonedDateTime.now(),
                         "testBucket",
                         null,
-                        "Argument keyCondition must not be null"
-                )
-        );
+                        "Argument keyCondition must not be null"));
     }
 
     private static Stream<Arguments> createBuilderWithNullArgKeyStartingWithConditionTestCases() {
@@ -300,518 +267,519 @@ class PostParamsTest {
                         ZonedDateTime.now(),
                         "testBucket",
                         withAnyKey(),
-                        "Argument region must not be null"
-                ),
+                        "Argument region must not be null"),
                 of(
                         Region.AP_EAST_1,
                         null,
                         "testBucket",
                         withAnyKey(),
-                        "Argument expirationDate must not be null"
-                ),
+                        "Argument expirationDate must not be null"),
                 of(
                         Region.AP_EAST_1,
                         ZonedDateTime.now(),
                         null,
                         withAnyKey(),
-                        "Argument bucket must not be null"
-                ),
+                        "Argument bucket must not be null"),
                 of(
                         Region.AP_EAST_1,
                         ZonedDateTime.now(),
                         "testBucket",
                         null,
-                        "Argument keyCondition must not be null"
-                )
-        );
+                        "Argument keyCondition must not be null"));
     }
 
     private static Stream<Arguments> shouldTestIfChecksumConditionWasAddedTestCases() {
         return Stream.of(
                 of(
                         "Should assert that condition withChecksumSha256 was added",
-                        (Supplier<PostParams.Builder>) () -> createBuilder()
-                                .withChecksumSha256("test"),
-                        CHECKSUM_SHA256
-                ),
+                        (Supplier<PostParams.Builder>)
+                                () -> createBuilder().withChecksumSha256("test"),
+                        CHECKSUM_SHA256),
                 of(
                         "Should assert that condition withChecksumSha1 was added",
-                        (Supplier<PostParams.Builder>) () -> createBuilder()
-                                .withChecksumSha1("test"),
-                        CHECKSUM_SHA1
-                ),
+                        (Supplier<PostParams.Builder>)
+                                () -> createBuilder().withChecksumSha1("test"),
+                        CHECKSUM_SHA1),
                 of(
                         "Should assert that condition withChecksumCrc32 was added",
-                        (Supplier<PostParams.Builder>) () -> createBuilder()
-                                .withChecksumCrc32("test"),
-                        CHECKSUM_CRC32
-                ),
+                        (Supplier<PostParams.Builder>)
+                                () -> createBuilder().withChecksumCrc32("test"),
+                        CHECKSUM_CRC32),
                 of(
                         "Should assert that condition withChecksumCrc32c was added",
-                        (Supplier<PostParams.Builder>) () -> createBuilder()
-                                .withChecksumCrc32c("test"),
-                        CHECKSUM_CRC32C
-                )
-        );
+                        (Supplier<PostParams.Builder>)
+                                () -> createBuilder().withChecksumCrc32c("test"),
+                        CHECKSUM_CRC32C));
     }
+
     private static Stream<Arguments> shouldTestIfConditionWasAddedTestCases() {
         return Stream.of(
                 of(
                         "Should assert that condition withCacheControlStartingWith was added",
-                        (Supplier<PostParams.Builder>) () -> createBuilder()
-                                .withCacheControlStartingWith("test"),
+                        (Supplier<PostParams.Builder>)
+                                () -> createBuilder().withCacheControlStartingWith("test"),
                         CACHE_CONTROL,
-                        STARTS_WITH
-                ),
+                        STARTS_WITH),
                 of(
                         "Should assert that condition withCacheControl was added",
-                        (Supplier<PostParams.Builder>) () -> createBuilder()
-                                .withCacheControl("test"),
+                        (Supplier<PostParams.Builder>)
+                                () -> createBuilder().withCacheControl("test"),
                         CACHE_CONTROL,
-                        EQ
-                ),
+                        EQ),
                 of(
                         "Should assert that condition withContentTypeStartingWith was added",
-                        (Supplier<PostParams.Builder>) () -> createBuilder()
-                                .withContentTypeStartingWith("test"),
+                        (Supplier<PostParams.Builder>)
+                                () -> createBuilder().withContentTypeStartingWith("test"),
                         CONTENT_TYPE,
-                        STARTS_WITH
-                ),
+                        STARTS_WITH),
                 of(
                         "Should assert that condition withContentType was added",
-                        (Supplier<PostParams.Builder>) () -> createBuilder()
-                                .withContentType("test"),
+                        (Supplier<PostParams.Builder>)
+                                () -> createBuilder().withContentType("test"),
                         CONTENT_TYPE,
-                        EQ
-                ),
+                        EQ),
                 of(
                         "Should assert that condition withContentDispositionStartingWith was added",
-                        (Supplier<PostParams.Builder>) () -> createBuilder()
-                                .withContentDispositionStartingWith("test"),
+                        (Supplier<PostParams.Builder>)
+                                () -> createBuilder().withContentDispositionStartingWith("test"),
                         CONTENT_DISPOSITION,
-                        STARTS_WITH
-                ),
+                        STARTS_WITH),
                 of(
                         "Should assert that condition withContentDisposition was added",
-                        (Supplier<PostParams.Builder>) () -> createBuilder()
-                                .withContentDisposition("test"),
+                        (Supplier<PostParams.Builder>)
+                                () -> createBuilder().withContentDisposition("test"),
                         CONTENT_DISPOSITION,
-                        EQ
-                ),
+                        EQ),
                 of(
                         "Should assert that condition withContentEncodingStartingWith was added",
-                        (Supplier<PostParams.Builder>) () -> createBuilder()
-                                .withContentEncodingStartingWith("test"),
+                        (Supplier<PostParams.Builder>)
+                                () -> createBuilder().withContentEncodingStartingWith("test"),
                         CONTENT_ENCODING,
-                        STARTS_WITH
-                ),
+                        STARTS_WITH),
                 of(
                         "Should assert that condition withContentEncoding was added",
-                        (Supplier<PostParams.Builder>) () -> createBuilder()
-                                .withContentEncoding("test"),
+                        (Supplier<PostParams.Builder>)
+                                () -> createBuilder().withContentEncoding("test"),
                         CONTENT_ENCODING,
-                        EQ
-                ),
+                        EQ),
                 of(
                         "Should assert that condition withExpiresStartingWith was added",
-                        (Supplier<PostParams.Builder>) () -> createBuilder()
-                                .withExpiresStartingWith("test"),
+                        (Supplier<PostParams.Builder>)
+                                () -> createBuilder().withExpiresStartingWith("test"),
                         EXPIRES,
-                        STARTS_WITH
-                ),
+                        STARTS_WITH),
                 of(
                         "Should assert that condition withExpires was added",
-                        (Supplier<PostParams.Builder>) () -> createBuilder()
-                                .withExpires("test"),
+                        (Supplier<PostParams.Builder>) () -> createBuilder().withExpires("test"),
                         EXPIRES,
-                        EQ
-                ),
+                        EQ),
                 of(
-                        "Should assert that condition withSuccessActionRedirectStartingWith was added",
-                        (Supplier<PostParams.Builder>) () -> createBuilder()
-                                .withSuccessActionRedirectStartingWith("test"),
+                        "Should assert that condition withSuccessActionRedirectStartingWith was"
+                                + " added",
+                        (Supplier<PostParams.Builder>)
+                                () -> createBuilder().withSuccessActionRedirectStartingWith("test"),
                         SUCCESS_ACTION_REDIRECT,
-                        STARTS_WITH
-                ),
+                        STARTS_WITH),
                 of(
                         "Should assert that condition withSuccessActionRedirect was added",
-                        (Supplier<PostParams.Builder>) () -> createBuilder()
-                                .withSuccessActionRedirect("test"),
+                        (Supplier<PostParams.Builder>)
+                                () -> createBuilder().withSuccessActionRedirect("test"),
                         SUCCESS_ACTION_REDIRECT,
-                        EQ
-                ),
+                        EQ),
                 of(
                         "Should assert that condition withSuccessActionStatus was added",
-                        (Supplier<PostParams.Builder>) () -> createBuilder()
-                                .withSuccessActionStatus(SuccessActionStatus.OK),
+                        (Supplier<PostParams.Builder>)
+                                () ->
+                                        createBuilder()
+                                                .withSuccessActionStatus(SuccessActionStatus.OK),
                         SUCCESS_ACTION_STATUS,
-                        EQ
-                ),
+                        EQ),
                 of(
                         "Should assert that condition withAclStartingWith was added",
-                        (Supplier<PostParams.Builder>) () -> createBuilder()
-                                .withAclStartingWith("test"),
+                        (Supplier<PostParams.Builder>)
+                                () -> createBuilder().withAclStartingWith("test"),
                         ACL,
-                        STARTS_WITH
-                ),
+                        STARTS_WITH),
                 of(
                         "Should assert that condition withAcl was added",
-                        (Supplier<PostParams.Builder>) () -> createBuilder()
-                                .withAcl(PRIVATE),
+                        (Supplier<PostParams.Builder>) () -> createBuilder().withAcl(PRIVATE),
                         ACL,
-                        EQ
-                ),
+                        EQ),
                 of(
                         "Should assert that condition withTagging was added",
-                        (Supplier<PostParams.Builder>) () -> createBuilder()
-                                .withTagging("test"),
+                        (Supplier<PostParams.Builder>) () -> createBuilder().withTagging("test"),
                         TAGGING,
-                        EQ
-                ),
+                        EQ),
                 of(
                         "Should assert that condition withTag was added",
-                        (Supplier<PostParams.Builder>) () -> createBuilder()
-                                .withTag("key","value"),
+                        (Supplier<PostParams.Builder>)
+                                () -> createBuilder().withTag("key", "value"),
                         TAGGING,
-                        EQ
-                ),
+                        EQ),
                 of(
                         "Should assert that condition withStorageClass was added",
-                        (Supplier<PostParams.Builder>) () -> createBuilder()
-                                .withStorageClass(STANDARD),
+                        (Supplier<PostParams.Builder>)
+                                () -> createBuilder().withStorageClass(STANDARD),
                         STORAGE_CLASS,
-                        EQ
-                ),
+                        EQ),
                 of(
                         "Should assert that condition withWebsiteRedirectLocation was added",
-                        (Supplier<PostParams.Builder>) () -> createBuilder()
-                                .withWebsiteRedirectLocation("test"),
+                        (Supplier<PostParams.Builder>)
+                                () -> createBuilder().withWebsiteRedirectLocation("test"),
                         WEBSITE_REDIRECT_LOCATION,
-                        EQ
-                ),
+                        EQ),
                 of(
                         "Should assert that condition withServerSideEncryption was added",
-                        (Supplier<PostParams.Builder>) () -> createBuilder()
-                                .withServerSideEncryption(AWS_KMS),
+                        (Supplier<PostParams.Builder>)
+                                () -> createBuilder().withServerSideEncryption(AWS_KMS),
                         SERVER_SIDE_ENCRYPTION,
-                        EQ
-                ),
+                        EQ),
                 of(
-                        "Should assert that condition withServerSideEncryptionAwsKmsKeyId was added",
-                        (Supplier<PostParams.Builder>) () -> createBuilder()
-                                .withServerSideEncryption(AWS_KMS)
-                                .withServerSideEncryptionAwsKmsKeyId("test"),
+                        "Should assert that condition withServerSideEncryptionAwsKmsKeyId was"
+                                + " added",
+                        (Supplier<PostParams.Builder>)
+                                () ->
+                                        createBuilder()
+                                                .withServerSideEncryption(AWS_KMS)
+                                                .withServerSideEncryptionAwsKmsKeyId("test"),
                         SERVER_SIDE_ENCRYPTION_AWS_KMS_KEY_ID,
-                        EQ
-                ),
+                        EQ),
                 of(
                         "Should assert that condition withServerSideEncryptionContext was added",
-                        (Supplier<PostParams.Builder>) () -> createBuilder()
-                                .withServerSideEncryption(AWS_KMS)
-                                .withServerSideEncryptionContext("test"),
+                        (Supplier<PostParams.Builder>)
+                                () ->
+                                        createBuilder()
+                                                .withServerSideEncryption(AWS_KMS)
+                                                .withServerSideEncryptionContext("test"),
                         SERVER_SIDE_ENCRYPTION_CONTEXT,
-                        EQ
-                ),
+                        EQ),
                 of(
-                        "Should assert that condition withServerSideEncryptionBucketKeyEnabled was added",
-                        (Supplier<PostParams.Builder>) () -> createBuilder()
-                                .withServerSideEncryption(AWS_KMS)
-                                .withServerSideEncryptionBucketKeyEnabled(),
+                        "Should assert that condition withServerSideEncryptionBucketKeyEnabled was"
+                                + " added",
+                        (Supplier<PostParams.Builder>)
+                                () ->
+                                        createBuilder()
+                                                .withServerSideEncryption(AWS_KMS)
+                                                .withServerSideEncryptionBucketKeyEnabled(),
                         SERVER_SIDE_ENCRYPTION_BUCKET_KEY_ENABLED,
-                        EQ
-                )
-        );
+                        EQ));
     }
 
     private static Stream<Arguments> shouldTestIfMetaConditionWasAddedTestCases() {
         return Stream.of(
                 of(
                         "Should assert that condition withMeta was added",
-                        (Supplier<PostParams.Builder>) () -> createBuilder()
-                                .withMeta("test", "test"),
-                        EQ
-                ),
+                        (Supplier<PostParams.Builder>)
+                                () -> createBuilder().withMeta("test", "test"),
+                        EQ),
                 of(
                         "Should assert that condition withMetaStartingWith was added",
-                        (Supplier<PostParams.Builder>) () -> createBuilder()
-                                .withMetaStartingWith("test", "test"),
-                        STARTS_WITH
-                )
-        );
+                        (Supplier<PostParams.Builder>)
+                                () -> createBuilder().withMetaStartingWith("test", "test"),
+                        STARTS_WITH));
     }
 
     private static Stream<Arguments> shouldThrowAnErrorIfRequiredConditionsWereNotAdded() {
         return Stream.of(
                 of(
-                        "Should assert that withServerSideEncryptionCustomerAlgorithmAES256 is called with required conditions",
-                        (ThrowableAssert.ThrowingCallable) () ->
-                                createBuilder()
-                                        .withServerSideEncryptionCustomerAlgorithmAES256()
-                                        .build(),
-                        "The condition SERVER_SIDE_ENCRYPTION_CUSTOMER_ALGORITHM requires the condition(s) [SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY, SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY_MD5] to be present"
-                ),
+                        "Should assert that withServerSideEncryptionCustomerAlgorithmAES256 is"
+                                + " called with required conditions",
+                        (ThrowableAssert.ThrowingCallable)
+                                () ->
+                                        createBuilder()
+                                                .withServerSideEncryptionCustomerAlgorithmAES256()
+                                                .build(),
+                        "The condition SERVER_SIDE_ENCRYPTION_CUSTOMER_ALGORITHM requires the"
+                                + " condition(s) [SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY,"
+                                + " SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY_MD5] to be present"),
                 of(
-                        "Should assert that withServerSideEncryptionCustomerKey is called with required conditions",
-                        (ThrowableAssert.ThrowingCallable) () ->
-                                createBuilder()
-                                        .withServerSideEncryptionCustomerKey("test")
-                                        .build(),
-                        "The condition SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY requires the condition(s) [SERVER_SIDE_ENCRYPTION_CUSTOMER_ALGORITHM, SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY_MD5] to be present"
-                ),
+                        "Should assert that withServerSideEncryptionCustomerKey is called with"
+                                + " required conditions",
+                        (ThrowableAssert.ThrowingCallable)
+                                () ->
+                                        createBuilder()
+                                                .withServerSideEncryptionCustomerKey("test")
+                                                .build(),
+                        "The condition SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY requires the"
+                                + " condition(s) [SERVER_SIDE_ENCRYPTION_CUSTOMER_ALGORITHM,"
+                                + " SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY_MD5] to be present"),
                 of(
-                        "Should assert that withServerSideEncryptionCustomerKeyMD5 is called with required conditions",
-                        (ThrowableAssert.ThrowingCallable) () ->
-                                createBuilder()
-                                        .withServerSideEncryptionCustomerKeyMD5("test")
-                                        .build(),
-                        "The condition SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY_MD5 requires the condition(s) [SERVER_SIDE_ENCRYPTION_CUSTOMER_ALGORITHM, SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY] to be present"
-                ),
+                        "Should assert that withServerSideEncryptionCustomerKeyMD5 is called with"
+                                + " required conditions",
+                        (ThrowableAssert.ThrowingCallable)
+                                () ->
+                                        createBuilder()
+                                                .withServerSideEncryptionCustomerKeyMD5("test")
+                                                .build(),
+                        "The condition SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY_MD5 requires the"
+                                + " condition(s) [SERVER_SIDE_ENCRYPTION_CUSTOMER_ALGORITHM,"
+                                + " SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY] to be present"),
                 of(
-                        "Should assert that withServerSideEncryptionAwsKmsKeyId is called with required conditions",
-                        (ThrowableAssert.ThrowingCallable) () ->
-                                createBuilder()
-                                        .withServerSideEncryptionAwsKmsKeyId("test")
-                                        .build(),
-                        "The condition SERVER_SIDE_ENCRYPTION_AWS_KMS_KEY_ID requires the condition(s) [SERVER_SIDE_ENCRYPTION] to be present"
-                ),
+                        "Should assert that withServerSideEncryptionAwsKmsKeyId is called with"
+                                + " required conditions",
+                        (ThrowableAssert.ThrowingCallable)
+                                () ->
+                                        createBuilder()
+                                                .withServerSideEncryptionAwsKmsKeyId("test")
+                                                .build(),
+                        "The condition SERVER_SIDE_ENCRYPTION_AWS_KMS_KEY_ID requires the"
+                                + " condition(s) [SERVER_SIDE_ENCRYPTION] to be present"),
                 of(
-                        "Should assert that withServerSideEncryptionContext is called with required conditions",
-                        (ThrowableAssert.ThrowingCallable) () ->
-                                createBuilder()
-                                        .withServerSideEncryptionContext("test")
-                                        .build(),
-                        "The condition SERVER_SIDE_ENCRYPTION_CONTEXT requires the condition(s) [SERVER_SIDE_ENCRYPTION] to be present"
-                ),
+                        "Should assert that withServerSideEncryptionContext is called with required"
+                                + " conditions",
+                        (ThrowableAssert.ThrowingCallable)
+                                () ->
+                                        createBuilder()
+                                                .withServerSideEncryptionContext("test")
+                                                .build(),
+                        "The condition SERVER_SIDE_ENCRYPTION_CONTEXT requires the condition(s)"
+                                + " [SERVER_SIDE_ENCRYPTION] to be present"),
                 of(
-                        "Should assert that withServerSideEncryptionBucketKeyEnabled is called with required conditions",
-                        (ThrowableAssert.ThrowingCallable) () ->
-                                createBuilder()
-                                        .withServerSideEncryptionBucketKeyEnabled()
-                                        .build(),
-                        "The condition SERVER_SIDE_ENCRYPTION_BUCKET_KEY_ENABLED requires the condition(s) [SERVER_SIDE_ENCRYPTION] to be present"
-                )
-        );
+                        "Should assert that withServerSideEncryptionBucketKeyEnabled is called with"
+                                + " required conditions",
+                        (ThrowableAssert.ThrowingCallable)
+                                () ->
+                                        createBuilder()
+                                                .withServerSideEncryptionBucketKeyEnabled()
+                                                .build(),
+                        "The condition SERVER_SIDE_ENCRYPTION_BUCKET_KEY_ENABLED requires the"
+                                + " condition(s) [SERVER_SIDE_ENCRYPTION] to be present"));
     }
 
     private static Stream<Arguments> shouldAssertSingleMutuallyExclusiveConditionsTest() {
         return Stream.of(
                 of(
-                        "Should assert that there is no conflicting STARTS_WITH and EQ CACHE_CONTROL conditions",
-                        (ThrowableAssert.ThrowingCallable) () ->
-                                createBuilder()
-                                        .withCacheControlStartingWith("test")
-                                        .withCacheControl("test"),
-                        getExceptionMessage(CACHE_CONTROL)
-                ),
+                        "Should assert that there is no conflicting STARTS_WITH and EQ"
+                                + " CACHE_CONTROL conditions",
+                        (ThrowableAssert.ThrowingCallable)
+                                () ->
+                                        createBuilder()
+                                                .withCacheControlStartingWith("test")
+                                                .withCacheControl("test"),
+                        getExceptionMessage(CACHE_CONTROL)),
                 of(
-                        "Should assert that there is no conflicting EQ and STARTS_WITH CACHE_CONTROL conditions",
-                        (ThrowableAssert.ThrowingCallable) () ->
-                                createBuilder()
-                                        .withCacheControl("test")
-                                        .withCacheControlStartingWith("test"),
-                        getExceptionMessage(CACHE_CONTROL)
-                ),
+                        "Should assert that there is no conflicting EQ and STARTS_WITH"
+                                + " CACHE_CONTROL conditions",
+                        (ThrowableAssert.ThrowingCallable)
+                                () ->
+                                        createBuilder()
+                                                .withCacheControl("test")
+                                                .withCacheControlStartingWith("test"),
+                        getExceptionMessage(CACHE_CONTROL)),
                 of(
-                        "Should assert that there is no conflicting STARTS_WITH and EQ CONTENT_TYPE conditions",
-                        (ThrowableAssert.ThrowingCallable) () ->
-                                createBuilder()
-                                        .withContentTypeStartingWith("test")
-                                        .withContentType("test"),
-                        getExceptionMessage(CONTENT_TYPE)
-                ),
+                        "Should assert that there is no conflicting STARTS_WITH and EQ CONTENT_TYPE"
+                                + " conditions",
+                        (ThrowableAssert.ThrowingCallable)
+                                () ->
+                                        createBuilder()
+                                                .withContentTypeStartingWith("test")
+                                                .withContentType("test"),
+                        getExceptionMessage(CONTENT_TYPE)),
                 of(
-                        "Should assert that there is no conflicting EQ and STARTS_WITH CONTENT_TYPE conditions",
-                        (ThrowableAssert.ThrowingCallable) () ->
-                                createBuilder()
-                                        .withContentType("test")
-                                        .withContentTypeStartingWith("test"),
-                        getExceptionMessage(CONTENT_TYPE)
-                ),
+                        "Should assert that there is no conflicting EQ and STARTS_WITH CONTENT_TYPE"
+                                + " conditions",
+                        (ThrowableAssert.ThrowingCallable)
+                                () ->
+                                        createBuilder()
+                                                .withContentType("test")
+                                                .withContentTypeStartingWith("test"),
+                        getExceptionMessage(CONTENT_TYPE)),
                 of(
-                        "Should assert that there is no conflicting STARTS_WITH and EQ CONTENT_DISPOSITION conditions",
-                        (ThrowableAssert.ThrowingCallable) () ->
-                                createBuilder()
-                                        .withContentDispositionStartingWith("test")
-                                        .withContentDisposition("test"),
-                        getExceptionMessage(CONTENT_DISPOSITION)
-                ),
+                        "Should assert that there is no conflicting STARTS_WITH and EQ"
+                                + " CONTENT_DISPOSITION conditions",
+                        (ThrowableAssert.ThrowingCallable)
+                                () ->
+                                        createBuilder()
+                                                .withContentDispositionStartingWith("test")
+                                                .withContentDisposition("test"),
+                        getExceptionMessage(CONTENT_DISPOSITION)),
                 of(
-                        "Should assert that there is no conflicting EQ and STARTS_WITH CONTENT_DISPOSITION conditions",
-                        (ThrowableAssert.ThrowingCallable) () ->
-                                createBuilder()
-                                        .withContentDisposition("test")
-                                        .withContentDispositionStartingWith("test"),
-                        getExceptionMessage(CONTENT_DISPOSITION)
-                ),
+                        "Should assert that there is no conflicting EQ and STARTS_WITH"
+                                + " CONTENT_DISPOSITION conditions",
+                        (ThrowableAssert.ThrowingCallable)
+                                () ->
+                                        createBuilder()
+                                                .withContentDisposition("test")
+                                                .withContentDispositionStartingWith("test"),
+                        getExceptionMessage(CONTENT_DISPOSITION)),
                 of(
-                        "Should assert that there is no conflicting STARTS_WITH and EQ CONTENT_ENCODING conditions",
-                        (ThrowableAssert.ThrowingCallable) () ->
-                                createBuilder()
-                                        .withContentEncodingStartingWith("test")
-                                        .withContentEncoding("test"),
-                        getExceptionMessage(CONTENT_ENCODING)
-                ),
+                        "Should assert that there is no conflicting STARTS_WITH and EQ"
+                                + " CONTENT_ENCODING conditions",
+                        (ThrowableAssert.ThrowingCallable)
+                                () ->
+                                        createBuilder()
+                                                .withContentEncodingStartingWith("test")
+                                                .withContentEncoding("test"),
+                        getExceptionMessage(CONTENT_ENCODING)),
                 of(
-                        "Should assert that there is no conflicting EQ and STARTS_WITH CONTENT_ENCODING conditions",
-                        (ThrowableAssert.ThrowingCallable) () ->
-                                createBuilder()
-                                        .withContentEncoding("test")
-                                        .withContentEncodingStartingWith("test"),
-                        getExceptionMessage(CONTENT_ENCODING)
-                ),
+                        "Should assert that there is no conflicting EQ and STARTS_WITH"
+                                + " CONTENT_ENCODING conditions",
+                        (ThrowableAssert.ThrowingCallable)
+                                () ->
+                                        createBuilder()
+                                                .withContentEncoding("test")
+                                                .withContentEncodingStartingWith("test"),
+                        getExceptionMessage(CONTENT_ENCODING)),
                 of(
-                        "Should assert that there is no conflicting STARTS_WITH and EQ EXPIRES conditions",
-                        (ThrowableAssert.ThrowingCallable) () ->
-                                createBuilder()
-                                        .withExpiresStartingWith("test")
-                                        .withExpires("test"),
-                        getExceptionMessage(EXPIRES)
-                ),
+                        "Should assert that there is no conflicting STARTS_WITH and EQ EXPIRES"
+                                + " conditions",
+                        (ThrowableAssert.ThrowingCallable)
+                                () ->
+                                        createBuilder()
+                                                .withExpiresStartingWith("test")
+                                                .withExpires("test"),
+                        getExceptionMessage(EXPIRES)),
                 of(
-                        "Should assert that there is no conflicting EQ and STARTS_WITH EXPIRES conditions",
-                        (ThrowableAssert.ThrowingCallable) () ->
-                                createBuilder()
-                                        .withExpires("test")
-                                        .withExpiresStartingWith("test"),
-                        getExceptionMessage(EXPIRES)
-                ),
+                        "Should assert that there is no conflicting EQ and STARTS_WITH EXPIRES"
+                                + " conditions",
+                        (ThrowableAssert.ThrowingCallable)
+                                () ->
+                                        createBuilder()
+                                                .withExpires("test")
+                                                .withExpiresStartingWith("test"),
+                        getExceptionMessage(EXPIRES)),
                 of(
-                        "Should assert that there is no conflicting STARTS_WITH and EQ SUCCESS_ACTION_REDIRECT conditions",
-                        (ThrowableAssert.ThrowingCallable) () ->
-                                createBuilder()
-                                        .withSuccessActionRedirectStartingWith("test")
-                                        .withSuccessActionRedirect("test"),
-                        getExceptionMessage(SUCCESS_ACTION_REDIRECT)
-                ),
+                        "Should assert that there is no conflicting STARTS_WITH and EQ"
+                                + " SUCCESS_ACTION_REDIRECT conditions",
+                        (ThrowableAssert.ThrowingCallable)
+                                () ->
+                                        createBuilder()
+                                                .withSuccessActionRedirectStartingWith("test")
+                                                .withSuccessActionRedirect("test"),
+                        getExceptionMessage(SUCCESS_ACTION_REDIRECT)),
                 of(
-                        "Should assert that there is no conflicting EQ and STARTS_WITH SUCCESS_ACTION_REDIRECT conditions",
-                        (ThrowableAssert.ThrowingCallable) () ->
-                                createBuilder()
-                                        .withSuccessActionRedirect("test")
-                                        .withSuccessActionRedirectStartingWith("test"),
-                        getExceptionMessage(SUCCESS_ACTION_REDIRECT)
-                ),
+                        "Should assert that there is no conflicting EQ and STARTS_WITH"
+                                + " SUCCESS_ACTION_REDIRECT conditions",
+                        (ThrowableAssert.ThrowingCallable)
+                                () ->
+                                        createBuilder()
+                                                .withSuccessActionRedirect("test")
+                                                .withSuccessActionRedirectStartingWith("test"),
+                        getExceptionMessage(SUCCESS_ACTION_REDIRECT)),
                 of(
-                        "Should assert that there is no conflicting STARTS_WITH and EQ ACL conditions",
-                        (ThrowableAssert.ThrowingCallable) () ->
-                                createBuilder()
-                                        .withAclStartingWith("test")
-                                        .withAcl(PRIVATE),
-                        getExceptionMessage(ACL)
-                ),
+                        "Should assert that there is no conflicting STARTS_WITH and EQ ACL"
+                                + " conditions",
+                        (ThrowableAssert.ThrowingCallable)
+                                () -> createBuilder().withAclStartingWith("test").withAcl(PRIVATE),
+                        getExceptionMessage(ACL)),
                 of(
-                        "Should assert that there is no conflicting EQ and STARTS_WITH ACL conditions",
-                        (ThrowableAssert.ThrowingCallable) () ->
-                                createBuilder()
-                                        .withAcl(PRIVATE)
-                                        .withAclStartingWith("test"),
-                        getExceptionMessage(ACL)
-                ),
+                        "Should assert that there is no conflicting EQ and STARTS_WITH ACL"
+                                + " conditions",
+                        (ThrowableAssert.ThrowingCallable)
+                                () -> createBuilder().withAcl(PRIVATE).withAclStartingWith("test"),
+                        getExceptionMessage(ACL)),
                 of(
-                        "Should assert that there is no conflicting withTag and withTagging TAGGING conditions",
-                        (ThrowableAssert.ThrowingCallable) () ->
-                                createBuilder()
-                                        .withTagging("test")
-                                        .withTag("key", "value"),
-                        getTaggingExceptionMessage()
-                ),
+                        "Should assert that there is no conflicting withTag and withTagging TAGGING"
+                                + " conditions",
+                        (ThrowableAssert.ThrowingCallable)
+                                () -> createBuilder().withTagging("test").withTag("key", "value"),
+                        getTaggingExceptionMessage()),
                 of(
-                        "Should assert that there is no conflicting withTagging and withTag TAGGING conditions",
-                        (ThrowableAssert.ThrowingCallable) () ->
-                                createBuilder()
-                                        .withTag("key", "value")
-                                        .withTagging("test"),
-                        getTaggingExceptionMessage()
-                ),
+                        "Should assert that there is no conflicting withTagging and withTag TAGGING"
+                                + " conditions",
+                        (ThrowableAssert.ThrowingCallable)
+                                () -> createBuilder().withTag("key", "value").withTagging("test"),
+                        getTaggingExceptionMessage()),
                 of(
-                        "Should assert that there is no conflicting withChecksumCrc32 and withChecksumCrc32c checksum conditions",
-                        (ThrowableAssert.ThrowingCallable) () ->
-                                createBuilder()
-                                        .withChecksumCrc32( "test")
-                                        .withChecksumCrc32c("test"),
-                        getChecksumExceptionMessage()
-                ),
+                        "Should assert that there is no conflicting withChecksumCrc32 and"
+                                + " withChecksumCrc32c checksum conditions",
+                        (ThrowableAssert.ThrowingCallable)
+                                () ->
+                                        createBuilder()
+                                                .withChecksumCrc32("test")
+                                                .withChecksumCrc32c("test"),
+                        getChecksumExceptionMessage()),
                 of(
-                        "Should assert that there is no conflicting withChecksumCrc32 and withChecksumSha1 checksum conditions",
-                        (ThrowableAssert.ThrowingCallable) () ->
-                                createBuilder()
-                                        .withChecksumCrc32( "test")
-                                        .withChecksumSha1("test"),
-                        getChecksumExceptionMessage()
-                ),
+                        "Should assert that there is no conflicting withChecksumCrc32 and"
+                                + " withChecksumSha1 checksum conditions",
+                        (ThrowableAssert.ThrowingCallable)
+                                () ->
+                                        createBuilder()
+                                                .withChecksumCrc32("test")
+                                                .withChecksumSha1("test"),
+                        getChecksumExceptionMessage()),
                 of(
-                        "Should assert that there is no conflicting withChecksumCrc32 and withChecksumSha256 checksum conditions",
-                        (ThrowableAssert.ThrowingCallable) () ->
-                                createBuilder()
-                                        .withChecksumCrc32( "test")
-                                        .withChecksumSha256("test"),
-                        getChecksumExceptionMessage()
-                ),
+                        "Should assert that there is no conflicting withChecksumCrc32 and"
+                                + " withChecksumSha256 checksum conditions",
+                        (ThrowableAssert.ThrowingCallable)
+                                () ->
+                                        createBuilder()
+                                                .withChecksumCrc32("test")
+                                                .withChecksumSha256("test"),
+                        getChecksumExceptionMessage()),
                 of(
-                        "Should assert that there is no conflicting withChecksumCrc32c and withChecksumSha1 checksum conditions",
-                        (ThrowableAssert.ThrowingCallable) () ->
-                                createBuilder()
-                                        .withChecksumCrc32c( "test")
-                                        .withChecksumSha1("test"),
-                        getChecksumExceptionMessage()
-                ),
+                        "Should assert that there is no conflicting withChecksumCrc32c and"
+                                + " withChecksumSha1 checksum conditions",
+                        (ThrowableAssert.ThrowingCallable)
+                                () ->
+                                        createBuilder()
+                                                .withChecksumCrc32c("test")
+                                                .withChecksumSha1("test"),
+                        getChecksumExceptionMessage()),
                 of(
-                        "Should assert that there is no conflicting withChecksumCrc32c and withChecksumSha256 checksum conditions",
-                        (ThrowableAssert.ThrowingCallable) () ->
-                                createBuilder()
-                                        .withChecksumCrc32c( "test")
-                                        .withChecksumSha256("test"),
-                        getChecksumExceptionMessage()
-                ),
+                        "Should assert that there is no conflicting withChecksumCrc32c and"
+                                + " withChecksumSha256 checksum conditions",
+                        (ThrowableAssert.ThrowingCallable)
+                                () ->
+                                        createBuilder()
+                                                .withChecksumCrc32c("test")
+                                                .withChecksumSha256("test"),
+                        getChecksumExceptionMessage()),
                 of(
-                        "Should assert that there is no conflicting withChecksumSha1 and withChecksumSha256 checksum conditions",
-                        (ThrowableAssert.ThrowingCallable) () ->
-                                createBuilder()
-                                        .withChecksumSha1( "test")
-                                        .withChecksumSha256("test"),
-                        getChecksumExceptionMessage()
-                ),
+                        "Should assert that there is no conflicting withChecksumSha1 and"
+                                + " withChecksumSha256 checksum conditions",
+                        (ThrowableAssert.ThrowingCallable)
+                                () ->
+                                        createBuilder()
+                                                .withChecksumSha1("test")
+                                                .withChecksumSha256("test"),
+                        getChecksumExceptionMessage()),
                 of(
-                        "Should assert that there is no conflicting withChecksumSha1 and withChecksumSha1 checksum conditions",
-                        (ThrowableAssert.ThrowingCallable) () ->
-                                createBuilder()
-                                        .withChecksumSha1( "test")
-                                        .withChecksumSha1("test"),
-                        getChecksumExceptionMessage()
-                ),
+                        "Should assert that there is no conflicting withChecksumSha1 and"
+                                + " withChecksumSha1 checksum conditions",
+                        (ThrowableAssert.ThrowingCallable)
+                                () ->
+                                        createBuilder()
+                                                .withChecksumSha1("test")
+                                                .withChecksumSha1("test"),
+                        getChecksumExceptionMessage()),
                 of(
-                        "Should assert that there is no conflicting withChecksumSha256 and withChecksumSha256 checksum conditions",
-                        (ThrowableAssert.ThrowingCallable) () ->
-                                createBuilder()
-                                        .withChecksumSha256( "test")
-                                        .withChecksumSha256("test"),
-                        getChecksumExceptionMessage()
-                ),
+                        "Should assert that there is no conflicting withChecksumSha256 and"
+                                + " withChecksumSha256 checksum conditions",
+                        (ThrowableAssert.ThrowingCallable)
+                                () ->
+                                        createBuilder()
+                                                .withChecksumSha256("test")
+                                                .withChecksumSha256("test"),
+                        getChecksumExceptionMessage()),
                 of(
-                        "Should assert that there is no conflicting withChecksumCrc32c and withChecksumCrc32c checksum conditions",
-                        (ThrowableAssert.ThrowingCallable) () ->
-                                createBuilder()
-                                        .withChecksumCrc32c( "test")
-                                        .withChecksumCrc32c("test"),
-                        getChecksumExceptionMessage()
-                ),
+                        "Should assert that there is no conflicting withChecksumCrc32c and"
+                                + " withChecksumCrc32c checksum conditions",
+                        (ThrowableAssert.ThrowingCallable)
+                                () ->
+                                        createBuilder()
+                                                .withChecksumCrc32c("test")
+                                                .withChecksumCrc32c("test"),
+                        getChecksumExceptionMessage()),
                 of(
-                        "Should assert that there is no conflicting withChecksumCrc32 and withChecksumCrc32 checksum conditions",
-                        (ThrowableAssert.ThrowingCallable) () ->
-                                createBuilder()
-                                        .withChecksumCrc32( "test")
-                                        .withChecksumCrc32("test"),
-                        getChecksumExceptionMessage()
-                )
-        );
+                        "Should assert that there is no conflicting withChecksumCrc32 and"
+                                + " withChecksumCrc32 checksum conditions",
+                        (ThrowableAssert.ThrowingCallable)
+                                () ->
+                                        createBuilder()
+                                                .withChecksumCrc32("test")
+                                                .withChecksumCrc32("test"),
+                        getChecksumExceptionMessage()));
     }
 
     private static String getTaggingExceptionMessage() {
-        return "Either the method withTag() or withTagging() can be used for adding tagging, not both";
+        return "Either the method withTag() or withTagging() can be used for adding tagging, not"
+                + " both";
     }
 
     private static String getChecksumExceptionMessage() {
-        return "Only one checksum condition CRC32, CRC32C, SHA1 or SHA256 can be added at the same time";
+        return "Only one checksum condition CRC32, CRC32C, SHA1 or SHA256 can be added at the same"
+                + " time";
     }
 
     private static String getExceptionMessage(ConditionField conditionField) {
@@ -819,12 +787,6 @@ class PostParamsTest {
     }
 
     private static PostParams.Builder createBuilder() {
-        return PostParams
-                .builder(
-                        Region.AP_EAST_1,
-                        EXPIRATION_DATE,
-                        "testBucket",
-                        withAnyKey()
-                );
+        return PostParams.builder(Region.AP_EAST_1, EXPIRATION_DATE, "testBucket", withAnyKey());
     }
 }

@@ -17,5 +17,4 @@ class KeyStartingWithConditionTest {
         // Assert
         assertThat(keyStartingWithCondition.getValue()).isEqualTo(value);
     }
-
 }

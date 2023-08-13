@@ -4,9 +4,7 @@ import mendes.sutil.dyego.awspresignedpost.conditions.key.ExactKeyCondition;
 import mendes.sutil.dyego.awspresignedpost.conditions.key.KeyStartingWithCondition;
 import mendes.sutil.dyego.awspresignedpost.conditions.key.KeyCondition;
 
-/**
- * Provides helper methods to create instances of {@link KeyCondition}
- */
+/** Provides helper methods to create instances of {@link KeyCondition} */
 public class KeyConditionHelper {
 
     /**
@@ -20,11 +18,12 @@ public class KeyConditionHelper {
     }
 
     /**
-     * Used to specify how the s3 key should start.
-     * Warning: Note that it allows the pre-signed post user to specify as many folders as they want after the starting
-     * value chosen here and then finally set the key name.
+     * Used to specify how the s3 key should start. Warning: Note that it allows the pre-signed post
+     * user to specify as many folders as they want after the starting value chosen here and then
+     * finally set the key name.
      *
-     * @param value The value which the key should start with when provided by the pre-signed post user
+     * @param value The value which the key should start with when provided by the pre-signed post
+     *     user
      * @return @link KeyStartsWithCondition}
      */
     public static KeyCondition withKeyStartingWith(String value) {
@@ -32,9 +31,9 @@ public class KeyConditionHelper {
     }
 
     /**
-     * Allow any key to be specified by the pre-signed post user.
-     * If the value provided by the user for the param 'key' is ${filename}, the name of the file being uploaded will
-     * be used.
+     * Allow any key to be specified by the pre-signed post user. If the value provided by the user
+     * for the param 'key' is ${filename}, the name of the file being uploaded will be used.
+     *
      * @return {@link KeyStartingWithCondition}
      */
     public static KeyStartingWithCondition withAnyKey() {

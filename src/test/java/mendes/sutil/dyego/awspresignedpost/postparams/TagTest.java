@@ -17,5 +17,4 @@ class TagTest {
         assertThat(tag.getKey()).isEqualTo("testKey");
         assertThat(tag.getValue()).isEqualTo("testValue");
     }
-
 }

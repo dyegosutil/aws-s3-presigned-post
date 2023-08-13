@@ -9,12 +9,14 @@ import java.util.Locale;
 import java.util.Objects;
 
 /**
- * Represents the expiration date time used in the policy to limit until when the pre-signed post can be used.
+ * Represents the expiration date time used in the policy to limit until when the pre-signed post
+ * can be used.
  */
 public class AmzExpirationDate {
-    
+
     private static final DateTimeFormatter ISO8601_FORMATTER =
-            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.ENGLISH).withZone(ZoneOffset.UTC);
+            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.ENGLISH)
+                    .withZone(ZoneOffset.UTC);
 
     private final ZonedDateTime expirationDate;
 
@@ -40,8 +42,7 @@ public class AmzExpirationDate {
     }
 
     public boolean isExpired() {
-        ZonedDateTime dateTimeNow = Instant.now(Clock.systemUTC())
-                .atZone(ZoneOffset.UTC);
+        ZonedDateTime dateTimeNow = Instant.now(Clock.systemUTC()).atZone(ZoneOffset.UTC);
         return expirationDate.isBefore(dateTimeNow);
     }
 }

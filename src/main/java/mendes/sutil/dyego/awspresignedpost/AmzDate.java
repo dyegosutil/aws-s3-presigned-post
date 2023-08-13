@@ -6,20 +6,16 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
-/**
- * Used in the policy, signature and subsequently in the request
- */
+/** Used in the policy, signature and subsequently in the request */
 public class AmzDate {
     private static final DateTimeFormatter AMZ_DATE_FORMATTER =
-            DateTimeFormatter
-                    .ofPattern("yyyyMMdd'T'HHmmss'Z'", Locale.ENGLISH)
+            DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss'Z'", Locale.ENGLISH)
                     .withZone(ZoneOffset.UTC);
 
-    private static final DateTimeFormatter YYYYMMDD_DATE_FORMATTER = DateTimeFormatter
-            .ofPattern("yyyyMMdd", Locale.ENGLISH)
-            .withZone(ZoneOffset.UTC);
+    private static final DateTimeFormatter YYYYMMDD_DATE_FORMATTER =
+            DateTimeFormatter.ofPattern("yyyyMMdd", Locale.ENGLISH).withZone(ZoneOffset.UTC);
 
-     private final ZonedDateTime date;
+    private final ZonedDateTime date;
 
     public AmzDate() {
         this.date = ZonedDateTime.now(Clock.systemUTC());
@@ -29,9 +25,7 @@ public class AmzDate {
         this.date = date;
     }
 
-    /**
-     * Used for testing purpose only.
-     */
+    /** Used for testing purpose only. */
     public AmzDate(Clock clock) {
         this.date = ZonedDateTime.now(clock);
     }

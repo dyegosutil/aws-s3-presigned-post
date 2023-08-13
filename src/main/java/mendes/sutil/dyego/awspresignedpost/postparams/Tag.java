@@ -1,8 +1,6 @@
 package mendes.sutil.dyego.awspresignedpost.postparams;
 
-/**
- * Represents an AWS S3 Tag
- */
+/** Represents an AWS S3 Tag */
 public class Tag {
 
     public Tag(String key, String value) {

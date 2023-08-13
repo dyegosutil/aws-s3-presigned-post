@@ -19,8 +19,8 @@ import static mendes.sutil.dyego.awspresignedpost.conditions.MatchCondition.Oper
 import static mendes.sutil.dyego.awspresignedpost.conditions.MatchCondition.Operator.STARTS_WITH;
 
 /**
- * A pre-signed POST request that can be executed at a later time without requiring additional signing or
- * authentication.
+ * A pre-signed POST request that can be executed at a later time without requiring additional
+ * signing or authentication.
  */
 public class PostParams {
 
@@ -34,8 +34,7 @@ public class PostParams {
             String bucket,
             Region region,
             AmzExpirationDate amzExpirationDate,
-            Map<ConditionField, Condition> conditions
-    ){
+            Map<ConditionField, Condition> conditions) {
         Objects.requireNonNull(bucket);
         Objects.requireNonNull(region);
         Objects.requireNonNull(amzExpirationDate);
@@ -47,64 +46,69 @@ public class PostParams {
     }
 
     /**
-     * Used to instantiate the {@link Builder} object to be used to provide all the conditions that must be fulfilled
-     * by for the AWS S3 post upload to be successful. This method accepts all the minimum necessary parameters to
-     * generate a valid pre-signed POST. After the instantiation, optional conditions can be added using the methods
-     * like {@link Builder#withContentLengthRange(long, long)} or {@link Builder#withContentTypeStartingWith(String)}.
-     * When said methods are called, validations are done to guarantee that conflicting conditions are not added.
+     * Used to instantiate the {@link Builder} object to be used to provide all the conditions that
+     * must be fulfilled by for the AWS S3 post upload to be successful. This method accepts all the
+     * minimum necessary parameters to generate a valid pre-signed POST. After the instantiation,
+     * optional conditions can be added using the methods like {@link
+     * Builder#withContentLengthRange(long, long)} or {@link
+     * Builder#withContentTypeStartingWith(String)}. When said methods are called, validations are
+     * done to guarantee that conflicting conditions are not added.
      *
-     * @param region            Region to be used in the signature
-     * @param expirationDate    Date indicating util when the pre-signed post can be used. Ultimately, the value passed
-     *                          here will be converted to ISO8601 UTC format in the policy as per specified by AWS.
-     * @param exactKeyCondition Specifies which is the exact value that should be used to perform the upload. For
-     *                          convenience, use the {@link KeyConditionHelper#withKey(String)} to build the condition.
-     * @param bucket            The bucket when the file should be uploaded to.
+     * @param region Region to be used in the signature
+     * @param expirationDate Date indicating util when the pre-signed post can be used. Ultimately,
+     *     the value passed here will be converted to ISO8601 UTC format in the policy as per
+     *     specified by AWS.
+     * @param exactKeyCondition Specifies which is the exact value that should be used to perform
+     *     the upload. For convenience, use the {@link KeyConditionHelper#withKey(String)} to build
+     *     the condition.
+     * @param bucket The bucket when the file should be uploaded to.
      * @return A PostParams builder which allows more fine-grained conditions to be added
      */
     public static Builder builder(
             Region region,
             ZonedDateTime expirationDate,
             String bucket,
-            ExactKeyCondition exactKeyCondition
-    ){
+            ExactKeyCondition exactKeyCondition) {
         Objects.requireNonNull(expirationDate, "Argument expirationDate must not be null");
         return new Builder(
                 Objects.requireNonNull(region, "Argument region must not be null"),
                 new AmzExpirationDate(expirationDate),
                 Objects.requireNonNull(exactKeyCondition, "Argument keyCondition must not be null"),
-                Objects.requireNonNull(bucket, "Argument bucket must not be null")
-        );
+                Objects.requireNonNull(bucket, "Argument bucket must not be null"));
     }
 
     /**
-     * Used to instantiate the {@link Builder} object to be used to provide all the conditions that must be fulfilled
-     * for the AWS S3 post upload to be successful. This method accepts all the minimum necessary parameters to
-     * generate a valid pre-signed POST. After the instantiation, optional conditions can be added using the variation of
-     * methods like {@link Builder#withContentLengthRange(long, long)} or {@link Builder#withContentTypeStartingWith(String)}.
-     * When said methods are called, validations are done to guarantee that conflicting conditions are not added.
+     * Used to instantiate the {@link Builder} object to be used to provide all the conditions that
+     * must be fulfilled for the AWS S3 post upload to be successful. This method accepts all the
+     * minimum necessary parameters to generate a valid pre-signed POST. After the instantiation,
+     * optional conditions can be added using the variation of methods like {@link
+     * Builder#withContentLengthRange(long, long)} or {@link
+     * Builder#withContentTypeStartingWith(String)}. When said methods are called, validations are
+     * done to guarantee that conflicting conditions are not added.
      *
-     * @param region                   Region to be used in the signature
-     * @param expirationDate           Date indicating util when the pre-signed post can be used. Ultimately, the value passed
-     *                                 here will be converted to ISO8601 UTC format in the policy as per specified by AWS.
-     * @param keyStartingWithCondition Specifies which is the exact value that should be used to perform the upload. For
-     *                                 convenience, use the {@link KeyConditionHelper#withKeyStartingWith(String)}
-     *                                 {@link KeyConditionHelper#withKeyStartingWith(String)} or to build the condition.
-     * @param bucket                   The bucket when the file should be uploaded to.
+     * @param region Region to be used in the signature
+     * @param expirationDate Date indicating util when the pre-signed post can be used. Ultimately,
+     *     the value passed here will be converted to ISO8601 UTC format in the policy as per
+     *     specified by AWS.
+     * @param keyStartingWithCondition Specifies which is the exact value that should be used to
+     *     perform the upload. For convenience, use the {@link
+     *     KeyConditionHelper#withKeyStartingWith(String)} {@link
+     *     KeyConditionHelper#withKeyStartingWith(String)} or to build the condition.
+     * @param bucket The bucket when the file should be uploaded to.
      * @return A PostParams builder which allows more fine-grained conditions to be added
      */
     public static Builder builder(
             Region region,
             ZonedDateTime expirationDate,
             String bucket,
-            KeyStartingWithCondition keyStartingWithCondition
-    ){
+            KeyStartingWithCondition keyStartingWithCondition) {
         Objects.requireNonNull(expirationDate, "Argument expirationDate must not be null");
         return new Builder(
                 Objects.requireNonNull(region, "Argument region must not be null"),
                 new AmzExpirationDate(expirationDate),
-                Objects.requireNonNull(keyStartingWithCondition, "Argument keyCondition must not be null"),
-                Objects.requireNonNull(bucket, "Argument bucket must not be null")
-        );
+                Objects.requireNonNull(
+                        keyStartingWithCondition, "Argument keyCondition must not be null"),
+                Objects.requireNonNull(bucket, "Argument bucket must not be null"));
     }
 
     public static final class Builder {
@@ -113,37 +117,44 @@ public class PostParams {
         private final String bucket;
         private final Region region;
         private final AmzExpirationDate amzExpirationDate;
-        private final Map<ConditionField,TreeSet<ConditionField>> dependentConditionFields;
+        private final Map<ConditionField, TreeSet<ConditionField>> dependentConditionFields;
 
         {
             dependentConditionFields = new HashMap<>();
             dependentConditionFields.put(
                     SERVER_SIDE_ENCRYPTION_AWS_KMS_KEY_ID,
-                    new TreeSet<>(singletonList(SERVER_SIDE_ENCRYPTION))
-            );
+                    new TreeSet<>(singletonList(SERVER_SIDE_ENCRYPTION)));
             dependentConditionFields.put(
                     SERVER_SIDE_ENCRYPTION_CONTEXT,
-                    new TreeSet<>(singletonList(SERVER_SIDE_ENCRYPTION))
-            );
+                    new TreeSet<>(singletonList(SERVER_SIDE_ENCRYPTION)));
             dependentConditionFields.put(
                     SERVER_SIDE_ENCRYPTION_BUCKET_KEY_ENABLED,
-                    new TreeSet<>(singletonList(SERVER_SIDE_ENCRYPTION))
-            );
+                    new TreeSet<>(singletonList(SERVER_SIDE_ENCRYPTION)));
             dependentConditionFields.put(
                     SERVER_SIDE_ENCRYPTION_CUSTOMER_ALGORITHM,
-                    new TreeSet<>(asList(SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY, SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY_MD5))
-            );
+                    new TreeSet<>(
+                            asList(
+                                    SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY,
+                                    SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY_MD5)));
             dependentConditionFields.put(
                     SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY,
-                    new TreeSet<>(asList(SERVER_SIDE_ENCRYPTION_CUSTOMER_ALGORITHM, SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY_MD5))
-            );
+                    new TreeSet<>(
+                            asList(
+                                    SERVER_SIDE_ENCRYPTION_CUSTOMER_ALGORITHM,
+                                    SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY_MD5)));
             dependentConditionFields.put(
                     SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY_MD5,
-                    new TreeSet<>(asList(SERVER_SIDE_ENCRYPTION_CUSTOMER_ALGORITHM, SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY))
-            );
+                    new TreeSet<>(
+                            asList(
+                                    SERVER_SIDE_ENCRYPTION_CUSTOMER_ALGORITHM,
+                                    SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY)));
         }
 
-        private Builder(Region region, AmzExpirationDate expirationDate, KeyCondition keyCondition, String bucket) {
+        private Builder(
+                Region region,
+                AmzExpirationDate expirationDate,
+                KeyCondition keyCondition,
+                String bucket) {
             Objects.requireNonNull(region);
             validateExpirationDate(expirationDate);
             Objects.requireNonNull(keyCondition);
@@ -157,73 +168,74 @@ public class PostParams {
 
         private void validateExpirationDate(AmzExpirationDate expirationDate) {
             Objects.requireNonNull(expirationDate);
-            if(expirationDate.isExpired()) {
+            if (expirationDate.isExpired()) {
                 throw new IllegalArgumentException(
-                        "The condition expiration date "+expirationDate.formatForPolicy()+" already expired"
-                );
+                        "The condition expiration date "
+                                + expirationDate.formatForPolicy()
+                                + " already expired");
             }
         }
 
         /**
-         * Builds the {@link PostParams} object.
-         * <br><br>
-         * Some conditions require other conditions to be present for the pre signed post to be valid. This method
-         * validates if said conditions where added, failing fast otherwise
+         * Builds the {@link PostParams} object. <br>
+         * <br>
+         * Some conditions require other conditions to be present for the pre signed post to be
+         * valid. This method validates if said conditions where added, failing fast otherwise
          *
-         * @return The {@link PostParams} to be used while
-         * calling {@link S3PostSigner#create(PostParams, AwsCredentialsProvider)}
+         * @return The {@link PostParams} to be used while calling {@link
+         *     S3PostSigner#create(PostParams, AwsCredentialsProvider)}
          */
-        public PostParams build(){
+        public PostParams build() {
             validateDependentConditions();
             addTags();
-            return new PostParams(
-                    bucket,
-                    region,
-                    amzExpirationDate,
-                    conditions
-            );
+            return new PostParams(bucket, region, amzExpirationDate, conditions);
         }
 
         private void validateDependentConditions() {
-            conditions.keySet().forEach(
-                    conditionField -> {
-                        Set<ConditionField> requiredConditions = dependentConditionFields.get(conditionField);
-                        if(requiredConditions != null) {
-                            requiredConditions.forEach(requiredConditionField -> {
-                                if (!conditions.containsKey(requiredConditionField)) {
-                                    throw new IllegalArgumentException(
-                                            String.format(
-                                                    "The condition %s requires the condition(s) %s to be present",
-                                                    conditionField,
-                                                    requiredConditions
-                                            )
-                                    );
+            conditions
+                    .keySet()
+                    .forEach(
+                            conditionField -> {
+                                Set<ConditionField> requiredConditions =
+                                        dependentConditionFields.get(conditionField);
+                                if (requiredConditions != null) {
+                                    requiredConditions.forEach(
+                                            requiredConditionField -> {
+                                                if (!conditions.containsKey(
+                                                        requiredConditionField)) {
+                                                    throw new IllegalArgumentException(
+                                                            String.format(
+                                                                    "The condition %s requires the"
+                                                                        + " condition(s) %s to be"
+                                                                        + " present",
+                                                                    conditionField,
+                                                                    requiredConditions));
+                                                }
+                                            });
                                 }
                             });
-                        }
-                    }
-            );
         }
 
         /**
-         * Add tags if the method {@link Builder#withTag(String, String)} was used.
-         * Plain text is used due to simplicity of xml and to avoid an overkill of using a library
+         * Add tags if the method {@link Builder#withTag(String, String)} was used. Plain text is
+         * used due to simplicity of xml and to avoid an overkill of using a library
          */
         private void addTags() {
-            if(!tags.isEmpty()) {
+            if (!tags.isEmpty()) {
                 StringBuilder taggingXml = new StringBuilder();
                 taggingXml.append("<Tagging>");
                 taggingXml.append("<TagSet>");
-                tags.forEach(tag -> {
-                    taggingXml.append("<Tag>");
-                    taggingXml.append("<Key>");
-                    taggingXml.append(tag.getKey());
-                    taggingXml.append("</Key>");
-                    taggingXml.append("<Value>");
-                    taggingXml.append(tag.getValue());
-                    taggingXml.append("</Value>");
-                    taggingXml.append("</Tag>");
-                });
+                tags.forEach(
+                        tag -> {
+                            taggingXml.append("<Tag>");
+                            taggingXml.append("<Key>");
+                            taggingXml.append(tag.getKey());
+                            taggingXml.append("</Key>");
+                            taggingXml.append("<Value>");
+                            taggingXml.append(tag.getValue());
+                            taggingXml.append("</Value>");
+                            taggingXml.append("</Tag>");
+                        });
                 taggingXml.append("</TagSet>");
                 taggingXml.append("</Tagging>");
 
@@ -232,11 +244,12 @@ public class PostParams {
         }
 
         /**
-         * Makes sure that an exact ({@link MatchCondition.Operator#EQ}) mutually exclusive condition is not added with
-         * a startsWith ({@link MatchCondition.Operator#STARTS_WITH}) condition.
+         * Makes sure that an exact ({@link MatchCondition.Operator#EQ}) mutually exclusive
+         * condition is not added with a startsWith ({@link MatchCondition.Operator#STARTS_WITH})
+         * condition.
          *
          * @param conditionField Condition type specified
-         * @param value          Specifiled value for this condition
+         * @param value Specifiled value for this condition
          * @return @return The {@link Builder} object
          */
         private Builder withCondition(ConditionField conditionField, String value) {
@@ -249,11 +262,12 @@ public class PostParams {
         }
 
         /**
-         * Makes sure that a startsWith ({@link MatchCondition.Operator#STARTS_WITH})mutually exclusive condition is not added with
-         * an exact ({@link MatchCondition.Operator#EQ}) condition.
+         * Makes sure that a startsWith ({@link MatchCondition.Operator#STARTS_WITH})mutually
+         * exclusive condition is not added with an exact ({@link MatchCondition.Operator#EQ})
+         * condition.
          *
          * @param conditionField Condition type specified
-         * @param value          Specifiled value for this condition
+         * @param value Specifiled value for this condition
          * @return @return The {@link Builder} object
          */
         private Builder withStartingWithCondition(ConditionField conditionField, String value) {
@@ -261,21 +275,27 @@ public class PostParams {
         }
 
         private Builder assertUniquenessAndAdd(MatchCondition matchCondition) {
-            return addIfUnique(matchCondition, getInvalidConditionExceptionMessage(matchCondition.getConditionField()));
+            return addIfUnique(
+                    matchCondition,
+                    getInvalidConditionExceptionMessage(matchCondition.getConditionField()));
         }
 
         private Builder assertUniquenessAndAdd(ChecksumCondition checksumCondition) {
-            new HashSet<>(asList(CHECKSUM_CRC32, CHECKSUM_CRC32C, CHECKSUM_SHA1, CHECKSUM_SHA256)).forEach(a -> {
-                if(conditions.containsKey(a)) {
-                    throw new IllegalArgumentException("Only one checksum condition CRC32, CRC32C, SHA1 or SHA256 can be added at the same time");
-                }
-            });
+            new HashSet<>(asList(CHECKSUM_CRC32, CHECKSUM_CRC32C, CHECKSUM_SHA1, CHECKSUM_SHA256))
+                    .forEach(
+                            a -> {
+                                if (conditions.containsKey(a)) {
+                                    throw new IllegalArgumentException(
+                                            "Only one checksum condition CRC32, CRC32C, SHA1 or"
+                                                    + " SHA256 can be added at the same time");
+                                }
+                            });
             conditions.put(checksumCondition.getConditionField(), checksumCondition);
             return this;
         }
 
         private Builder addIfUnique(Condition condition, String errorMessage) {
-            if (conditions.containsKey(condition.getConditionField())){
+            if (conditions.containsKey(condition.getConditionField())) {
                 throw new IllegalArgumentException(errorMessage);
             }
             this.conditions.put(condition.getConditionField(), condition);
@@ -283,17 +303,17 @@ public class PostParams {
         }
 
         private void throwExceptionIfConditionIsPresent(
-                ConditionField conditionField,
-                String errorMessage
-        ) {
-            if (conditions.containsKey(conditionField)){
+                ConditionField conditionField, String errorMessage) {
+            if (conditions.containsKey(conditionField)) {
                 throw new IllegalArgumentException(errorMessage);
             }
         }
 
         private Builder assertUniquenessAndAddTagging(String value) {
             if (!tags.isEmpty()) {
-                throw new IllegalArgumentException("Either the method withTag() or withTagging() can be used for adding tagging, not both");
+                throw new IllegalArgumentException(
+                        "Either the method withTag() or withTagging() can be used for adding"
+                                + " tagging, not both");
             }
             return withTaggingCondition(value);
         }
@@ -301,8 +321,8 @@ public class PostParams {
         private Builder assertUniquenessAndAddTag(String key, String value) {
             throwExceptionIfConditionIsPresent(
                     TAGGING,
-                    "Either the method withTag() or withTagging() can be used for adding tagging, not both"
-            );
+                    "Either the method withTag() or withTagging() can be used for adding tagging,"
+                            + " not both");
             tags.add(new Tag(key, value));
             return this;
         }
@@ -313,29 +333,35 @@ public class PostParams {
 
         /**
          * Used to limit the size of the file to be uploaded
-         * <p>
-         * For example, calling the method with the values withContentLengthRange(1048576, 10485760) allows the
-         * upload of a file from 1 to 10 MiB
          *
-         * @param minimumValue Specified in bytes, indicates the minimum size of the file for it to be accepted
-         * @param maximumValue Specified in bytes, indicates the maximum size of the file for it to be accepted
+         * <p>For example, calling the method with the values withContentLengthRange(1048576,
+         * 10485760) allows the upload of a file from 1 to 10 MiB
+         *
+         * @param minimumValue Specified in bytes, indicates the minimum size of the file for it to
+         *     be accepted
+         * @param maximumValue Specified in bytes, indicates the maximum size of the file for it to
+         *     be accepted
          * @return The {@link Builder} object
          */
         public Builder withContentLengthRange(long minimumValue, long maximumValue) {
-            ContentLengthRangeCondition condition = new ContentLengthRangeCondition(minimumValue, maximumValue);
+            ContentLengthRangeCondition condition =
+                    new ContentLengthRangeCondition(minimumValue, maximumValue);
             this.conditions.put(condition.getConditionField(), condition);
             return this;
         }
 
         /**
-         * Used to define how should be the response code returned by AWS when the upload is successful. The enum
-         * received as parameter here will be converted to 200, 201 or 204. Same values that should be used while using
-         * the pre-singed post to upload the file.
-         * <p>
-         * If the value is set to OK (200) or NO_CONTENT (204), Amazon S3 returns an empty document with a 200 or 204 status code.
-         * <p>
-         * If the value is set to CREATED (201), Amazon S3 returns an XML document with a 201 status code:
-         * <pre> {@code
+         * Used to define how should be the response code returned by AWS when the upload is
+         * successful. The enum received as parameter here will be converted to 200, 201 or 204.
+         * Same values that should be used while using the pre-singed post to upload the file.
+         *
+         * <p>If the value is set to OK (200) or NO_CONTENT (204), Amazon S3 returns an empty
+         * document with a 200 or 204 status code.
+         *
+         * <p>If the value is set to CREATED (201), Amazon S3 returns an XML document with a 201
+         * status code:
+         *
+         * <pre>{@code
          * <?xml version="1.0" encoding="UTF-8"?>
          * <PostResponse>
          *     <Location>https://mybucket.s3.eu-central-1.amazonaws.com/myfile.txt</Location>
@@ -343,12 +369,12 @@ public class PostParams {
          *     <Key>myfile.txt</Key>
          *     <ETag>"d41d8cd98f00b204e9800998ecf8427f"</ETag>
          * </PostResponse>
-         * }
-         * </pre>
-         * <p>
-         * If you don't specify {@link PostParams.Builder#withSuccessActionRedirect(String)} or
-         * {@link PostParams.Builder#withSuccessActionRedirectStartingWith(String)}, the status code 204 is returned by
-         * default to the client when the upload succeeds.
+         * }</pre>
+         *
+         * <p>If you don't specify {@link PostParams.Builder#withSuccessActionRedirect(String)} or
+         * {@link PostParams.Builder#withSuccessActionRedirectStartingWith(String)}, the status code
+         * 204 is returned by default to the client when the upload succeeds.
+         *
          * @param successActionStatus Http code to be returned when the upload is successful
          * @return The {@link Builder} object
          */
@@ -366,6 +392,7 @@ public class PostParams {
                 this.value = value;
             }
         }
+
         public enum SuccessActionStatus {
             OK(200),
             CREATED(201),
@@ -432,8 +459,8 @@ public class PostParams {
         }
 
         /**
-         * Allows specifying which is the exact content type of the file being uploaded.
-         * Example: 'audio/aac', 'text/plain'. This can be seen in the metadata information in the s3 bucket.
+         * Allows specifying which is the exact content type of the file being uploaded. Example:
+         * 'audio/aac', 'text/plain'. This can be seen in the metadata information in the s3 bucket.
          * Not to be confused with file extension. To limit that use {@link KeyConditionHelper}
          *
          * @param value Content Type to be used
@@ -445,8 +472,9 @@ public class PostParams {
 
         /**
          * Allows specifying how should be the beginning of the content type for this upload.
-         * Example: 'audio/aac', 'text/plain'. This can be seen in the metadata information in the s3 bucket.
-         * Not to be confused with file extension. To limit that use {@link KeyConditionHelper}
+         * Example: 'audio/aac', 'text/plain'. This can be seen in the metadata information in the
+         * s3 bucket. Not to be confused with file extension. To limit that use {@link
+         * KeyConditionHelper}
          *
          * @param value Content Type to be used
          * @return @return The {@link Builder} object
@@ -522,14 +550,17 @@ public class PostParams {
         }
 
         /**
-         * Allows specifying which is the exact success_action_redirect condition of the file being uploaded.
-         * <br><br>
-         * This condition is used to redirect the user to another page after the upload. AWS will add query parameters
-         * into the end of the url such as
-         * {@code https://www.mydomain.com/?bucket=mybucket&key=test.txt&etag=%2254b0c58c7ce9f2a8b551351102ee0938%22}
-         * <br><br>
+         * Allows specifying which is the exact success_action_redirect condition of the file being
+         * uploaded. <br>
+         * <br>
+         * This condition is used to redirect the user to another page after the upload. AWS will
+         * add query parameters into the end of the url such as {@code
+         * https://www.mydomain.com/?bucket=mybucket&key=test.txt&etag=%2254b0c58c7ce9f2a8b551351102ee0938%22}
+         * <br>
+         * <br>
          *
-         * @param value success_action_redirect value to be added to the policy, ex: {@code https://www.mydomain.com}
+         * @param value success_action_redirect value to be added to the policy, ex: {@code
+         *     https://www.mydomain.com}
          * @return The {@link Builder} object
          */
         public Builder withSuccessActionRedirect(String value) {
@@ -537,15 +568,17 @@ public class PostParams {
         }
 
         /**
-         * Allows specifying how should be the beginning of the success_action_redirect for this upload.
-         * This condition is used to redirect the user to another page after the upload
-         * <br><br>
-         * This condition is used to redirect the user to another page after the upload. AWS will add correspondent
-         * query parameters into the end of the url such as
-         * {@code https://www.mydomain.com/?bucket=mybucket&key=test.txt&etag=%2254b0c58c7ce9f2a8b551351102ee0938%22}
-         * <br><br>
+         * Allows specifying how should be the beginning of the success_action_redirect for this
+         * upload. This condition is used to redirect the user to another page after the upload <br>
+         * <br>
+         * This condition is used to redirect the user to another page after the upload. AWS will
+         * add correspondent query parameters into the end of the url such as {@code
+         * https://www.mydomain.com/?bucket=mybucket&key=test.txt&etag=%2254b0c58c7ce9f2a8b551351102ee0938%22}
+         * <br>
+         * <br>
          *
-         * @param value success_action_redirect condition value to be added to the policy, ex: {@code https://www.mydomain.com}
+         * @param value success_action_redirect condition value to be added to the policy, ex:
+         *     {@code https://www.mydomain.com}
          * @return The {@link Builder} object
          */
         public Builder withSuccessActionRedirectStartingWith(String value) {
@@ -553,37 +586,43 @@ public class PostParams {
         }
 
         /**
-         * Warning: <a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/about-object-ownership.html">Aws
-         * recommends that you disable ACLs except in unusual circumstances where you need to control access for each object individually.</a>.
-         * <p>
-         * Allows specifying how should be the acl this object.
-         * <p>
-         * Check <a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/acl-overview.html">this</a> link to
-         * understand what each one of the canned acl permissions mean.
+         * Warning: <a
+         * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/about-object-ownership.html">Aws
+         * recommends that you disable ACLs except in unusual circumstances where you need to
+         * control access for each object individually.</a>.
+         *
+         * <p>Allows specifying how should be the acl this object.
+         *
+         * <p>Check <a
+         * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/acl-overview.html">this</a>
+         * link to understand what each one of the canned acl permissions mean.
          */
         public Builder withAcl(CannedAcl cannedAcl) {
             return withCondition(ACL, cannedAcl.cannedAcl);
         }
 
         /**
-         * Warning: <a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/about-object-ownership.html">Aws
-         * recommends that you disable ACLs except in unusual circumstances where you need to control access for each object individually.</a>.
-         * <p>
-         * Allows specifying how should be the begging of the value of the acl for this object.
-         * <p>
-         * Check <a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/acl-overview.html">this</a> link to
-         * understand what each one of the canned acl permissions mean.
+         * Warning: <a
+         * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/about-object-ownership.html">Aws
+         * recommends that you disable ACLs except in unusual circumstances where you need to
+         * control access for each object individually.</a>.
+         *
+         * <p>Allows specifying how should be the begging of the value of the acl for this object.
+         *
+         * <p>Check <a
+         * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/acl-overview.html">this</a>
+         * link to understand what each one of the canned acl permissions mean.
          */
         public Builder withAclStartingWith(String value) {
             return withStartingWithCondition(ACL, value);
         }
 
         /**
-         * Allows specifying which tags should be added for the file being uploaded. If this method is used then the
-         * {@link Builder#withTag(String, String)} cannot.
-         * The value should be in the follow format:
+         * Allows specifying which tags should be added for the file being uploaded. If this method
+         * is used then the {@link Builder#withTag(String, String)} cannot. The value should be in
+         * the follow format:
          *
-         * <pre> {@code
+         * <pre>{@code
          * <Tagging>
          *     <TagSet>
          *         <Tag>
@@ -592,8 +631,8 @@ public class PostParams {
          *         </Tag>
          *     </TagSet>
          * </Tagging>
-         * }
-         * </pre>
+         * }</pre>
+         *
          * @param xml The xml containing the tags to be added
          * @return The {@link Builder} object
          */
@@ -603,8 +642,8 @@ public class PostParams {
         }
 
         /**
-         * Allows specifying a tag to be added for the file being uploaded. If this method is used then the
-         * {@link Builder#withTagging(String)} cannot.
+         * Allows specifying a tag to be added for the file being uploaded. If this method is used
+         * then the {@link Builder#withTagging(String)} cannot.
          *
          * @param key The key for this tag. Ex: 'MyClassification'
          * @param value The value for this tag. Ex: 'Confidential'
@@ -617,10 +656,10 @@ public class PostParams {
         }
 
         /**
-         * Allows the user to specify freely their own meta-data for the file being uploaded. It can be used multiple
-         * times. Aws s3 does not validate any user meta-data. It stores user-defined metadata keys in lowercase.
-         * Find more information
-         * <a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingMetadata.html">here</a>
+         * Allows the user to specify freely their own meta-data for the file being uploaded. It can
+         * be used multiple times. Aws s3 does not validate any user meta-data. It stores
+         * user-defined metadata keys in lowercase. Find more information <a
+         * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingMetadata.html">here</a>
          *
          * @param metaName The name of this meta-data
          * @param value The value for this meta-data
@@ -634,10 +673,10 @@ public class PostParams {
         }
 
         /**
-         * Allows the user to specify freely their own meta-data and its starting value for the file being uploaded.
-         * It can be used multiple times. Aws s3 does not validate any user meta-data. It stores user-defined metadata
-         * keys in lowercase. Find more information
-         * <a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingMetadata.html">here</a>
+         * Allows the user to specify freely their own meta-data and its starting value for the file
+         * being uploaded. It can be used multiple times. Aws s3 does not validate any user
+         * meta-data. It stores user-defined metadata keys in lowercase. Find more information <a
+         * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingMetadata.html">here</a>
          *
          * @param metaName The name of this meta-data
          * @param startingValue The starting value for this meta-data
@@ -651,9 +690,9 @@ public class PostParams {
         }
 
         /**
-         * Allows specifying which is the storage class to be used for the file being uploaded.
-         * Find more information about each one of the options
-         * <a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html">here</a>
+         * Allows specifying which is the storage class to be used for the file being uploaded. Find
+         * more information about each one of the options <a
+         * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html">here</a>
          *
          * @param storageClass Store class to be used
          * @return The {@link Builder} object
@@ -663,13 +702,15 @@ public class PostParams {
         }
 
         /**
-         * If the bucket is configured as a website, this condition allows specifying to redirect requests for this
-         * object to another object in the same bucket or to an external URL. Note that the value must be prefixed
-         * by /, http://, or https://. The length of the value is limited to 2 KB.
-         * For more information
-         * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/RESTObjectPOST.html">vide the aws documentation</a>
+         * If the bucket is configured as a website, this condition allows specifying to redirect
+         * requests for this object to another object in the same bucket or to an external URL. Note
+         * that the value must be prefixed by /, http://, or https://. The length of the value is
+         * limited to 2 KB. For more information <a
+         * href="https://docs.aws.amazon.com/AmazonS3/latest/API/RESTObjectPOST.html">vide the aws
+         * documentation</a>
          *
-         * @param value An object in the same bucket or website to redirect to. Ex: '/anotherPage.html', 'www.example.com/'
+         * @param value An object in the same bucket or website to redirect to. Ex:
+         *     '/anotherPage.html', 'www.example.com/'
          * @return The {@link Builder} object
          */
         public Builder withWebsiteRedirectLocation(String value) {
@@ -682,7 +723,8 @@ public class PostParams {
          * @return The {@link Builder} object
          */
         public Builder withChecksumCrc32(String checksumCrc32Value) {
-            return assertUniquenessAndAdd(new ChecksumCondition(CHECKSUM_CRC32, checksumCrc32Value));
+            return assertUniquenessAndAdd(
+                    new ChecksumCondition(CHECKSUM_CRC32, checksumCrc32Value));
         }
 
         /**
@@ -691,7 +733,8 @@ public class PostParams {
          * @return The {@link Builder} object
          */
         public Builder withChecksumCrc32c(String checksumCrc32cValue) {
-            return assertUniquenessAndAdd(new ChecksumCondition(CHECKSUM_CRC32C, checksumCrc32cValue));
+            return assertUniquenessAndAdd(
+                    new ChecksumCondition(CHECKSUM_CRC32C, checksumCrc32cValue));
         }
 
         /**
@@ -700,7 +743,8 @@ public class PostParams {
          * @return The {@link Builder} object
          */
         public Builder withChecksumSha1(String checksumSha1Base64Encoded) {
-            return assertUniquenessAndAdd(new ChecksumCondition(CHECKSUM_SHA1, checksumSha1Base64Encoded));
+            return assertUniquenessAndAdd(
+                    new ChecksumCondition(CHECKSUM_SHA1, checksumSha1Base64Encoded));
         }
 
         /**
@@ -709,12 +753,11 @@ public class PostParams {
          * @return The {@link Builder} object
          */
         public Builder withChecksumSha256(String checksumSha256Base64Encoded) {
-            return assertUniquenessAndAdd(new ChecksumCondition(CHECKSUM_SHA256, checksumSha256Base64Encoded));
+            return assertUniquenessAndAdd(
+                    new ChecksumCondition(CHECKSUM_SHA256, checksumSha256Base64Encoded));
         }
 
-        /**
-         * Allows specifying which algorithm should be used for server-side encryption.
-         */
+        /** Allows specifying which algorithm should be used for server-side encryption. */
         public Builder withServerSideEncryption(EncryptionAlgorithm encryptionAlgorithm) {
             return withCondition(SERVER_SIDE_ENCRYPTION, encryptionAlgorithm.value);
         }
@@ -722,7 +765,8 @@ public class PostParams {
         /**
          * Allows specifying the id of the AWS KMS KEY to be used to for server-side encryption
          *
-         * @param awsKmsKeyId The value shold be in the format 'arn:aws:kms:region:acct-id:key/key-id'
+         * @param awsKmsKeyId The value shold be in the format
+         *     'arn:aws:kms:region:acct-id:key/key-id'
          * @return The {@link Builder} object
          */
         public Builder withServerSideEncryptionAwsKmsKeyId(String awsKmsKeyId) {
@@ -730,11 +774,13 @@ public class PostParams {
         }
 
         /**
-         * Allows specifying the encryption context for this file upload. That is, and optional set of key-value pairs
-         * that can contain contextual information about the upload. It is used as ADD, that is, non-secret data that is
-         * provided to encryption and decryption operations to add an additional integrity and authenticity check on the
-         * encrypted data. For more information vide 'Encryption context' in the
-         * <a href="https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html">aws documentation.</a>
+         * Allows specifying the encryption context for this file upload. That is, and optional set
+         * of key-value pairs that can contain contextual information about the upload. It is used
+         * as ADD, that is, non-secret data that is provided to encryption and decryption operations
+         * to add an additional integrity and authenticity check on the encrypted data. For more
+         * information vide 'Encryption context' in the <a
+         * href="https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html">aws
+         * documentation.</a>
          *
          * @param awsKmsKeyId Base64 encoded json of key-value pairs
          * @return The {@link Builder} object
@@ -744,10 +790,10 @@ public class PostParams {
         }
 
         /**
-         * Allows specifying if Amazon S3 should use an S3 Bucket Key with SSE-KMS or not.
-         * When KMS encryption is used to encrypt new objects in this bucket, the bucket key reduces encryption costs by
-         * lowering calls to AWS KMS. More information
-         * <a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucket-key.html">here</a>.
+         * Allows specifying if Amazon S3 should use an S3 Bucket Key with SSE-KMS or not. When KMS
+         * encryption is used to encrypt new objects in this bucket, the bucket key reduces
+         * encryption costs by lowering calls to AWS KMS. More information <a
+         * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucket-key.html">here</a>.
          *
          * @return The {@link Builder} object
          */
@@ -757,6 +803,7 @@ public class PostParams {
 
         /**
          * Specifies the algorithm to use to when encrypting the object.
+         *
          * @return The {@link Builder} object
          */
         public Builder withServerSideEncryptionCustomerAlgorithmAES256() {
@@ -764,8 +811,9 @@ public class PostParams {
         }
 
         /**
-         * Allows specifying the base64 encoded encryption key to be used for this file upload. The key must be
-         * appropriate for use with the algorithm specified. For example, using a 265 bit encryption key for AES256
+         * Allows specifying the base64 encoded encryption key to be used for this file upload. The
+         * key must be appropriate for use with the algorithm specified. For example, using a 265
+         * bit encryption key for AES256
          *
          * @param encryptionKeyDigestAsBase64 base64 encoded encryption key.
          * @return The {@link Builder} object
@@ -775,25 +823,31 @@ public class PostParams {
         }
 
         /**
-         * Allows specifying the base64 encoded 128-bit MD5 digest of the encryption key. Amazon S3 uses this header for
-         * a message integrity check to ensure that the encryption key was transmitted without error.
+         * Allows specifying the base64 encoded 128-bit MD5 digest of the encryption key. Amazon S3
+         * uses this header for a message integrity check to ensure that the encryption key was
+         * transmitted without error.
          *
-         * @param encryptionKeyDigestAsBase64 base64 encoded 128-bit MD5 digest of the encryption key
+         * @param encryptionKeyDigestAsBase64 base64 encoded 128-bit MD5 digest of the encryption
+         *     key
          * @return The {@link Builder} object
          */
         public Builder withServerSideEncryptionCustomerKeyMD5(String encryptionKeyDigestAsBase64) {
-            return withCondition(SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY_MD5, encryptionKeyDigestAsBase64);
+            return withCondition(
+                    SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY_MD5, encryptionKeyDigestAsBase64);
         }
 
-//        AWSAccessKeyId ?
+        //        AWSAccessKeyId ?
 
         // TODO
         // Matching Any Content
-        // To configure the POST policy to allow any content within a form field, use starts-with with an empty value (""). This example allows any value for success_action_redirect:
+        // To configure the POST policy to allow any content within a form field, use starts-with
+        // with
+        // an empty value (""). This example allows any value for success_action_redirect:
         // ["starts-with", "$success_action_redirect", ""]
 
         // TODO
-        // Content-Types values for a starts-with condition that include commas are interpreted as lists. Each value in the list must meet the condition for the whole condition to pass.
+        // Content-Types values for a starts-with condition that include commas are interpreted as
+        // lists. Each value in the list must meet the condition for the whole condition to pass.
     }
 
     public String getBucket() {
@@ -812,4 +866,3 @@ public class PostParams {
         return conditions;
     }
 }
-

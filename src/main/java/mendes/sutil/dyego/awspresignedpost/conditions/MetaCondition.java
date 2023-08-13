@@ -18,19 +18,19 @@ public class MetaCondition extends MatchCondition {
 
     @Override
     public String[] asAwsPolicyCondition() {
-        return new String[]{
-                getConditionOperator().awsOperatorValue,
-                super.getConditionField().valueForAwsPolicy.concat(metaName),
-                getValue()
+        return new String[] {
+            getConditionOperator().awsOperatorValue,
+            super.getConditionField().valueForAwsPolicy.concat(metaName),
+            getValue()
         };
     }
 
     @Override
     public boolean equals(Object obj) {
-        if(obj == null) return false;
-        return obj instanceof MetaCondition &&
-                ((MetaCondition) obj).getConditionField() == this.conditionField &&
-                Objects.equals(((MetaCondition) obj).metaName, this.metaName);
+        if (obj == null) return false;
+        return obj instanceof MetaCondition
+                && ((MetaCondition) obj).getConditionField() == this.conditionField
+                && Objects.equals(((MetaCondition) obj).metaName, this.metaName);
     }
 
     @Override

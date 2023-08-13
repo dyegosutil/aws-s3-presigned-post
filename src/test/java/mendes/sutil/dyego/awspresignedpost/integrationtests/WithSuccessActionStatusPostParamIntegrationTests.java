@@ -23,12 +23,10 @@ public class WithSuccessActionStatusPostParamIntegrationTests extends Integratio
     @ParameterizedTest(name = "{0}")
     @MethodSource("getTestCasesForWithSuccessActionStatus")
     void shouldUploadFileUsingSuccessActionStatus(
-            String testDescription,
-            PostParams postParams,
-            int expectedResponseCode
-    ) {
+            String testDescription, PostParams postParams, int expectedResponseCode) {
         // Arrange
-        PresignedPost presignedPost = S3PostSigner.create(postParams, getAmazonCredentialsProvider());
+        PresignedPost presignedPost =
+                S3PostSigner.create(postParams, getAmazonCredentialsProvider());
 
         Map<String, String> conditions = presignedPost.getConditions();
         Request request = createRequestFromConditions(conditions, presignedPost.getUrl());
@@ -43,10 +41,12 @@ public class WithSuccessActionStatusPostParamIntegrationTests extends Integratio
     @Test
     void shouldNotUploadFileUsingWrongSuccessActionStatus() {
         // Arrange
-        PostParams postParams = createDefaultPostParamBuilderSpecifyingKey()
-                .withSuccessActionStatus(PostParams.Builder.SuccessActionStatus.OK)
-                .build();
-        PresignedPost presignedPost = S3PostSigner.create(postParams, getAmazonCredentialsProvider());
+        PostParams postParams =
+                createDefaultPostParamBuilderSpecifyingKey()
+                        .withSuccessActionStatus(PostParams.Builder.SuccessActionStatus.OK)
+                        .build();
+        PresignedPost presignedPost =
+                S3PostSigner.create(postParams, getAmazonCredentialsProvider());
         Map<String, String> conditions = presignedPost.getConditions();
         conditions.put("success_action_status", "299");
         Request request = createRequestFromConditions(conditions, presignedPost.getUrl());
@@ -61,29 +61,30 @@ public class WithSuccessActionStatusPostParamIntegrationTests extends Integratio
     public static Stream<Arguments> getTestCasesForWithSuccessActionStatus() {
         return Stream.of(
                 of(
-                        "Should succeed while uploading file to S3 when the success_action_status specified is " +
-                                "the same as the one in the policy and status code returned in the response should be 200",
+                        "Should succeed while uploading file to S3 when the success_action_status"
+                                + " specified is the same as the one in the policy and status code"
+                                + " returned in the response should be 200",
                         createDefaultPostParamBuilderSpecifyingKey()
                                 .withSuccessActionStatus(PostParams.Builder.SuccessActionStatus.OK)
                                 .build(),
-                        200
-                ),
+                        200),
                 of(
-                        "Should succeed while uploading file to S3 when the success_action_status specified is " +
-                                "the same as the one in the policy and status code returned in the response should be 201",
+                        "Should succeed while uploading file to S3 when the success_action_status"
+                                + " specified is the same as the one in the policy and status code"
+                                + " returned in the response should be 201",
                         createDefaultPostParamBuilderSpecifyingKey()
-                                .withSuccessActionStatus(PostParams.Builder.SuccessActionStatus.CREATED)
+                                .withSuccessActionStatus(
+                                        PostParams.Builder.SuccessActionStatus.CREATED)
                                 .build(),
-                        201
-                ),
+                        201),
                 of(
-                        "Should succeed while uploading file to S3 when the success_action_status specified is " +
-                                "the same as the one in the policy and status code returned in the response should be 204",
+                        "Should succeed while uploading file to S3 when the success_action_status"
+                                + " specified is the same as the one in the policy and status code"
+                                + " returned in the response should be 204",
                         createDefaultPostParamBuilderSpecifyingKey()
-                                .withSuccessActionStatus(PostParams.Builder.SuccessActionStatus.NO_CONTENT)
+                                .withSuccessActionStatus(
+                                        PostParams.Builder.SuccessActionStatus.NO_CONTENT)
                                 .build(),
-                        204
-                )
-        );
+                        204));
     }
 }

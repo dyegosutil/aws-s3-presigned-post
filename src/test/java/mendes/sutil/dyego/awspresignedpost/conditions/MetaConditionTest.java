@@ -16,7 +16,8 @@ class MetaConditionTest {
         String[] awsPolicyCondition = metaCondition.asAwsPolicyCondition();
 
         // Assert
-        assertThat(awsPolicyCondition).isEqualTo(new String[]{"eq","$x-amz-meta-myMetaName","myMetaValue"});
+        assertThat(awsPolicyCondition)
+                .isEqualTo(new String[] {"eq", "$x-amz-meta-myMetaName", "myMetaValue"});
     }
 
     @Test
@@ -30,5 +31,4 @@ class MetaConditionTest {
         // Assert
         assertThat(metaName).isEqualTo("myMetaName");
     }
-
 }

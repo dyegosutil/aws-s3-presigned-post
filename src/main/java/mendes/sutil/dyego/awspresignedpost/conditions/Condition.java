@@ -17,6 +17,7 @@ public abstract class Condition {
 
     /**
      * Generates this condition's correspondent String array to be added to the policy
+     *
      * @return
      */
     public abstract String[] asAwsPolicyCondition();

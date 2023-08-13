@@ -5,9 +5,7 @@ Generating S3 post data for uploading files into public access s3 buckets is not
 That is, the only parameters necessary are the ```key``` and ```file```.
 
 # To be done
-- either name the tests givenEmptySetOfConditions_whenCreatingFreeTextPostParams_thenThrowIllegalArgumentException or shoudl....
-- check package names and move tests to correct packages
-- Make sure the AKIA, ASIAn temp credentials can be used
+- Test locally or in AWS making sure that AKIA, ASIAn temp credentials can be used
 
 # How to use
 
@@ -22,8 +20,6 @@ otherwise it will return an error
 
 # Features to be added
 
-- Add a way to pass string params and make the lib compatible with any new fields aws might start supporting
-
 # Reference documents
 
 - Post Policy - https://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-HTTPPOSTConstructPolicy.html
@@ -35,13 +31,6 @@ AWS_SESSION_TOKEN=value;AWS_REGION=eu-central-1;AWS_KEY=value;AWS_SECRET=value;A
 ```
 
 # Issues
-
-sometimes seems that due to the ```=``` in the end of the policy, there was a signature problem. Removing one of the 3 = symbols in the end of the request made it work. Investigate this better. Perhaps print the policy withouth any = in the end to avoid problems. But test this first.
-- include support for/check ```x-ignore-```
-- Test to be done
-  - upload with key in policy 
-  - upload with key outside policy
-- Check https://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-query-string-auth.html to make everything in an url 
 - Add formatting standards according to what is accepted by the community
 - scan for any vulnerabilities in dependencies or code betterment.
 - Use Value Objects
@@ -197,7 +186,7 @@ HAVE A look in well know libraries souce code to see what they are using
 - Add final where it should be
 
 
-- Test logging in ECS
+- Test logging in ECS.
 - Add id to pre signed post generation to get meaningfull loggings, userId, etc
 - Have one more look in the logs, Input validation failures e.g. protocol violations, unacceptable encodings, invalid parameter names and values
 

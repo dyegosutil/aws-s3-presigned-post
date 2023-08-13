@@ -17,11 +17,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class SessionTokenIntegrationTests extends IntegrationTests {
 
     @Test
-    @DisplayName("Should succeed while uploading file to S3 using the same session token added in the policy")
+    @DisplayName(
+            "Should succeed while uploading file to S3 using the same session token added in the"
+                    + " policy")
     void shouldUploadFileWithSessionToken() {
         // Arrange
         PostParams postParams = createDefaultPostParamBuilderSpecifyingKey().build();
-        PresignedPost presignedPost = S3PostSigner.create(postParams, getAmazonCredentialsProviderWithAwsSessionCredentials());
+        PresignedPost presignedPost =
+                S3PostSigner.create(
+                        postParams, getAmazonCredentialsProviderWithAwsSessionCredentials());
 
         Map<String, String> conditions = presignedPost.getConditions();
         Request request = createRequestFromConditions(conditions, presignedPost.getUrl());
@@ -34,14 +38,18 @@ public class SessionTokenIntegrationTests extends IntegrationTests {
     }
 
     @Test
-    @DisplayName("Should fail while uploading file to S3 using a different session token added in the policy")
+    @DisplayName(
+            "Should fail while uploading file to S3 using a different session token added in the"
+                    + " policy")
     void shouldNotUploadFileWithWrongSessionToken() {
         // Arrange
         PostParams postParams = createDefaultPostParamBuilder().build();
-        PresignedPost presignedPost = S3PostSigner.create(postParams, getAmazonCredentialsProviderWithAwsSessionCredentials());
+        PresignedPost presignedPost =
+                S3PostSigner.create(
+                        postParams, getAmazonCredentialsProviderWithAwsSessionCredentials());
 
         Map<String, String> conditions = presignedPost.getConditions();
-        conditions.put("x-amz-security-token",  "thisTokenIsWrong");
+        conditions.put("x-amz-security-token", "thisTokenIsWrong");
         Request request = createRequestFromConditions(conditions, presignedPost.getUrl());
 
         // Act
