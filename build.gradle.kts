@@ -25,7 +25,7 @@ dependencies {
     testImplementation("com.squareup.okhttp3:okhttp:4.10.0")
     testImplementation("org.assertj:assertj-core:3.23.1")
     implementation("org.mockito:mockito-core:5.4.0")
-    testRuntimeOnly("ch.qos.logback:logback-classic:1.4.4")
+    testRuntimeOnly("ch.qos.logback:logback-classic:1.4.11")
 }
 
 tasks.getByName<Test>("test") {
