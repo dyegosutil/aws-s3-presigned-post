@@ -1,8 +1,8 @@
 package mendes.sutil.dyego.awspresignedpost.integrationtests;
 
-import mendes.sutil.dyego.awspresignedpost.S3PostSigner;
+import mendes.sutil.dyego.awspresignedpost.signer.S3PostSigner;
 import mendes.sutil.dyego.awspresignedpost.postparams.FreeTextPostParams;
-import mendes.sutil.dyego.awspresignedpost.result.FreeTextPresignedPost;
+import mendes.sutil.dyego.awspresignedpost.presigned.PresignedFreeTextPost;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.Request;
@@ -52,7 +52,7 @@ public class FreeTextIntegrationTest extends IntegrationTests {
 
     private static Arguments getEncryptionWithCustomerKeyTestCase() {
         FreeTextPostParams freeTextPostParams = getFreeTextPostParams(getConditionsForUploadWithCustomerEncryptionKey());
-        FreeTextPresignedPost preSignedPost = S3PostSigner.create(freeTextPostParams, getAmazonCredentialsProvider());
+        PresignedFreeTextPost preSignedPost = S3PostSigner.create(freeTextPostParams, getAmazonCredentialsProvider());
         return of(
                 "Should upload file using free text post params where file encryption is used with key specified by the user. One of the most complex cases",
                 getFormData(preSignedPost, getFormDataPartsForUploadWithCustomerEncryptionKey())
@@ -61,7 +61,7 @@ public class FreeTextIntegrationTest extends IntegrationTests {
 
     private static Arguments getAwsStsTokenTestCase() {
         FreeTextPostParams freeTextPostParams = getFreeTextPostParams(getConditionsForAwsSts());
-        FreeTextPresignedPost preSignedPost = S3PostSigner.create(
+        PresignedFreeTextPost preSignedPost = S3PostSigner.create(
                 freeTextPostParams,
                 getAmazonCredentialsProviderWithAwsSessionCredentials()
         );
@@ -71,7 +71,7 @@ public class FreeTextIntegrationTest extends IntegrationTests {
         );
     }
 
-    private static Map<String, String> getFormData(FreeTextPresignedPost preSignedPost, Map<String, String> formDataParts) {
+    private static Map<String, String> getFormData(PresignedFreeTextPost preSignedPost, Map<String, String> formDataParts) {
         formDataParts.put("x-amz-signature", preSignedPost.getxAmzSignature());
         formDataParts.put("policy", preSignedPost.getPolicy());
         return formDataParts;
@@ -82,7 +82,7 @@ public class FreeTextIntegrationTest extends IntegrationTests {
      */
     private static Arguments getSimpleUploadTestCase() {
         FreeTextPostParams freeTextPostParams = getFreeTextPostParams(getMandatoryConditions());
-        FreeTextPresignedPost preSignedPost = S3PostSigner.create(
+        PresignedFreeTextPost preSignedPost = S3PostSigner.create(
                 freeTextPostParams,
                 getAmazonCredentialsProvider()
         );

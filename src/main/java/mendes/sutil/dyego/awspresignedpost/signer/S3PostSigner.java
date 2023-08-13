@@ -1,13 +1,14 @@
-package mendes.sutil.dyego.awspresignedpost;
+package mendes.sutil.dyego.awspresignedpost.signer;
 
 import com.google.gson.Gson;
 import com.google.gson.annotations.Expose;
+import mendes.sutil.dyego.awspresignedpost.AmzDate;
 import mendes.sutil.dyego.awspresignedpost.conditions.Condition;
 import mendes.sutil.dyego.awspresignedpost.conditions.ConditionField;
 import mendes.sutil.dyego.awspresignedpost.conditions.MetaCondition;
 import mendes.sutil.dyego.awspresignedpost.conditions.MatchCondition;
-import mendes.sutil.dyego.awspresignedpost.result.FreeTextPresignedPost;
-import mendes.sutil.dyego.awspresignedpost.result.PresignedPost;
+import mendes.sutil.dyego.awspresignedpost.presigned.PresignedFreeTextPost;
+import mendes.sutil.dyego.awspresignedpost.presigned.PresignedPost;
 import mendes.sutil.dyego.awspresignedpost.postparams.FreeTextPostParams;
 import mendes.sutil.dyego.awspresignedpost.postparams.PostParams;
 import org.slf4j.Logger;
@@ -107,7 +108,7 @@ public final class S3PostSigner {
      * that these fields only are not enough to perform the file upload. The caller must add the other necessary fields
      * matching the conditions passed to this method.
      */
-    public static FreeTextPresignedPost create(final FreeTextPostParams params,  final AwsCredentialsProvider provider) {
+    public static PresignedFreeTextPost create(final FreeTextPostParams params, final AwsCredentialsProvider provider) {
         final AwsCredentials awsCredentials = validateAwsCredentials(provider);
         final AmzDate amzDate = new AmzDate(params.getDate());
 
@@ -119,7 +120,7 @@ public final class S3PostSigner {
         final String policyB64 = Base64.getEncoder().encodeToString(policyJson.getBytes(StandardCharsets.UTF_8));
         final String signature = generateSignature(params.getRegion(), amzDate, policyB64, awsCredentials);
 
-        return new FreeTextPresignedPost(signature, policyB64);
+        return new PresignedFreeTextPost(signature, policyB64);
     }
 
     private static AwsCredentials validateAwsCredentials(AwsCredentialsProvider provider) {
@@ -272,9 +273,11 @@ public final class S3PostSigner {
     }
 
     private static class Policy {
+        @SuppressWarnings("unused")
         @Expose
         private String expiration;
 
+        @SuppressWarnings("unused")
         @Expose
         private Set<String[]> conditions;
 
