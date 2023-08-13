@@ -10,6 +10,6 @@ jobs:
       - uses: actions/checkout@v3 # v2 minimum required
       - uses: axel-op/googlejavaformat-action@v3
         with:
-          args: "--skip-sorting-imports --replace"
+          args: "--skip-sorting-imports --aosp --replace"
           # Recommended if you use MacOS:
           # github-token: ${{ secrets.GITHUB_TOKEN }}
