@@ -190,8 +190,4 @@ HAVE A look in well know libraries souce code to see what they are using
 - Add id to pre signed post generation to get meaningfull loggings, userId, etc
 - Have one more look in the logs, Input validation failures e.g. protocol violations, unacceptable encodings, invalid parameter names and values
 
-###
-Tips for buying a domain
-e.g. for me it's net.martijnverburg.foobar - Martijn Verburg
-
 
