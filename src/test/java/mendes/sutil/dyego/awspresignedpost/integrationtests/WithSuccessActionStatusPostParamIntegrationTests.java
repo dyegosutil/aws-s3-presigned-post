@@ -62,16 +62,16 @@ public class WithSuccessActionStatusPostParamIntegrationTests extends Integratio
         return Stream.of(
                 of(
                         "Should succeed while uploading file to S3 when the success_action_status"
-                            + " specified is the same as the one in the policy and status code"
-                            + " returned in the response should be 200",
+                                + " specified is the same as the one in the policy and status code"
+                                + " returned in the response should be 200",
                         createDefaultPostParamBuilderSpecifyingKey()
                                 .withSuccessActionStatus(PostParams.Builder.SuccessActionStatus.OK)
                                 .build(),
                         200),
                 of(
                         "Should succeed while uploading file to S3 when the success_action_status"
-                            + " specified is the same as the one in the policy and status code"
-                            + " returned in the response should be 201",
+                                + " specified is the same as the one in the policy and status code"
+                                + " returned in the response should be 201",
                         createDefaultPostParamBuilderSpecifyingKey()
                                 .withSuccessActionStatus(
                                         PostParams.Builder.SuccessActionStatus.CREATED)
@@ -79,8 +79,8 @@ public class WithSuccessActionStatusPostParamIntegrationTests extends Integratio
                         201),
                 of(
                         "Should succeed while uploading file to S3 when the success_action_status"
-                            + " specified is the same as the one in the policy and status code"
-                            + " returned in the response should be 204",
+                                + " specified is the same as the one in the policy and status code"
+                                + " returned in the response should be 204",
                         createDefaultPostParamBuilderSpecifyingKey()
                                 .withSuccessActionStatus(
                                         PostParams.Builder.SuccessActionStatus.NO_CONTENT)

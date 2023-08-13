@@ -375,7 +375,7 @@ class PostParamsTest {
                         EQ),
                 of(
                         "Should assert that condition withSuccessActionRedirectStartingWith was"
-                            + " added",
+                                + " added",
                         (Supplier<PostParams.Builder>)
                                 () -> createBuilder().withSuccessActionRedirectStartingWith("test"),
                         SUCCESS_ACTION_REDIRECT,
@@ -436,7 +436,7 @@ class PostParamsTest {
                         EQ),
                 of(
                         "Should assert that condition withServerSideEncryptionAwsKmsKeyId was"
-                            + " added",
+                                + " added",
                         (Supplier<PostParams.Builder>)
                                 () ->
                                         createBuilder()
@@ -455,7 +455,7 @@ class PostParamsTest {
                         EQ),
                 of(
                         "Should assert that condition withServerSideEncryptionBucketKeyEnabled was"
-                            + " added",
+                                + " added",
                         (Supplier<PostParams.Builder>)
                                 () ->
                                         createBuilder()
@@ -483,50 +483,50 @@ class PostParamsTest {
         return Stream.of(
                 of(
                         "Should assert that withServerSideEncryptionCustomerAlgorithmAES256 is"
-                            + " called with required conditions",
+                                + " called with required conditions",
                         (ThrowableAssert.ThrowingCallable)
                                 () ->
                                         createBuilder()
                                                 .withServerSideEncryptionCustomerAlgorithmAES256()
                                                 .build(),
                         "The condition SERVER_SIDE_ENCRYPTION_CUSTOMER_ALGORITHM requires the"
-                            + " condition(s) [SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY,"
-                            + " SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY_MD5] to be present"),
+                                + " condition(s) [SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY,"
+                                + " SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY_MD5] to be present"),
                 of(
                         "Should assert that withServerSideEncryptionCustomerKey is called with"
-                            + " required conditions",
+                                + " required conditions",
                         (ThrowableAssert.ThrowingCallable)
                                 () ->
                                         createBuilder()
                                                 .withServerSideEncryptionCustomerKey("test")
                                                 .build(),
                         "The condition SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY requires the"
-                            + " condition(s) [SERVER_SIDE_ENCRYPTION_CUSTOMER_ALGORITHM,"
-                            + " SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY_MD5] to be present"),
+                                + " condition(s) [SERVER_SIDE_ENCRYPTION_CUSTOMER_ALGORITHM,"
+                                + " SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY_MD5] to be present"),
                 of(
                         "Should assert that withServerSideEncryptionCustomerKeyMD5 is called with"
-                            + " required conditions",
+                                + " required conditions",
                         (ThrowableAssert.ThrowingCallable)
                                 () ->
                                         createBuilder()
                                                 .withServerSideEncryptionCustomerKeyMD5("test")
                                                 .build(),
                         "The condition SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY_MD5 requires the"
-                            + " condition(s) [SERVER_SIDE_ENCRYPTION_CUSTOMER_ALGORITHM,"
-                            + " SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY] to be present"),
+                                + " condition(s) [SERVER_SIDE_ENCRYPTION_CUSTOMER_ALGORITHM,"
+                                + " SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY] to be present"),
                 of(
                         "Should assert that withServerSideEncryptionAwsKmsKeyId is called with"
-                            + " required conditions",
+                                + " required conditions",
                         (ThrowableAssert.ThrowingCallable)
                                 () ->
                                         createBuilder()
                                                 .withServerSideEncryptionAwsKmsKeyId("test")
                                                 .build(),
                         "The condition SERVER_SIDE_ENCRYPTION_AWS_KMS_KEY_ID requires the"
-                            + " condition(s) [SERVER_SIDE_ENCRYPTION] to be present"),
+                                + " condition(s) [SERVER_SIDE_ENCRYPTION] to be present"),
                 of(
                         "Should assert that withServerSideEncryptionContext is called with required"
-                            + " conditions",
+                                + " conditions",
                         (ThrowableAssert.ThrowingCallable)
                                 () ->
                                         createBuilder()
@@ -536,21 +536,21 @@ class PostParamsTest {
                                 + " [SERVER_SIDE_ENCRYPTION] to be present"),
                 of(
                         "Should assert that withServerSideEncryptionBucketKeyEnabled is called with"
-                            + " required conditions",
+                                + " required conditions",
                         (ThrowableAssert.ThrowingCallable)
                                 () ->
                                         createBuilder()
                                                 .withServerSideEncryptionBucketKeyEnabled()
                                                 .build(),
                         "The condition SERVER_SIDE_ENCRYPTION_BUCKET_KEY_ENABLED requires the"
-                            + " condition(s) [SERVER_SIDE_ENCRYPTION] to be present"));
+                                + " condition(s) [SERVER_SIDE_ENCRYPTION] to be present"));
     }
 
     private static Stream<Arguments> shouldAssertSingleMutuallyExclusiveConditionsTest() {
         return Stream.of(
                 of(
                         "Should assert that there is no conflicting STARTS_WITH and EQ"
-                            + " CACHE_CONTROL conditions",
+                                + " CACHE_CONTROL conditions",
                         (ThrowableAssert.ThrowingCallable)
                                 () ->
                                         createBuilder()
@@ -559,7 +559,7 @@ class PostParamsTest {
                         getExceptionMessage(CACHE_CONTROL)),
                 of(
                         "Should assert that there is no conflicting EQ and STARTS_WITH"
-                            + " CACHE_CONTROL conditions",
+                                + " CACHE_CONTROL conditions",
                         (ThrowableAssert.ThrowingCallable)
                                 () ->
                                         createBuilder()
@@ -568,7 +568,7 @@ class PostParamsTest {
                         getExceptionMessage(CACHE_CONTROL)),
                 of(
                         "Should assert that there is no conflicting STARTS_WITH and EQ CONTENT_TYPE"
-                            + " conditions",
+                                + " conditions",
                         (ThrowableAssert.ThrowingCallable)
                                 () ->
                                         createBuilder()
@@ -577,7 +577,7 @@ class PostParamsTest {
                         getExceptionMessage(CONTENT_TYPE)),
                 of(
                         "Should assert that there is no conflicting EQ and STARTS_WITH CONTENT_TYPE"
-                            + " conditions",
+                                + " conditions",
                         (ThrowableAssert.ThrowingCallable)
                                 () ->
                                         createBuilder()
@@ -586,7 +586,7 @@ class PostParamsTest {
                         getExceptionMessage(CONTENT_TYPE)),
                 of(
                         "Should assert that there is no conflicting STARTS_WITH and EQ"
-                            + " CONTENT_DISPOSITION conditions",
+                                + " CONTENT_DISPOSITION conditions",
                         (ThrowableAssert.ThrowingCallable)
                                 () ->
                                         createBuilder()
@@ -595,7 +595,7 @@ class PostParamsTest {
                         getExceptionMessage(CONTENT_DISPOSITION)),
                 of(
                         "Should assert that there is no conflicting EQ and STARTS_WITH"
-                            + " CONTENT_DISPOSITION conditions",
+                                + " CONTENT_DISPOSITION conditions",
                         (ThrowableAssert.ThrowingCallable)
                                 () ->
                                         createBuilder()
@@ -604,7 +604,7 @@ class PostParamsTest {
                         getExceptionMessage(CONTENT_DISPOSITION)),
                 of(
                         "Should assert that there is no conflicting STARTS_WITH and EQ"
-                            + " CONTENT_ENCODING conditions",
+                                + " CONTENT_ENCODING conditions",
                         (ThrowableAssert.ThrowingCallable)
                                 () ->
                                         createBuilder()
@@ -613,7 +613,7 @@ class PostParamsTest {
                         getExceptionMessage(CONTENT_ENCODING)),
                 of(
                         "Should assert that there is no conflicting EQ and STARTS_WITH"
-                            + " CONTENT_ENCODING conditions",
+                                + " CONTENT_ENCODING conditions",
                         (ThrowableAssert.ThrowingCallable)
                                 () ->
                                         createBuilder()
@@ -622,7 +622,7 @@ class PostParamsTest {
                         getExceptionMessage(CONTENT_ENCODING)),
                 of(
                         "Should assert that there is no conflicting STARTS_WITH and EQ EXPIRES"
-                            + " conditions",
+                                + " conditions",
                         (ThrowableAssert.ThrowingCallable)
                                 () ->
                                         createBuilder()
@@ -631,7 +631,7 @@ class PostParamsTest {
                         getExceptionMessage(EXPIRES)),
                 of(
                         "Should assert that there is no conflicting EQ and STARTS_WITH EXPIRES"
-                            + " conditions",
+                                + " conditions",
                         (ThrowableAssert.ThrowingCallable)
                                 () ->
                                         createBuilder()
@@ -640,7 +640,7 @@ class PostParamsTest {
                         getExceptionMessage(EXPIRES)),
                 of(
                         "Should assert that there is no conflicting STARTS_WITH and EQ"
-                            + " SUCCESS_ACTION_REDIRECT conditions",
+                                + " SUCCESS_ACTION_REDIRECT conditions",
                         (ThrowableAssert.ThrowingCallable)
                                 () ->
                                         createBuilder()
@@ -649,7 +649,7 @@ class PostParamsTest {
                         getExceptionMessage(SUCCESS_ACTION_REDIRECT)),
                 of(
                         "Should assert that there is no conflicting EQ and STARTS_WITH"
-                            + " SUCCESS_ACTION_REDIRECT conditions",
+                                + " SUCCESS_ACTION_REDIRECT conditions",
                         (ThrowableAssert.ThrowingCallable)
                                 () ->
                                         createBuilder()
@@ -658,31 +658,31 @@ class PostParamsTest {
                         getExceptionMessage(SUCCESS_ACTION_REDIRECT)),
                 of(
                         "Should assert that there is no conflicting STARTS_WITH and EQ ACL"
-                            + " conditions",
+                                + " conditions",
                         (ThrowableAssert.ThrowingCallable)
                                 () -> createBuilder().withAclStartingWith("test").withAcl(PRIVATE),
                         getExceptionMessage(ACL)),
                 of(
                         "Should assert that there is no conflicting EQ and STARTS_WITH ACL"
-                            + " conditions",
+                                + " conditions",
                         (ThrowableAssert.ThrowingCallable)
                                 () -> createBuilder().withAcl(PRIVATE).withAclStartingWith("test"),
                         getExceptionMessage(ACL)),
                 of(
                         "Should assert that there is no conflicting withTag and withTagging TAGGING"
-                            + " conditions",
+                                + " conditions",
                         (ThrowableAssert.ThrowingCallable)
                                 () -> createBuilder().withTagging("test").withTag("key", "value"),
                         getTaggingExceptionMessage()),
                 of(
                         "Should assert that there is no conflicting withTagging and withTag TAGGING"
-                            + " conditions",
+                                + " conditions",
                         (ThrowableAssert.ThrowingCallable)
                                 () -> createBuilder().withTag("key", "value").withTagging("test"),
                         getTaggingExceptionMessage()),
                 of(
                         "Should assert that there is no conflicting withChecksumCrc32 and"
-                            + " withChecksumCrc32c checksum conditions",
+                                + " withChecksumCrc32c checksum conditions",
                         (ThrowableAssert.ThrowingCallable)
                                 () ->
                                         createBuilder()
@@ -691,7 +691,7 @@ class PostParamsTest {
                         getChecksumExceptionMessage()),
                 of(
                         "Should assert that there is no conflicting withChecksumCrc32 and"
-                            + " withChecksumSha1 checksum conditions",
+                                + " withChecksumSha1 checksum conditions",
                         (ThrowableAssert.ThrowingCallable)
                                 () ->
                                         createBuilder()
@@ -700,7 +700,7 @@ class PostParamsTest {
                         getChecksumExceptionMessage()),
                 of(
                         "Should assert that there is no conflicting withChecksumCrc32 and"
-                            + " withChecksumSha256 checksum conditions",
+                                + " withChecksumSha256 checksum conditions",
                         (ThrowableAssert.ThrowingCallable)
                                 () ->
                                         createBuilder()
@@ -709,7 +709,7 @@ class PostParamsTest {
                         getChecksumExceptionMessage()),
                 of(
                         "Should assert that there is no conflicting withChecksumCrc32c and"
-                            + " withChecksumSha1 checksum conditions",
+                                + " withChecksumSha1 checksum conditions",
                         (ThrowableAssert.ThrowingCallable)
                                 () ->
                                         createBuilder()
@@ -718,7 +718,7 @@ class PostParamsTest {
                         getChecksumExceptionMessage()),
                 of(
                         "Should assert that there is no conflicting withChecksumCrc32c and"
-                            + " withChecksumSha256 checksum conditions",
+                                + " withChecksumSha256 checksum conditions",
                         (ThrowableAssert.ThrowingCallable)
                                 () ->
                                         createBuilder()
@@ -727,7 +727,7 @@ class PostParamsTest {
                         getChecksumExceptionMessage()),
                 of(
                         "Should assert that there is no conflicting withChecksumSha1 and"
-                            + " withChecksumSha256 checksum conditions",
+                                + " withChecksumSha256 checksum conditions",
                         (ThrowableAssert.ThrowingCallable)
                                 () ->
                                         createBuilder()
@@ -736,7 +736,7 @@ class PostParamsTest {
                         getChecksumExceptionMessage()),
                 of(
                         "Should assert that there is no conflicting withChecksumSha1 and"
-                            + " withChecksumSha1 checksum conditions",
+                                + " withChecksumSha1 checksum conditions",
                         (ThrowableAssert.ThrowingCallable)
                                 () ->
                                         createBuilder()
@@ -745,7 +745,7 @@ class PostParamsTest {
                         getChecksumExceptionMessage()),
                 of(
                         "Should assert that there is no conflicting withChecksumSha256 and"
-                            + " withChecksumSha256 checksum conditions",
+                                + " withChecksumSha256 checksum conditions",
                         (ThrowableAssert.ThrowingCallable)
                                 () ->
                                         createBuilder()
@@ -754,7 +754,7 @@ class PostParamsTest {
                         getChecksumExceptionMessage()),
                 of(
                         "Should assert that there is no conflicting withChecksumCrc32c and"
-                            + " withChecksumCrc32c checksum conditions",
+                                + " withChecksumCrc32c checksum conditions",
                         (ThrowableAssert.ThrowingCallable)
                                 () ->
                                         createBuilder()
@@ -763,7 +763,7 @@ class PostParamsTest {
                         getChecksumExceptionMessage()),
                 of(
                         "Should assert that there is no conflicting withChecksumCrc32 and"
-                            + " withChecksumCrc32 checksum conditions",
+                                + " withChecksumCrc32 checksum conditions",
                         (ThrowableAssert.ThrowingCallable)
                                 () ->
                                         createBuilder()
@@ -774,7 +774,7 @@ class PostParamsTest {
 
     private static String getTaggingExceptionMessage() {
         return "Either the method withTag() or withTagging() can be used for adding tagging, not"
-                   + " both";
+                + " both";
     }
 
     private static String getChecksumExceptionMessage() {

@@ -287,7 +287,7 @@ public class PostParams {
                                 if (conditions.containsKey(a)) {
                                     throw new IllegalArgumentException(
                                             "Only one checksum condition CRC32, CRC32C, SHA1 or"
-                                                + " SHA256 can be added at the same time");
+                                                    + " SHA256 can be added at the same time");
                                 }
                             });
             conditions.put(checksumCondition.getConditionField(), checksumCondition);
@@ -313,7 +313,7 @@ public class PostParams {
             if (!tags.isEmpty()) {
                 throw new IllegalArgumentException(
                         "Either the method withTag() or withTagging() can be used for adding"
-                            + " tagging, not both");
+                                + " tagging, not both");
             }
             return withTaggingCondition(value);
         }
@@ -322,7 +322,7 @@ public class PostParams {
             throwExceptionIfConditionIsPresent(
                     TAGGING,
                     "Either the method withTag() or withTagging() can be used for adding tagging,"
-                        + " not both");
+                            + " not both");
             tags.add(new Tag(key, value));
             return this;
         }

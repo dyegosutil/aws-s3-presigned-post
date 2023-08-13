@@ -24,7 +24,7 @@ class FreeTextPostParamsTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage(
                         "There should be no null arguments passed to FreeTextPostParams"
-                            + " constructor");
+                                + " constructor");
     }
 
     @Test

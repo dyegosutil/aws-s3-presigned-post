@@ -119,7 +119,7 @@ public class MandatoryPostParamsIntegrationTests extends IntegrationTests {
                 // key
                 of(
                         "Should fail while uploading file to S3 using a different key then"
-                            + " specified in the policy",
+                                + " specified in the policy",
                         REGION,
                         EXPIRATION_DATE,
                         BUCKET,
@@ -129,7 +129,7 @@ public class MandatoryPostParamsIntegrationTests extends IntegrationTests {
                 // bucket
                 of(
                         "Should fail while uploading file to S3 using a different bucket then the"
-                            + " one configured in the policy",
+                                + " one configured in the policy",
                         REGION,
                         EXPIRATION_DATE,
                         "wrongbucket",
@@ -139,7 +139,7 @@ public class MandatoryPostParamsIntegrationTests extends IntegrationTests {
                 // region
                 of(
                         "Should fail while uploading file to S3 using a different region then the"
-                            + " one configured in the policy",
+                                + " one configured in the policy",
                         Region.of(System.getenv("AWS_WRONG_REGION")),
                         EXPIRATION_DATE,
                         BUCKET,
@@ -150,7 +150,7 @@ public class MandatoryPostParamsIntegrationTests extends IntegrationTests {
                 // key starts-with
                 of(
                         "Should succeed while uploading file to S3 when key correctly starts-with"
-                            + " the value specified in the policy",
+                                + " the value specified in the policy",
                         REGION,
                         EXPIRATION_DATE,
                         BUCKET,
@@ -160,7 +160,7 @@ public class MandatoryPostParamsIntegrationTests extends IntegrationTests {
                 // key starts-with
                 of(
                         "Should fail while uploading file to S3 when key does not starts-with the"
-                            + " value specified in the policy",
+                                + " value specified in the policy",
                         REGION,
                         EXPIRATION_DATE,
                         BUCKET,
@@ -172,7 +172,7 @@ public class MandatoryPostParamsIntegrationTests extends IntegrationTests {
                 // used
                 of(
                         "Should succeed while uploading file to S3 when key correctly starts-with"
-                            + " the value specified in the policy",
+                                + " the value specified in the policy",
                         REGION,
                         EXPIRATION_DATE,
                         BUCKET,

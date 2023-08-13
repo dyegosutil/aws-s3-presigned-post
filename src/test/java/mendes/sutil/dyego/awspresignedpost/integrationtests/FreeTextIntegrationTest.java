@@ -52,7 +52,7 @@ public class FreeTextIntegrationTest extends IntegrationTests {
                 S3PostSigner.create(freeTextPostParams, getAmazonCredentialsProvider());
         return of(
                 "Should upload file using free text post params where file encryption is used with"
-                    + " key specified by the user. One of the most complex cases",
+                        + " key specified by the user. One of the most complex cases",
                 getFormData(preSignedPost, getFormDataPartsForUploadWithCustomerEncryptionKey()));
     }
 
@@ -83,7 +83,7 @@ public class FreeTextIntegrationTest extends IntegrationTests {
                 S3PostSigner.create(freeTextPostParams, getAmazonCredentialsProvider());
         return of(
                 "Should upload file using free text post params where mandatory params are used."
-                    + " This is the simplest upload condition possible",
+                        + " This is the simplest upload condition possible",
                 getFormData(preSignedPost, getMandatoryFormDataParts()));
     }
 

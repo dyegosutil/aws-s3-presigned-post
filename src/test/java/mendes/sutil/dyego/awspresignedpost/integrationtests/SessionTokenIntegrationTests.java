@@ -19,7 +19,7 @@ public class SessionTokenIntegrationTests extends IntegrationTests {
     @Test
     @DisplayName(
             "Should succeed while uploading file to S3 using the same session token added in the"
-                + " policy")
+                    + " policy")
     void shouldUploadFileWithSessionToken() {
         // Arrange
         PostParams postParams = createDefaultPostParamBuilderSpecifyingKey().build();
@@ -40,7 +40,7 @@ public class SessionTokenIntegrationTests extends IntegrationTests {
     @Test
     @DisplayName(
             "Should fail while uploading file to S3 using a different session token added in the"
-                + " policy")
+                    + " policy")
     void shouldNotUploadFileWithWrongSessionToken() {
         // Arrange
         PostParams postParams = createDefaultPostParamBuilder().build();

@@ -67,8 +67,8 @@ public class WithSuccessActionRedirectPostParamIntegrationTests extends Integrat
                 // success_action_redirect
                 of(
                         "Should succeed while uploading file to S3 when using the same"
-                            + " success_action_redirect specified in the policy and having the"
-                            + " correct return from the http client",
+                                + " success_action_redirect specified in the policy and having the"
+                                + " correct return from the http client",
                         createDefaultPostParamBuilderSpecifyingKey()
                                 .withSuccessActionRedirect("https://www.google.com")
                                 .build(),
@@ -80,8 +80,8 @@ public class WithSuccessActionRedirectPostParamIntegrationTests extends Integrat
                 // success_action_redirect
                 of(
                         "Should fail while uploading file to S3 when using a different"
-                            + " success_action_redirect specified in the policy and having the"
-                            + " unsuccessful return from the http client",
+                                + " success_action_redirect specified in the policy and having the"
+                                + " unsuccessful return from the http client",
                         createDefaultPostParamBuilder()
                                 .withSuccessActionRedirect("https://www.google.com")
                                 .build(),
@@ -103,8 +103,8 @@ public class WithSuccessActionRedirectPostParamIntegrationTests extends Integrat
                 // success_action_redirect
                 of(
                         "Should fail while uploading file to S3 when using a different initial"
-                            + " stringsuccess_action_redirect than specified in the policy and"
-                            + " having the unsuccessful return from the http client",
+                                + " stringsuccess_action_redirect than specified in the policy and"
+                                + " having the unsuccessful return from the http client",
                         createDefaultPostParamBuilder()
                                 .withSuccessActionRedirectStartingWith("https://www.google")
                                 .build(),
