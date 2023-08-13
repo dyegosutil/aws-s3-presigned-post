@@ -1,4 +1,4 @@
-package mendes.sutil.dyego.awspresignedpost.conditions.helper;
+package mendes.sutil.dyego.awspresignedpost.conditions;
 
 import mendes.sutil.dyego.awspresignedpost.conditions.key.ExactKeyCondition;
 import mendes.sutil.dyego.awspresignedpost.conditions.key.KeyStartingWithCondition;

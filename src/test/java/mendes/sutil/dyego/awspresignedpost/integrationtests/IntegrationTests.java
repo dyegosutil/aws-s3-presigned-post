@@ -20,8 +20,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import static mendes.sutil.dyego.awspresignedpost.conditions.helper.KeyConditionHelper.withAnyKey;
-import static mendes.sutil.dyego.awspresignedpost.conditions.helper.KeyConditionHelper.withKey;
+import static mendes.sutil.dyego.awspresignedpost.conditions.KeyConditionHelper.withAnyKey;
+import static mendes.sutil.dyego.awspresignedpost.conditions.KeyConditionHelper.withKey;
 
 public class IntegrationTests {
 

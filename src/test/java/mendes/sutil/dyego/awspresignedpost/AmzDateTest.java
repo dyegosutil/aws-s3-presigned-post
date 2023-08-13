@@ -1,10 +1,11 @@
-package domain;
+package mendes.sutil.dyego.awspresignedpost;
 
-import mendes.sutil.dyego.awspresignedpost.AmzDate;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.time.*;
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneOffset;
 
 class AmzDateTest {
 

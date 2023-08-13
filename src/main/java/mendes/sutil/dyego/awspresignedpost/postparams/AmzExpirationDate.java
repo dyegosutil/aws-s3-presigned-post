@@ -1,4 +1,4 @@
-package mendes.sutil.dyego.awspresignedpost;
+package mendes.sutil.dyego.awspresignedpost.postparams;
 
 import java.time.Clock;
 import java.time.Instant;

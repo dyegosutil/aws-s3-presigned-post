@@ -1,5 +1,6 @@
-package mendes.sutil.dyego.awspresignedpost;
+package mendes.sutil.dyego.awspresignedpost.signer;
 
+import mendes.sutil.dyego.awspresignedpost.AmzDate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.regions.Region;

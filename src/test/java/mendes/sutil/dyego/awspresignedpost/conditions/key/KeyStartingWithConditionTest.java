@@ -1,6 +1,5 @@
-package domain.conditions.key;
+package mendes.sutil.dyego.awspresignedpost.conditions.key;
 
-import mendes.sutil.dyego.awspresignedpost.conditions.key.KeyStartingWithCondition;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

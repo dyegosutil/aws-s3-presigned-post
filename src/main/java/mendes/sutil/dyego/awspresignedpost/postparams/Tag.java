@@ -1,4 +1,4 @@
-package mendes.sutil.dyego.awspresignedpost;
+package mendes.sutil.dyego.awspresignedpost.postparams;
 
 /**
  * Represents an AWS S3 Tag

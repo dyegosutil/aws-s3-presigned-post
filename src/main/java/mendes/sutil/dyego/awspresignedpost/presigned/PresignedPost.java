@@ -1,4 +1,4 @@
-package mendes.sutil.dyego.awspresignedpost.result;
+package mendes.sutil.dyego.awspresignedpost.presigned;
 
 import java.util.Map;
 import java.util.Objects;

@@ -1,9 +1,9 @@
-package mendes.sutil.dyego.awspresignedpost;
+package mendes.sutil.dyego.awspresignedpost.signer;
 
 import mendes.sutil.dyego.awspresignedpost.postparams.FreeTextPostParams;
 import mendes.sutil.dyego.awspresignedpost.postparams.PostParams;
-import mendes.sutil.dyego.awspresignedpost.result.FreeTextPresignedPost;
-import mendes.sutil.dyego.awspresignedpost.result.PresignedPost;
+import mendes.sutil.dyego.awspresignedpost.presigned.PresignedFreeTextPost;
+import mendes.sutil.dyego.awspresignedpost.presigned.PresignedPost;
 import org.junit.jupiter.api.Test;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
@@ -15,7 +15,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static mendes.sutil.dyego.awspresignedpost.TestUtils.*;
-import static mendes.sutil.dyego.awspresignedpost.conditions.helper.KeyConditionHelper.withAnyKey;
+import static mendes.sutil.dyego.awspresignedpost.conditions.KeyConditionHelper.withAnyKey;
 import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.InstanceOfAssertFactories.STRING;
 import static org.mockito.Mockito.mock;
@@ -86,7 +86,7 @@ public class S3PostSignerTest {
         );
 
         // Act
-        FreeTextPresignedPost preSignedPost = S3PostSigner.create(
+        PresignedFreeTextPost preSignedPost = S3PostSigner.create(
                 freeTextPostParams,
                 getAmazonCredentialsProvider(AWS_FAKE_KEY, AWS_FAKE_SECRET)
         );

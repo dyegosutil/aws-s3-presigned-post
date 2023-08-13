@@ -1,12 +1,13 @@
 package mendes.sutil.dyego.awspresignedpost.integrationtests;
 
-import mendes.sutil.dyego.awspresignedpost.S3PostSigner;
+import mendes.sutil.dyego.awspresignedpost.signer.S3PostSigner;
 import mendes.sutil.dyego.awspresignedpost.conditions.key.ExactKeyCondition;
 import mendes.sutil.dyego.awspresignedpost.conditions.key.KeyCondition;
 import mendes.sutil.dyego.awspresignedpost.conditions.key.KeyStartingWithCondition;
 import mendes.sutil.dyego.awspresignedpost.postparams.PostParams;
-import mendes.sutil.dyego.awspresignedpost.result.PresignedPost;
+import mendes.sutil.dyego.awspresignedpost.presigned.PresignedPost;
 import okhttp3.Request;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -18,11 +19,11 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import static mendes.sutil.dyego.awspresignedpost.TestUtils.getAmazonCredentialsProvider;
-import static mendes.sutil.dyego.awspresignedpost.conditions.helper.KeyConditionHelper.*;
+import static mendes.sutil.dyego.awspresignedpost.conditions.KeyConditionHelper.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.params.provider.Arguments.of;
 
-//@Disabled
+@Disabled
 public class MandatoryPostParamsIntegrationTests extends IntegrationTests {
 
     @Test

@@ -1,6 +1,5 @@
 package mendes.sutil.dyego.awspresignedpost.postparams;
 
-import mendes.sutil.dyego.awspresignedpost.AmzExpirationDate;
 import mendes.sutil.dyego.awspresignedpost.conditions.*;
 import mendes.sutil.dyego.awspresignedpost.conditions.key.ExactKeyCondition;
 import mendes.sutil.dyego.awspresignedpost.conditions.key.KeyStartingWithCondition;
@@ -21,16 +20,16 @@ import java.util.Map;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+import static mendes.sutil.dyego.awspresignedpost.TestUtils.EXPIRATION_DATE;
+import static mendes.sutil.dyego.awspresignedpost.conditions.ConditionField.*;
+import static mendes.sutil.dyego.awspresignedpost.conditions.KeyConditionHelper.withAnyKey;
+import static mendes.sutil.dyego.awspresignedpost.conditions.KeyConditionHelper.withKey;
+import static mendes.sutil.dyego.awspresignedpost.conditions.MatchCondition.Operator.EQ;
+import static mendes.sutil.dyego.awspresignedpost.conditions.MatchCondition.Operator.STARTS_WITH;
 import static mendes.sutil.dyego.awspresignedpost.postparams.PostParams.Builder.CannedAcl.PRIVATE;
 import static mendes.sutil.dyego.awspresignedpost.postparams.PostParams.Builder.EncryptionAlgorithm.AWS_KMS;
 import static mendes.sutil.dyego.awspresignedpost.postparams.PostParams.Builder.StorageClass.STANDARD;
 import static mendes.sutil.dyego.awspresignedpost.postparams.PostParams.Builder.SuccessActionStatus;
-import static mendes.sutil.dyego.awspresignedpost.TestUtils.EXPIRATION_DATE;
-import static mendes.sutil.dyego.awspresignedpost.conditions.ConditionField.*;
-import static mendes.sutil.dyego.awspresignedpost.conditions.MatchCondition.Operator.EQ;
-import static mendes.sutil.dyego.awspresignedpost.conditions.MatchCondition.Operator.STARTS_WITH;
-import static mendes.sutil.dyego.awspresignedpost.conditions.helper.KeyConditionHelper.withAnyKey;
-import static mendes.sutil.dyego.awspresignedpost.conditions.helper.KeyConditionHelper.withKey;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.params.provider.Arguments.of;
@@ -161,14 +160,12 @@ class PostParamsTest {
         // Assert
         assertThat(postParams.getRegion()).isEqualTo(Region.AP_EAST_1);
         assertThat(postParams.getBucket()).isEqualTo("testBucket");
-        AmzExpirationDate amzExpirationDate1 = postParams.getAmzExpirationDate();
         assertThat(postParams.getAmzExpirationDate()).isEqualTo(amzExpirationDate);
     }
 
     @ParameterizedTest(name = "Should assert that {0} is not null")
     @MethodSource("createBuilderWithNullArgKeyStartingWithConditionTestCases")
     void createBuilderNullArgKeyStartingWithConditionTest(
-            String argument,
             Region region,
             ZonedDateTime expirationDate,
             String bucket,
@@ -190,7 +187,6 @@ class PostParamsTest {
     @ParameterizedTest(name = "Should assert that {0} is not null")
     @MethodSource("createBuilderWithNullArgExactKeyConditionTestCases")
     void createBuilderNullArgExactKeyConditionTest(
-            String argument,
             Region region,
             ZonedDateTime expirationDate,
             String bucket,
@@ -267,7 +263,6 @@ class PostParamsTest {
     private static Stream<Arguments> createBuilderWithNullArgExactKeyConditionTestCases() {
         return Stream.of(
                 of(
-                        "region",
                         null,
                         ZonedDateTime.now(),
                         "testBucket",
@@ -275,7 +270,6 @@ class PostParamsTest {
                         "Argument region must not be null"
                 ),
                 of(
-                        "expirationDate",
                         Region.AP_EAST_1,
                         null,
                         "testBucket",
@@ -283,7 +277,6 @@ class PostParamsTest {
                         "Argument expirationDate must not be null"
                 ),
                 of(
-                        "bucket",
                         Region.AP_EAST_1,
                         ZonedDateTime.now(),
                         null,
@@ -291,7 +284,6 @@ class PostParamsTest {
                         "Argument bucket must not be null"
                 ),
                 of(
-                        "bucket",
                         Region.AP_EAST_1,
                         ZonedDateTime.now(),
                         "testBucket",
@@ -304,7 +296,6 @@ class PostParamsTest {
     private static Stream<Arguments> createBuilderWithNullArgKeyStartingWithConditionTestCases() {
         return Stream.of(
                 of(
-                        "region",
                         null,
                         ZonedDateTime.now(),
                         "testBucket",
@@ -312,7 +303,6 @@ class PostParamsTest {
                         "Argument region must not be null"
                 ),
                 of(
-                        "expirationDate",
                         Region.AP_EAST_1,
                         null,
                         "testBucket",
@@ -320,7 +310,6 @@ class PostParamsTest {
                         "Argument expirationDate must not be null"
                 ),
                 of(
-                        "bucket",
                         Region.AP_EAST_1,
                         ZonedDateTime.now(),
                         null,
@@ -328,7 +317,6 @@ class PostParamsTest {
                         "Argument bucket must not be null"
                 ),
                 of(
-                        "bucket",
                         Region.AP_EAST_1,
                         ZonedDateTime.now(),
                         "testBucket",

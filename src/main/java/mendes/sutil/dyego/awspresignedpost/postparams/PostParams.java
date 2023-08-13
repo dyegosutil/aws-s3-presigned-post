@@ -1,12 +1,11 @@
 package mendes.sutil.dyego.awspresignedpost.postparams;
 
-import mendes.sutil.dyego.awspresignedpost.AmzExpirationDate;
-import mendes.sutil.dyego.awspresignedpost.Tag;
 import mendes.sutil.dyego.awspresignedpost.conditions.*;
-import mendes.sutil.dyego.awspresignedpost.conditions.helper.KeyConditionHelper;
+import mendes.sutil.dyego.awspresignedpost.conditions.KeyConditionHelper;
 import mendes.sutil.dyego.awspresignedpost.conditions.key.ExactKeyCondition;
 import mendes.sutil.dyego.awspresignedpost.conditions.key.KeyCondition;
 import mendes.sutil.dyego.awspresignedpost.conditions.key.KeyStartingWithCondition;
+import mendes.sutil.dyego.awspresignedpost.signer.S3PostSigner;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 
@@ -172,7 +171,7 @@ public class PostParams {
          * validates if said conditions where added, failing fast otherwise
          *
          * @return The {@link PostParams} to be used while
-         * calling {@link mendes.sutil.dyego.awspresignedpost.S3PostSigner#create(PostParams, AwsCredentialsProvider)}
+         * calling {@link S3PostSigner#create(PostParams, AwsCredentialsProvider)}
          */
         public PostParams build(){
             validateDependentConditions();
@@ -383,6 +382,7 @@ public class PostParams {
             }
         }
 
+        @SuppressWarnings("unused")
         public enum StorageClass {
             STANDARD,
             REDUCED_REDUNDANCY,
@@ -394,6 +394,7 @@ public class PostParams {
             DEEP_ARCHIVE
         }
 
+        @SuppressWarnings("unused")
         public enum CannedAcl {
             PRIVATE("private"),
             PUBLIC_READ("public-read"),
@@ -668,7 +669,7 @@ public class PostParams {
          * For more information
          * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/RESTObjectPOST.html">vide the aws documentation</a>
          *
-         * @param value An object in the same bucket or website to redirect to. Ex: '/anotherPage.html', 'https://www.example.com/'
+         * @param value An object in the same bucket or website to redirect to. Ex: '/anotherPage.html', 'www.example.com/'
          * @return The {@link Builder} object
          */
         public Builder withWebsiteRedirectLocation(String value) {
