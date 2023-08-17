@@ -17,7 +17,7 @@ dependencies {
     implementation(platform("software.amazon.awssdk:bom:2.20.128"))
     implementation("software.amazon.awssdk:regions")
     implementation("software.amazon.awssdk:auth")
-    implementation("com.google.code.gson:gson:2.10")
+    implementation("com.google.code.gson:gson:2.10.1")
     implementation("org.slf4j:slf4j-api:2.0.7")
 
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$jupiterVersion")
