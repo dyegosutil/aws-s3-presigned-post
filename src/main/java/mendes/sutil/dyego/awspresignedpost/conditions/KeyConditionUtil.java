@@ -7,7 +7,7 @@ import mendes.sutil.dyego.awspresignedpost.conditions.key.KeyCondition;
 /** Provides util methods to create instances of {@link KeyCondition} */
 public class KeyConditionUtil {
 
-    private KeyConditionUtil(){}
+    private KeyConditionUtil() {}
 
     /**
      * Used to specify the exact s3 key name expected to be used for the upload
