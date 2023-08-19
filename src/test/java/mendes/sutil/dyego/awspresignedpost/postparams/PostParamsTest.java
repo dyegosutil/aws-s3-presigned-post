@@ -22,8 +22,8 @@ import java.util.stream.Stream;
 
 import static mendes.sutil.dyego.awspresignedpost.TestUtils.EXPIRATION_DATE;
 import static mendes.sutil.dyego.awspresignedpost.conditions.ConditionField.*;
-import static mendes.sutil.dyego.awspresignedpost.conditions.KeyConditionHelper.withAnyKey;
-import static mendes.sutil.dyego.awspresignedpost.conditions.KeyConditionHelper.withKey;
+import static mendes.sutil.dyego.awspresignedpost.conditions.KeyConditionUtil.withAnyKey;
+import static mendes.sutil.dyego.awspresignedpost.conditions.KeyConditionUtil.withKey;
 import static mendes.sutil.dyego.awspresignedpost.conditions.MatchCondition.Operator.EQ;
 import static mendes.sutil.dyego.awspresignedpost.conditions.MatchCondition.Operator.STARTS_WITH;
 import static mendes.sutil.dyego.awspresignedpost.postparams.PostParams.Builder.CannedAcl.PRIVATE;

@@ -1,4 +1,3 @@
-![Build](https://github.com/dyegosutil/aws-s3-presigned-post/actions/workflows/github-actions-demo.yml/badge.svg)
 # Aws S3 Presigned Post
 
 Generating S3 post data for uploading files into public access s3 buckets is not included in this library since it is pretty straight forward. 
@@ -29,11 +28,6 @@ otherwise it will return an error
 ```
 AWS_SESSION_TOKEN=value;AWS_REGION=eu-central-1;AWS_KEY=value;AWS_SECRET=value;AWS_KMS_S3_KEY=arn:aws:kms:eu-central-1:xxxxxxxxxxxx:key/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx;AWS_SESSION_SECRET=value;AWS_SESSION_KEY=ASIA...;AWS_BUCKET=muBucket;AWS_WRONG_REGION=eu-central-2
 ```
-
-# Issues
-- Add formatting standards according to what is accepted by the community
-- scan for any vulnerabilities in dependencies or code betterment.
-- Use Value Objects
 
 
 to be done: Add adapted desc of this text:
@@ -136,8 +130,6 @@ https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-tagging.html
 Check if all acccess modifiers are all right, private, protected, etc.
 
 Please Report any limitations that you found so that I can add validations.
-
-Use the annotation @NotNull
 
 Think about removing jaxb
 

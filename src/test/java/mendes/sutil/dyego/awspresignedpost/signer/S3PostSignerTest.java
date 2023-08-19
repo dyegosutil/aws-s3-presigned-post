@@ -15,7 +15,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static mendes.sutil.dyego.awspresignedpost.TestUtils.*;
-import static mendes.sutil.dyego.awspresignedpost.conditions.KeyConditionHelper.withAnyKey;
+import static mendes.sutil.dyego.awspresignedpost.conditions.KeyConditionUtil.withAnyKey;
 import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.InstanceOfAssertFactories.STRING;
 import static org.mockito.Mockito.mock;

@@ -3,6 +3,7 @@ val jupiterVersion = "5.10.0"
 plugins {
     java
     idea
+    id("org.sonarqube") version "4.2.1.3168"
 }
 
 group = "org.example"

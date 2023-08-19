@@ -4,8 +4,10 @@ import mendes.sutil.dyego.awspresignedpost.conditions.key.ExactKeyCondition;
 import mendes.sutil.dyego.awspresignedpost.conditions.key.KeyStartingWithCondition;
 import mendes.sutil.dyego.awspresignedpost.conditions.key.KeyCondition;
 
-/** Provides helper methods to create instances of {@link KeyCondition} */
-public class KeyConditionHelper {
+/** Provides util methods to create instances of {@link KeyCondition} */
+public class KeyConditionUtil {
+
+    private KeyConditionUtil() {}
 
     /**
      * Used to specify the exact s3 key name expected to be used for the upload
