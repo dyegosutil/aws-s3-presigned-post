@@ -5,10 +5,10 @@ import mendes.sutil.dyego.awspresignedpost.conditions.key.KeyStartingWithConditi
 import mendes.sutil.dyego.awspresignedpost.conditions.key.KeyCondition;
 import org.junit.jupiter.api.Test;
 
-import static mendes.sutil.dyego.awspresignedpost.conditions.KeyConditionHelper.*;
+import static mendes.sutil.dyego.awspresignedpost.conditions.KeyConditionUtil.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
-class KeyConditionHelperTest {
+class KeyConditionUtilTest {
 
     @Test
     public void shouldCreateExactKeyCondition() {

@@ -1,7 +1,7 @@
 package mendes.sutil.dyego.awspresignedpost.postparams;
 
 import mendes.sutil.dyego.awspresignedpost.conditions.*;
-import mendes.sutil.dyego.awspresignedpost.conditions.KeyConditionHelper;
+import mendes.sutil.dyego.awspresignedpost.conditions.KeyConditionUtil;
 import mendes.sutil.dyego.awspresignedpost.conditions.key.ExactKeyCondition;
 import mendes.sutil.dyego.awspresignedpost.conditions.key.KeyCondition;
 import mendes.sutil.dyego.awspresignedpost.conditions.key.KeyStartingWithCondition;
@@ -59,7 +59,7 @@ public class PostParams {
      *     the value passed here will be converted to ISO8601 UTC format in the policy as per
      *     specified by AWS.
      * @param exactKeyCondition Specifies which is the exact value that should be used to perform
-     *     the upload. For convenience, use the {@link KeyConditionHelper#withKey(String)} to build
+     *     the upload. For convenience, use the {@link KeyConditionUtil#withKey(String)} to build
      *     the condition.
      * @param bucket The bucket when the file should be uploaded to.
      * @return A PostParams builder which allows more fine-grained conditions to be added
@@ -92,8 +92,8 @@ public class PostParams {
      *     specified by AWS.
      * @param keyStartingWithCondition Specifies which is the exact value that should be used to
      *     perform the upload. For convenience, use the {@link
-     *     KeyConditionHelper#withKeyStartingWith(String)} {@link
-     *     KeyConditionHelper#withKeyStartingWith(String)} or to build the condition.
+     *     KeyConditionUtil#withKeyStartingWith(String)} {@link
+     *     KeyConditionUtil#withKeyStartingWith(String)} or to build the condition.
      * @param bucket The bucket when the file should be uploaded to.
      * @return A PostParams builder which allows more fine-grained conditions to be added
      */
@@ -461,7 +461,7 @@ public class PostParams {
         /**
          * Allows specifying which is the exact content type of the file being uploaded. Example:
          * 'audio/aac', 'text/plain'. This can be seen in the metadata information in the s3 bucket.
-         * Not to be confused with file extension. To limit that use {@link KeyConditionHelper}
+         * Not to be confused with file extension. To limit that use {@link KeyConditionUtil}
          *
          * @param value Content Type to be used
          * @return @return The {@link Builder} object
@@ -474,7 +474,7 @@ public class PostParams {
          * Allows specifying how should be the beginning of the content type for this upload.
          * Example: 'audio/aac', 'text/plain'. This can be seen in the metadata information in the
          * s3 bucket. Not to be confused with file extension. To limit that use {@link
-         * KeyConditionHelper}
+         * KeyConditionUtil}
          *
          * @param value Content Type to be used
          * @return @return The {@link Builder} object
@@ -835,19 +835,6 @@ public class PostParams {
             return withCondition(
                     SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY_MD5, encryptionKeyDigestAsBase64);
         }
-
-        //        AWSAccessKeyId ?
-
-        // TODO
-        // Matching Any Content
-        // To configure the POST policy to allow any content within a form field, use starts-with
-        // with
-        // an empty value (""). This example allows any value for success_action_redirect:
-        // ["starts-with", "$success_action_redirect", ""]
-
-        // TODO
-        // Content-Types values for a starts-with condition that include commas are interpreted as
-        // lists. Each value in the list must meet the condition for the whole condition to pass.
     }
 
     public String getBucket() {
