@@ -29,9 +29,6 @@ otherwise it will return an error
 AWS_SESSION_TOKEN=value;AWS_REGION=eu-central-1;AWS_KEY=value;AWS_SECRET=value;AWS_KMS_S3_KEY=arn:aws:kms:eu-central-1:xxxxxxxxxxxx:key/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx;AWS_SESSION_SECRET=value;AWS_SESSION_KEY=ASIA...;AWS_BUCKET=muBucket;AWS_WRONG_REGION=eu-central-2
 ```
 
-# Issues
-- scan for any vulnerabilities in dependencies or code betterment.
-
 
 to be done: Add adapted desc of this text:
 The following table describes a list of fields that you can use within a form.
