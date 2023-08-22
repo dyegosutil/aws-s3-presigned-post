@@ -36,8 +36,7 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
     @ParameterizedTest(name = "{0}")
     @MethodSource("optionalPostParamsTestCases")
     void shouldTestUploadWithOptionalParams(String testDescription, PostParams postParams) {
-        PreSignedPost presignedPost =
-                S3PostSigner.sign(postParams, getAmazonCredentialsProvider());
+        PreSignedPost presignedPost = S3PostSigner.sign(postParams, getAmazonCredentialsProvider());
         Request request =
                 createRequestFromConditions(presignedPost.getConditions(), presignedPost.getUrl());
         boolean result = postFileIntoS3(request);
@@ -52,8 +51,7 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
             Map<String, String> customizedUploadConditions,
             boolean expectedResult) {
         // Arrange
-        PreSignedPost presignedPost =
-                S3PostSigner.sign(postParams, getAmazonCredentialsProvider());
+        PreSignedPost presignedPost = S3PostSigner.sign(postParams, getAmazonCredentialsProvider());
         Map<String, String> conditions = presignedPost.getConditions();
         conditions.putAll(customizedUploadConditions);
         Request request =

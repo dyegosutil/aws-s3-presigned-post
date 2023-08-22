@@ -31,8 +31,8 @@ public final class S3PostSigner {
     private static final Logger LOGGER = LoggerFactory.getLogger(S3PostSigner.class);
 
     /**
-     * Creates the Pre-Signed Post using the data provided in {@link PostParams}. First the policy is
-     * created and then its base64 value is used to generate the signature using the <a
+     * Creates the Pre-Signed Post using the data provided in {@link PostParams}. First the policy
+     * is created and then its base64 value is used to generate the signature using the <a
      * href="https://docs.aws.amazon.com/general/latest/gr/sigv4_signing.html">Aws Signature Version
      * 4 specification</a> <br>
      * <br>

@@ -31,8 +31,7 @@ public class MandatoryPostParamsIntegrationTests extends IntegrationTests {
         // Arrange
         PostParams postParams =
                 PostParams.builder(REGION, EXPIRATION_DATE, BUCKET, withKey("test.txt")).build();
-        PreSignedPost presignedPost =
-                S3PostSigner.sign(postParams, getAmazonCredentialsProvider());
+        PreSignedPost presignedPost = S3PostSigner.sign(postParams, getAmazonCredentialsProvider());
         Map<String, String> conditions = presignedPost.getConditions();
         Request request = createRequestFromConditions(conditions, presignedPost.getUrl());
 
@@ -60,8 +59,7 @@ public class MandatoryPostParamsIntegrationTests extends IntegrationTests {
             boolean expectedResult) {
         // Arrange
         PostParams postParams = createPostParams(region, expirationDate, bucket, keyCondition);
-        PreSignedPost presignedPost =
-                S3PostSigner.sign(postParams, getAmazonCredentialsProvider());
+        PreSignedPost presignedPost = S3PostSigner.sign(postParams, getAmazonCredentialsProvider());
         Map<String, String> conditions = presignedPost.getConditions();
         conditions.putAll(customizedUploadConditions);
 

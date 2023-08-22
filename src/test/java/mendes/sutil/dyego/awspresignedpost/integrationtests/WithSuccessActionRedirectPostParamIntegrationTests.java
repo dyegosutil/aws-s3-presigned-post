@@ -24,8 +24,7 @@ public class WithSuccessActionRedirectPostParamIntegrationTests extends Integrat
     void shouldTestUploadUsingRedirectCondition(
             String testDescription, PostParams postParams, String redirectAwsConditionName) {
         // Act
-        PreSignedPost presignedPost =
-                S3PostSigner.sign(postParams, getAmazonCredentialsProvider());
+        PreSignedPost presignedPost = S3PostSigner.sign(postParams, getAmazonCredentialsProvider());
 
         Map<String, String> conditions = presignedPost.getConditions();
         Request request = createRequestFromConditions(conditions, presignedPost.getUrl());
@@ -49,8 +48,7 @@ public class WithSuccessActionRedirectPostParamIntegrationTests extends Integrat
             Map<String, String> formDataParts,
             String redirectAwsConditionName) {
         // Arrange
-        PreSignedPost presignedPost =
-                S3PostSigner.sign(postParams, getAmazonCredentialsProvider());
+        PreSignedPost presignedPost = S3PostSigner.sign(postParams, getAmazonCredentialsProvider());
         Map<String, String> conditions = presignedPost.getConditions();
         conditions.putAll(formDataParts);
         Request request = createRequestFromConditions(conditions, presignedPost.getUrl());
