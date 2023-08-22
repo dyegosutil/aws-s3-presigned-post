@@ -5,7 +5,7 @@ import mendes.sutil.dyego.awspresignedpost.conditions.key.ExactKeyCondition;
 import mendes.sutil.dyego.awspresignedpost.conditions.key.KeyCondition;
 import mendes.sutil.dyego.awspresignedpost.conditions.key.KeyStartingWithCondition;
 import mendes.sutil.dyego.awspresignedpost.postparams.PostParams;
-import mendes.sutil.dyego.awspresignedpost.presigned.PresignedPost;
+import mendes.sutil.dyego.awspresignedpost.presigned.PreSignedPost;
 import okhttp3.Request;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -31,8 +31,8 @@ public class MandatoryPostParamsIntegrationTests extends IntegrationTests {
         // Arrange
         PostParams postParams =
                 PostParams.builder(REGION, EXPIRATION_DATE, BUCKET, withKey("test.txt")).build();
-        PresignedPost presignedPost =
-                S3PostSigner.create(postParams, getAmazonCredentialsProvider());
+        PreSignedPost presignedPost =
+                S3PostSigner.sign(postParams, getAmazonCredentialsProvider());
         Map<String, String> conditions = presignedPost.getConditions();
         Request request = createRequestFromConditions(conditions, presignedPost.getUrl());
 
@@ -60,8 +60,8 @@ public class MandatoryPostParamsIntegrationTests extends IntegrationTests {
             boolean expectedResult) {
         // Arrange
         PostParams postParams = createPostParams(region, expirationDate, bucket, keyCondition);
-        PresignedPost presignedPost =
-                S3PostSigner.create(postParams, getAmazonCredentialsProvider());
+        PreSignedPost presignedPost =
+                S3PostSigner.sign(postParams, getAmazonCredentialsProvider());
         Map<String, String> conditions = presignedPost.getConditions();
         conditions.putAll(customizedUploadConditions);
 

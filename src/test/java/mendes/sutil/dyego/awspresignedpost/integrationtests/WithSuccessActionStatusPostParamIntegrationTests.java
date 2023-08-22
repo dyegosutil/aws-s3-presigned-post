@@ -1,7 +1,7 @@
 package mendes.sutil.dyego.awspresignedpost.integrationtests;
 
 import mendes.sutil.dyego.awspresignedpost.postparams.PostParams;
-import mendes.sutil.dyego.awspresignedpost.presigned.PresignedPost;
+import mendes.sutil.dyego.awspresignedpost.presigned.PreSignedPost;
 import mendes.sutil.dyego.awspresignedpost.signer.S3PostSigner;
 import okhttp3.Request;
 import org.junit.jupiter.api.Disabled;
@@ -25,8 +25,8 @@ public class WithSuccessActionStatusPostParamIntegrationTests extends Integratio
     void shouldUploadFileUsingSuccessActionStatus(
             String testDescription, PostParams postParams, int expectedResponseCode) {
         // Arrange
-        PresignedPost presignedPost =
-                S3PostSigner.create(postParams, getAmazonCredentialsProvider());
+        PreSignedPost presignedPost =
+                S3PostSigner.sign(postParams, getAmazonCredentialsProvider());
 
         Map<String, String> conditions = presignedPost.getConditions();
         Request request = createRequestFromConditions(conditions, presignedPost.getUrl());
@@ -45,8 +45,8 @@ public class WithSuccessActionStatusPostParamIntegrationTests extends Integratio
                 createDefaultPostParamBuilderSpecifyingKey()
                         .withSuccessActionStatus(PostParams.Builder.SuccessActionStatus.OK)
                         .build();
-        PresignedPost presignedPost =
-                S3PostSigner.create(postParams, getAmazonCredentialsProvider());
+        PreSignedPost presignedPost =
+                S3PostSigner.sign(postParams, getAmazonCredentialsProvider());
         Map<String, String> conditions = presignedPost.getConditions();
         conditions.put("success_action_status", "299");
         Request request = createRequestFromConditions(conditions, presignedPost.getUrl());

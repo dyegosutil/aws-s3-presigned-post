@@ -8,7 +8,7 @@ import mendes.sutil.dyego.awspresignedpost.conditions.ConditionField;
 import mendes.sutil.dyego.awspresignedpost.conditions.MetaCondition;
 import mendes.sutil.dyego.awspresignedpost.conditions.MatchCondition;
 import mendes.sutil.dyego.awspresignedpost.presigned.PresignedFreeTextPost;
-import mendes.sutil.dyego.awspresignedpost.presigned.PresignedPost;
+import mendes.sutil.dyego.awspresignedpost.presigned.PreSignedPost;
 import mendes.sutil.dyego.awspresignedpost.postparams.FreeTextPostParams;
 import mendes.sutil.dyego.awspresignedpost.postparams.PostParams;
 import org.slf4j.Logger;
@@ -31,7 +31,7 @@ public final class S3PostSigner {
     private static final Logger LOGGER = LoggerFactory.getLogger(S3PostSigner.class);
 
     /**
-     * Creates the Pre-Signed Post using the data provided in {@link PostParams} First the policy is
+     * Creates the Pre-Signed Post using the data provided in {@link PostParams}. First the policy is
      * created and then its base64 value is used to generate the signature using the <a
      * href="https://docs.aws.amazon.com/general/latest/gr/sigv4_signing.html">Aws Signature Version
      * 4 specification</a> <br>
@@ -46,7 +46,7 @@ public final class S3PostSigner {
      * @return The object containing all the necessary params to be used to upload a file using pre
      *     signed post
      */
-    public static PresignedPost create(
+    public static PreSignedPost sign(
             final PostParams postParams, final AwsCredentialsProvider awsCredentialsProvider) {
         requireNonNull(postParams, "PostParam cannot be null");
         final AwsCredentials awsCredentials = validateAwsCredentials(awsCredentialsProvider);
@@ -75,7 +75,7 @@ public final class S3PostSigner {
         final String keyUploadValue = getKeyUploadValue(returnConditions);
         removeKeyFromConditions(returnConditions);
 
-        return new PresignedPost(
+        return new PreSignedPost(
                 createUrl(bucket, region),
                 createConditionsMap(
                         credentials,
@@ -100,13 +100,13 @@ public final class S3PostSigner {
     }
 
     /**
-     * This method, compared to {@link #create(PostParams, AwsCredentialsProvider)}, gives more
+     * This method, compared to {@link #sign(PostParams, AwsCredentialsProvider)}, gives more
      * liberty to the caller who can provide more freely the conditions to generate the pre signed
      * post. Note that this method performs only basic validations hence its use is more error-prone
      * because the caller should know the intricacies of the <a
      * href="https://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-HTTPPOSTConstructPolicy.html">Aws
      * S3 Post Policy</a>. This method might be useful though for using new features made available
-     * by AWS not yet added to {@link #create(PostParams, AwsCredentialsProvider)} or for
+     * by AWS not yet added to {@link #sign(PostParams, AwsCredentialsProvider)} or for
      * troubleshooting using raw data. For reference about how to use this method, check the
      * correspondent integration tests in the source code. <br>
      * <br>
@@ -121,7 +121,7 @@ public final class S3PostSigner {
      *     The caller must add the other necessary fields matching the conditions passed to this
      *     method.
      */
-    public static PresignedFreeTextPost create(
+    public static PresignedFreeTextPost sign(
             final FreeTextPostParams params, final AwsCredentialsProvider provider) {
         final AwsCredentials awsCredentials = validateAwsCredentials(provider);
         final AmzDate amzDate = new AmzDate(params.getDate());

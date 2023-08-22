@@ -1,7 +1,7 @@
 package mendes.sutil.dyego.awspresignedpost.integrationtests;
 
 import mendes.sutil.dyego.awspresignedpost.postparams.PostParams;
-import mendes.sutil.dyego.awspresignedpost.presigned.PresignedPost;
+import mendes.sutil.dyego.awspresignedpost.presigned.PreSignedPost;
 import mendes.sutil.dyego.awspresignedpost.signer.S3PostSigner;
 import okhttp3.Request;
 import org.junit.jupiter.api.Disabled;
@@ -24,8 +24,8 @@ public class WithSuccessActionRedirectPostParamIntegrationTests extends Integrat
     void shouldTestUploadUsingRedirectCondition(
             String testDescription, PostParams postParams, String redirectAwsConditionName) {
         // Act
-        PresignedPost presignedPost =
-                S3PostSigner.create(postParams, getAmazonCredentialsProvider());
+        PreSignedPost presignedPost =
+                S3PostSigner.sign(postParams, getAmazonCredentialsProvider());
 
         Map<String, String> conditions = presignedPost.getConditions();
         Request request = createRequestFromConditions(conditions, presignedPost.getUrl());
@@ -49,8 +49,8 @@ public class WithSuccessActionRedirectPostParamIntegrationTests extends Integrat
             Map<String, String> formDataParts,
             String redirectAwsConditionName) {
         // Arrange
-        PresignedPost presignedPost =
-                S3PostSigner.create(postParams, getAmazonCredentialsProvider());
+        PreSignedPost presignedPost =
+                S3PostSigner.sign(postParams, getAmazonCredentialsProvider());
         Map<String, String> conditions = presignedPost.getConditions();
         conditions.putAll(formDataParts);
         Request request = createRequestFromConditions(conditions, presignedPost.getUrl());

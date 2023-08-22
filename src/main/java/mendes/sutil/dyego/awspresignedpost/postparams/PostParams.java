@@ -183,7 +183,7 @@ public class PostParams {
          * valid. This method validates if said conditions where added, failing fast otherwise
          *
          * @return The {@link PostParams} to be used while calling {@link
-         *     S3PostSigner#create(PostParams, AwsCredentialsProvider)}
+         *     S3PostSigner#sign(PostParams, AwsCredentialsProvider)}
          */
         public PostParams build() {
             validateDependentConditions();

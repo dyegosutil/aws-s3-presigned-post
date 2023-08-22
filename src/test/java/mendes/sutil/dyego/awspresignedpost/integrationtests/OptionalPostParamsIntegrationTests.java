@@ -1,6 +1,6 @@
 package mendes.sutil.dyego.awspresignedpost.integrationtests;
 
-import mendes.sutil.dyego.awspresignedpost.presigned.PresignedPost;
+import mendes.sutil.dyego.awspresignedpost.presigned.PreSignedPost;
 import mendes.sutil.dyego.awspresignedpost.postparams.PostParams;
 import mendes.sutil.dyego.awspresignedpost.signer.S3PostSigner;
 import okhttp3.Request;
@@ -36,8 +36,8 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
     @ParameterizedTest(name = "{0}")
     @MethodSource("optionalPostParamsTestCases")
     void shouldTestUploadWithOptionalParams(String testDescription, PostParams postParams) {
-        PresignedPost presignedPost =
-                S3PostSigner.create(postParams, getAmazonCredentialsProvider());
+        PreSignedPost presignedPost =
+                S3PostSigner.sign(postParams, getAmazonCredentialsProvider());
         Request request =
                 createRequestFromConditions(presignedPost.getConditions(), presignedPost.getUrl());
         boolean result = postFileIntoS3(request);
@@ -52,8 +52,8 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
             Map<String, String> customizedUploadConditions,
             boolean expectedResult) {
         // Arrange
-        PresignedPost presignedPost =
-                S3PostSigner.create(postParams, getAmazonCredentialsProvider());
+        PreSignedPost presignedPost =
+                S3PostSigner.sign(postParams, getAmazonCredentialsProvider());
         Map<String, String> conditions = presignedPost.getConditions();
         conditions.putAll(customizedUploadConditions);
         Request request =

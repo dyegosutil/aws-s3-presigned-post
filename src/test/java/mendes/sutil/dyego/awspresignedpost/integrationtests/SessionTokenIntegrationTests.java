@@ -1,6 +1,6 @@
 package mendes.sutil.dyego.awspresignedpost.integrationtests;
 
-import mendes.sutil.dyego.awspresignedpost.presigned.PresignedPost;
+import mendes.sutil.dyego.awspresignedpost.presigned.PreSignedPost;
 import mendes.sutil.dyego.awspresignedpost.postparams.PostParams;
 import mendes.sutil.dyego.awspresignedpost.signer.S3PostSigner;
 import okhttp3.Request;
@@ -23,8 +23,8 @@ public class SessionTokenIntegrationTests extends IntegrationTests {
     void shouldUploadFileWithSessionToken() {
         // Arrange
         PostParams postParams = createDefaultPostParamBuilderSpecifyingKey().build();
-        PresignedPost presignedPost =
-                S3PostSigner.create(
+        PreSignedPost presignedPost =
+                S3PostSigner.sign(
                         postParams, getAmazonCredentialsProviderWithAwsSessionCredentials());
 
         Map<String, String> conditions = presignedPost.getConditions();
@@ -44,8 +44,8 @@ public class SessionTokenIntegrationTests extends IntegrationTests {
     void shouldNotUploadFileWithWrongSessionToken() {
         // Arrange
         PostParams postParams = createDefaultPostParamBuilder().build();
-        PresignedPost presignedPost =
-                S3PostSigner.create(
+        PreSignedPost presignedPost =
+                S3PostSigner.sign(
                         postParams, getAmazonCredentialsProviderWithAwsSessionCredentials());
 
         Map<String, String> conditions = presignedPost.getConditions();
