@@ -25,7 +25,7 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-params:$jupiterVersion")
     testImplementation("com.squareup.okhttp3:okhttp:4.11.0")
     testImplementation("org.assertj:assertj-core:3.24.2")
-    implementation("org.mockito:mockito-core:5.4.0")
+    implementation("org.mockito:mockito-core:5.5.0")
     testRuntimeOnly("ch.qos.logback:logback-classic:1.4.11")
 }
 
