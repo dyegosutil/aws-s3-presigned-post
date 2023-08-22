@@ -25,8 +25,7 @@ public class WithSuccessActionStatusPostParamIntegrationTests extends Integratio
     void shouldUploadFileUsingSuccessActionStatus(
             String testDescription, PostParams postParams, int expectedResponseCode) {
         // Arrange
-        PreSignedPost presignedPost =
-                S3PostSigner.sign(postParams, getAmazonCredentialsProvider());
+        PreSignedPost presignedPost = S3PostSigner.sign(postParams, getAmazonCredentialsProvider());
 
         Map<String, String> conditions = presignedPost.getConditions();
         Request request = createRequestFromConditions(conditions, presignedPost.getUrl());
@@ -45,8 +44,7 @@ public class WithSuccessActionStatusPostParamIntegrationTests extends Integratio
                 createDefaultPostParamBuilderSpecifyingKey()
                         .withSuccessActionStatus(PostParams.Builder.SuccessActionStatus.OK)
                         .build();
-        PreSignedPost presignedPost =
-                S3PostSigner.sign(postParams, getAmazonCredentialsProvider());
+        PreSignedPost presignedPost = S3PostSigner.sign(postParams, getAmazonCredentialsProvider());
         Map<String, String> conditions = presignedPost.getConditions();
         conditions.put("success_action_status", "299");
         Request request = createRequestFromConditions(conditions, presignedPost.getUrl());
