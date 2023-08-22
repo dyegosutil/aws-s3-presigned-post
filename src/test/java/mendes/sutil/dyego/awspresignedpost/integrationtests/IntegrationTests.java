@@ -75,7 +75,7 @@ public class IntegrationTests {
                         new String(
                                 Objects.requireNonNull(response.body()).bytes(),
                                 StandardCharsets.UTF_8);
-                LOGGER.error(" Response xml: {}", responseXml);
+                LOGGER.error("Response xml: {}", responseXml);
             } catch (IOException e) {
                 LOGGER.error("Error while getting the xml response from failed upload", e);
                 throw new RuntimeException(e);

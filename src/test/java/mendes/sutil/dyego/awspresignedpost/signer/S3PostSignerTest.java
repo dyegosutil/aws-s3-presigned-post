@@ -3,7 +3,7 @@ package mendes.sutil.dyego.awspresignedpost.signer;
 import mendes.sutil.dyego.awspresignedpost.postparams.FreeTextPostParams;
 import mendes.sutil.dyego.awspresignedpost.postparams.PostParams;
 import mendes.sutil.dyego.awspresignedpost.presigned.PresignedFreeTextPost;
-import mendes.sutil.dyego.awspresignedpost.presigned.PresignedPost;
+import mendes.sutil.dyego.awspresignedpost.presigned.PreSignedPost;
 import org.junit.jupiter.api.Test;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
@@ -35,8 +35,8 @@ public class S3PostSignerTest {
         String bucket = "myBucket";
 
         // Act
-        PresignedPost presignedPost =
-                S3PostSigner.create(
+        PreSignedPost presignedPost =
+                S3PostSigner.sign(
                         PostParams.builder(REGION, EXPIRATION_DATE, bucket, withAnyKey()).build(),
                         getAmazonCredentialsProvider(AWS_FAKE_KEY, AWS_FAKE_SECRET));
 
@@ -90,7 +90,7 @@ public class S3PostSignerTest {
 
         // Act
         PresignedFreeTextPost preSignedPost =
-                S3PostSigner.create(
+                S3PostSigner.sign(
                         freeTextPostParams,
                         getAmazonCredentialsProvider(AWS_FAKE_KEY, AWS_FAKE_SECRET));
 
@@ -109,7 +109,7 @@ public class S3PostSignerTest {
     void shouldValidateAwsCredentialsForPreSignedPost() {
         assertThatThrownBy(
                         () ->
-                                S3PostSigner.create(
+                                S3PostSigner.sign(
                                         createPostParamsWithKeyStartingWith(),
                                         mockAwsCredentialsProvider()))
                 .isInstanceOf(NullPointerException.class)
@@ -120,7 +120,7 @@ public class S3PostSignerTest {
     void shouldValidateAwsCredentialsForFreeTextPreSignedPost() {
         assertThatThrownBy(
                         () ->
-                                S3PostSigner.create(
+                                S3PostSigner.sign(
                                         createFreeTextPostParams(), mockAwsCredentialsProvider()))
                 .isInstanceOf(NullPointerException.class)
                 .hasMessage(ERROR_MESSAGE_NULL_AWS_CREDENTIALS);

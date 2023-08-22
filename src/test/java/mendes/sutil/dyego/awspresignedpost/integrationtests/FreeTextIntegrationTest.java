@@ -49,7 +49,7 @@ public class FreeTextIntegrationTest extends IntegrationTests {
         FreeTextPostParams freeTextPostParams =
                 getFreeTextPostParams(getConditionsForUploadWithCustomerEncryptionKey());
         PresignedFreeTextPost preSignedPost =
-                S3PostSigner.create(freeTextPostParams, getAmazonCredentialsProvider());
+                S3PostSigner.sign(freeTextPostParams, getAmazonCredentialsProvider());
         return of(
                 "Should upload file using free text post params where file encryption is used with"
                         + " key specified by the user. One of the most complex cases",
@@ -59,7 +59,7 @@ public class FreeTextIntegrationTest extends IntegrationTests {
     private static Arguments getAwsStsTokenTestCase() {
         FreeTextPostParams freeTextPostParams = getFreeTextPostParams(getConditionsForAwsSts());
         PresignedFreeTextPost preSignedPost =
-                S3PostSigner.create(
+                S3PostSigner.sign(
                         freeTextPostParams,
                         getAmazonCredentialsProviderWithAwsSessionCredentials());
         return of(
@@ -80,7 +80,7 @@ public class FreeTextIntegrationTest extends IntegrationTests {
     private static Arguments getSimpleUploadTestCase() {
         FreeTextPostParams freeTextPostParams = getFreeTextPostParams(getMandatoryConditions());
         PresignedFreeTextPost preSignedPost =
-                S3PostSigner.create(freeTextPostParams, getAmazonCredentialsProvider());
+                S3PostSigner.sign(freeTextPostParams, getAmazonCredentialsProvider());
         return of(
                 "Should upload file using free text post params where mandatory params are used."
                         + " This is the simplest upload condition possible",
