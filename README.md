@@ -183,7 +183,6 @@ AWS_KEY = Your AWS key such as AKIA...
 AWS_SECRET = your secret
 AWS_BUCKET = The bucket name where the test files must be uploaded to. Ex: 'testbucket'
 AWS_REGION = Ex: 'eu-central-1' any regition that can be used with Region.of(). This should be the region for the valid bucket your have configured to test the uploads.
-AWS_WRONG_REGION = This should be a bucket which is not the one you have configured the bucket for. Any value that can be used with Region.of()
 AWS_SESSION_TOKEN ?  
 ```
 
@@ -293,7 +292,7 @@ client request respectively.
 
 - Environment Variables necessary to run all integration tests
 ```
-AWS_SESSION_TOKEN=value;AWS_REGION=eu-central-1;AWS_KEY=value;AWS_SECRET=value;AWS_KMS_S3_KEY=arn:aws:kms:eu-central-1:xxxxxxxxxxxx:key/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx;AWS_SESSION_SECRET=value;AWS_SESSION_KEY=ASIA...;AWS_BUCKET=muBucket;AWS_WRONG_REGION=eu-central-2
+AWS_SESSION_TOKEN=value;AWS_REGION=eu-central-1;AWS_KEY=value;AWS_SECRET=value;AWS_KMS_S3_KEY=arn:aws:kms:eu-central-1:xxxxxxxxxxxx:key/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx;AWS_SESSION_SECRET=value;AWS_SESSION_KEY=ASIA...;AWS_BUCKET=myBucket
 ```
 Add info from this page
 https://docs.aws.amazon.com/general/latest/gr/signature-version-4.html

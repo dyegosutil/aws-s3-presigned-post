@@ -16,7 +16,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - name: Set up JDK 17
+      - name: Set up JDK 17  #      TODO should not it be 8?
         uses: actions/setup-java@v3
         with:
           distribution: 'zulu'
@@ -32,4 +32,10 @@ jobs:
       - name: Build
         run: ./gradlew -q :clean :build -x test --info
       - name: Test
+        with:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          AWS_BUCKET: ${{ secrets.AWS_BUCKET }}
+          AWS_KMS_S3_KEY: ${{ secrets.AWS_KMS_S3_KEY }}
         run: ./gradlew :test

@@ -142,7 +142,7 @@ public class PreSignedPostMandatoryPostParamsIntegrationTests extends Integratio
                 of(
                         "Should fail while uploading file to S3 using a different region then the"
                                 + " one configured in the policy",
-                        Region.of(System.getenv("AWS_WRONG_REGION")),
+                        Region.IL_CENTRAL_1,
                         EXPIRATION_DATE,
                         BUCKET,
                         withKey("test.txt"),
