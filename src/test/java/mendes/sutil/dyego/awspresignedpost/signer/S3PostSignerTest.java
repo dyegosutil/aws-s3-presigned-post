@@ -2,11 +2,15 @@ package mendes.sutil.dyego.awspresignedpost.signer;
 
 import mendes.sutil.dyego.awspresignedpost.postparams.FreeTextPostParams;
 import mendes.sutil.dyego.awspresignedpost.postparams.PostParams;
-import mendes.sutil.dyego.awspresignedpost.presigned.PresignedFreeTextPost;
 import mendes.sutil.dyego.awspresignedpost.presigned.PreSignedPost;
+import mendes.sutil.dyego.awspresignedpost.presigned.PreSignedFreeTextPost;
 import org.junit.jupiter.api.Test;
-import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
+import org.junit.jupiter.api.extension.ExtendWith;
+import software.amazon.awssdk.core.exception.SdkClientException;
 import software.amazon.awssdk.regions.Region;
+import uk.org.webcompere.systemstubs.environment.EnvironmentVariables;
+import uk.org.webcompere.systemstubs.jupiter.SystemStub;
+import uk.org.webcompere.systemstubs.jupiter.SystemStubsExtension;
 
 import java.time.Instant;
 import java.time.ZoneOffset;
@@ -18,27 +22,28 @@ import static mendes.sutil.dyego.awspresignedpost.TestUtils.*;
 import static mendes.sutil.dyego.awspresignedpost.conditions.KeyConditionUtil.withAnyKey;
 import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.InstanceOfAssertFactories.STRING;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
+@ExtendWith(SystemStubsExtension.class)
 public class S3PostSignerTest {
 
-    public static final String ERROR_MESSAGE_NULL_AWS_CREDENTIALS =
-            "AwsCredentialsProvider must provide non-null AwsCredentials";
     public static final Region REGION = Region.EU_CENTRAL_1;
     public static final String AWS_FAKE_SECRET = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY";
     public static final String AWS_FAKE_KEY = "AKIAIOSFODNN7EXAMPLE";
+
+    @SystemStub
+    private EnvironmentVariables environmentVariables;
 
     @Test
     void shouldReturnCorrectPreSignedPost() {
         // Arrange
         String bucket = "myBucket";
+        environmentVariables.set("AWS_ACCESS_KEY_ID", AWS_FAKE_KEY);
+        environmentVariables.set("AWS_SECRET_ACCESS_KEY", AWS_FAKE_SECRET);
+        environmentVariables.set("AWS_SESSION_TOKEN", null);
 
         // Act
         PreSignedPost presignedPost =
-                S3PostSigner.sign(
-                        PostParams.builder(REGION, EXPIRATION_DATE, bucket, withAnyKey()).build(),
-                        getAmazonCredentialsProvider(AWS_FAKE_KEY, AWS_FAKE_SECRET));
+                S3PostSigner.sign(PostParams.builder(REGION, EXPIRATION_DATE, bucket, withAnyKey()).build());
 
         // Assert
         Map<String, String> actualConditions = presignedPost.getConditions();
@@ -89,10 +94,7 @@ public class S3PostSignerTest {
                 new FreeTextPostParams(region, expirationDate, date, conditions);
 
         // Act
-        PresignedFreeTextPost preSignedPost =
-                S3PostSigner.sign(
-                        freeTextPostParams,
-                        getAmazonCredentialsProvider(AWS_FAKE_KEY, AWS_FAKE_SECRET));
+        PreSignedFreeTextPost preSignedPost = S3PostSigner.sign(freeTextPostParams);
 
         // Assert
         assertThat(preSignedPost.getPolicy()).isNotEmpty();
@@ -106,24 +108,31 @@ public class S3PostSignerTest {
     }
 
     @Test
-    void shouldValidateAwsCredentialsForPreSignedPost() {
+    void shouldThrowSdkClientExceptionIfNoCredentialsForPreSignedPost() {
+        //Arrange
+        setInvalidAwsCredentials();
+
+        // Act & Assert
         assertThatThrownBy(
                         () ->
                                 S3PostSigner.sign(
-                                        createPostParamsWithKeyStartingWith(),
-                                        mockAwsCredentialsProvider()))
-                .isInstanceOf(NullPointerException.class)
-                .hasMessage(ERROR_MESSAGE_NULL_AWS_CREDENTIALS);
+                                        createPostParamsWithKeyStartingWith()))
+                .isInstanceOf(SdkClientException.class);
     }
 
     @Test
-    void shouldValidateAwsCredentialsForFreeTextPreSignedPost() {
-        assertThatThrownBy(
-                        () ->
-                                S3PostSigner.sign(
-                                        createFreeTextPostParams(), mockAwsCredentialsProvider()))
-                .isInstanceOf(NullPointerException.class)
-                .hasMessage(ERROR_MESSAGE_NULL_AWS_CREDENTIALS);
+    void shouldThrowSdkClientExceptionIfNoCredentialsForFreeTextPreSignedPost() {
+        //Arrange
+        setInvalidAwsCredentials();
+        assertThatThrownBy(() -> S3PostSigner.sign(createFreeTextPostParams()))
+                .isInstanceOf(SdkClientException.class);
+    }
+
+    private void setInvalidAwsCredentials() {
+        environmentVariables.set("AWS_PROFILE", "wrong_profile");
+        environmentVariables.set("AWS_ACCESS_KEY_ID", null);
+        environmentVariables.set("AWS_SECRET_ACCESS_KEY", null);
+        environmentVariables.set("AWS_SESSION_TOKEN", null);
     }
 
     public FreeTextPostParams createFreeTextPostParams() {
@@ -132,11 +141,5 @@ public class S3PostSignerTest {
                 ZonedDateTime.now(),
                 ZonedDateTime.now(),
                 Collections.singleton(new String[] {"eq", "$bucket", "myBucket"}));
-    }
-
-    private AwsCredentialsProvider mockAwsCredentialsProvider() {
-        AwsCredentialsProvider mock = mock(AwsCredentialsProvider.class);
-        when((mock).resolveCredentials()).thenReturn(null);
-        return mock;
     }
 }

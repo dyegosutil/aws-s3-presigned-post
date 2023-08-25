@@ -20,7 +20,7 @@ repositories {
 dependencies {
     api(platform("software.amazon.awssdk:bom:2.20.131"))
     api("software.amazon.awssdk:regions")
-    api("software.amazon.awssdk:auth")
+    implementation("software.amazon.awssdk:auth")
     implementation("com.google.code.gson:gson:2.10.1")
     implementation("org.slf4j:slf4j-api:2.0.7")
 
@@ -31,6 +31,7 @@ dependencies {
     testImplementation("com.squareup.okhttp3:okhttp:4.11.0")
     testImplementation("org.assertj:assertj-core:3.24.2")
     testImplementation("org.mockito:mockito-core:5.5.0")
+    testImplementation("uk.org.webcompere:system-stubs-jupiter:1.1.0")
 }
 
 tasks.getByName<Test>("test") {

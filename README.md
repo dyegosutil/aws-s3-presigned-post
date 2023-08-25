@@ -63,14 +63,15 @@ Here is one example of how to create a `AwsCredentialsProvider` for tests
 ```java
 public AwsCredentialsProvider getAmazonCredentialsProvider() {
     return StaticCredentialsProvider.create(
-            AwsBasicCredentials.create(System.getenv("AWS_KEY"), System.getenv("AWS_SECRET")));
+            AwsBasicCredentials.create(System.getenv("AWS_KEY"), System.getenv("AWS_SECRET"))
+        );
 }
 ```
 
 ### 3. Upload the file
 
 Use a http client in any platform to upload the file using the generated parameters from PreSignedPost.  
-Below is a minimalistic example for using OkHttp
+Below is a minimalistic example using OkHttp
 
 ```java
 MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
@@ -95,7 +96,7 @@ try (Response response = new OkHttpClient().newCall(request).execute()) {
 ```
 ## Features
 
-- `PreSignedPost` creation: Provides a guided approach with a builder to create a non-error prone Pre Signed Post
+- `PreSignedPost` creation: Provides a guided approach with a builder to create a non-error prone `PreSignedPost`
 - `PresignedFreeTextPost` creation: Advanced option that provides flexibility for creating a Pre Signed Post on which
 parameters and conditions can be provided freely. Even if this library does not support a new AWS feature, using this
 approach will probably make it possible to use it. Note that this option requires some understanding of the AWS request
@@ -103,7 +104,7 @@ creation and signing process.
 - Adding conditions/restrictions:  
 Example: You need to create a Pre Signed Post that will allow the user to upload a file with the name starting with 
 "Full_Report_", not bigger than 100 MB and having the tag confidential=true.  
-Note that for each condition util methods `withConditionNmae` and/or 
+Note that for each condition util methods `withConditionName` and/or 
 `withConditionNameStartingWith` are available. Below are all the supported conditions. For full details of the conditions
 check the class `PostParams`:
   - Bucket
@@ -151,9 +152,8 @@ check the class `PostParams`:
 ```
 
 
-
 ## Notes
-
+- If you want to allow the user upload any key use ```withAnyKey()``` and submit as key name ```${filename}```
 - Generating S3 post data for uploading files into public access s3 buckets is not included in this library since it is pretty straight forward.
 That is, the only parameters necessary are the ```key``` and ```file```.
 
@@ -168,27 +168,6 @@ For the startWith, it is okay since you will specify at list on character in fro
 # Features to be added
 To accept any value for a certain condition, use the ```with*StartingWith``` passing an empty string ```""``` such as ```withAclStartingWith("")```, ```withContentEncodingStartingWith("")```, etc
 In next releases, the method ```withAny*``` will be made available such as  ```withAnyAcl```, ```withAnyContentEncoding```, etc
-
-# Reference documents
-
-- Post Policy - https://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-HTTPPOSTConstructPolicy.html
-- https://docs.aws.amazon.com/AmazonS3/latest/API/RESTObjectPOST.html
-
-- Environment Variables necessary to run all integration tests
-```
-AWS_SESSION_TOKEN=value;AWS_REGION=eu-central-1;AWS_KEY=value;AWS_SECRET=value;AWS_KMS_S3_KEY=arn:aws:kms:eu-central-1:xxxxxxxxxxxx:key/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx;AWS_SESSION_SECRET=value;AWS_SESSION_KEY=ASIA...;AWS_BUCKET=muBucket;AWS_WRONG_REGION=eu-central-2
-```
-
-
-
-
-
-
-
-Add info from this page
-https://docs.aws.amazon.com/general/latest/gr/signature-version-4.html
-
-
 
 ## Running locally
 
@@ -207,11 +186,6 @@ AWS_REGION = Ex: 'eu-central-1' any regition that can be used with Region.of(). 
 AWS_WRONG_REGION = This should be a bucket which is not the one you have configured the bucket for. Any value that can be used with Region.of()
 AWS_SESSION_TOKEN ?  
 ```
- 
-
-
-
-If you want to allow the user upload any key use ```withAnyKey()``` and submit as key name ```${filename}```
 
 
 Expalin that this is the return when you set 201 as response
@@ -227,7 +201,10 @@ Expalin that this is the return when you set 201 as response
 ```
 
 ### How to get a session token
+
+```shell
 aws-vault exec default --duration=12h -- env | egrep '^AWS_(ACCESS_KEY_ID|SECRET_ACCESS_KEY|SESSION_TOKEN)'
+```
 
 Important notes:
 - Even if you are not adding a withSessionToken, if the credentials are temporary, a condition ```x-amz-security-token``` will be adde dot the policy and you will have to add it to the request.
@@ -241,10 +218,6 @@ If while trying to use ACLs you receive the message
 ```
 it is because you first have to enable ACL usage in the bucket before using it int he pre-signed post.
 
-
-FreeTextPostParam
-- gives total freedom for adding valuedConditions and params used
-
 ## Troubleshooting
 
 ### Cannot restrict key value
@@ -256,23 +229,12 @@ were added to the http client post request. But when the http client `file` cond
 when the name of the uploaded file is `wrong_file_name.txt`, the upload still works when it should have failed.
 
 #### Solution
-
-The library is working as expected.  
-The parameter `key` set in the request has the correct value `uploads/my_file.txt`.
+ 
+The parameter `key` set in the request has the correct value `uploads/my_file.txt`.  
 When `withKey("uploads/my_file.txt")` is used, the value of the parameter `file` or the name of the file being uploaded 
-is not considered by AWS. What matter is that the value of the parameter `key` and that is how the file will be named in S3.  
+is not considered by AWS.What matter is that the value of the parameter `key` and that is how the file will be named in S3.    
 Note that the file name would matter if `startWith()` and `{filename}` would have been used in `PostParam` and in the http 
 client request respectively.
-
-## AWS erros and solutions
-
-```aidl
-The provided token is malformed or otherwise invalid.
-```
-or
-```aidl
-The AWS Access Key Id you provided does not exist in our records
-```
 
 ## Goals
 
@@ -281,13 +243,9 @@ The AWS Access Key Id you provided does not exist in our records
 - Save time preventing the user having to dive into the AWS documentation do understand how to use the feature.
 - Provide friendly intuitive methods for specifying conditions and for generating the Pre Signed Post.
 
-### Contributing
-
 # To be done
-- which libraries include with api and impl?
-- what should be transient and what not
-- Make a test usiing java 7 or 6 to see what happens
-- should we include regions as transitive?
+- Use credentials defined in my computer instead of env variables
+- Explain point above in the read.me
 - Remove getAmazonCredentialsProvider
 - Add Sources
 - Also is necessary to remove the @Disabled annotation from the test zzz
@@ -324,7 +282,18 @@ The AWS Access Key Id you provided does not exist in our records
 - Add id to pre signed post generation to get meaningfull loggings, userId, etc
 - Have one more look in the logs, Input validation failures e.g. protocol violations, unacceptable encodings, invalid parameter names and values
 - how to make your library to be found by searches on google.
+- Regenerate any access key, password, token, just to make sure.
 
+## Contributing
 
+## Reference documents
 
+- Post Policy - https://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-HTTPPOSTConstructPolicy.html
+- https://docs.aws.amazon.com/AmazonS3/latest/API/RESTObjectPOST.html
 
+- Environment Variables necessary to run all integration tests
+```
+AWS_SESSION_TOKEN=value;AWS_REGION=eu-central-1;AWS_KEY=value;AWS_SECRET=value;AWS_KMS_S3_KEY=arn:aws:kms:eu-central-1:xxxxxxxxxxxx:key/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx;AWS_SESSION_SECRET=value;AWS_SESSION_KEY=ASIA...;AWS_BUCKET=muBucket;AWS_WRONG_REGION=eu-central-2
+```
+Add info from this page
+https://docs.aws.amazon.com/general/latest/gr/signature-version-4.html

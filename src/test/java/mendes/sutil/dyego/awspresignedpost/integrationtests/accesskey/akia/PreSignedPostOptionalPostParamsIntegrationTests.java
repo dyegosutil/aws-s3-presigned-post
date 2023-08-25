@@ -1,10 +1,11 @@
-package mendes.sutil.dyego.awspresignedpost.integrationtests;
+package mendes.sutil.dyego.awspresignedpost.integrationtests.accesskey.akia;
 
-import mendes.sutil.dyego.awspresignedpost.presigned.PreSignedPost;
+import mendes.sutil.dyego.awspresignedpost.integrationtests.accesskey.IntegrationTests;
 import mendes.sutil.dyego.awspresignedpost.postparams.PostParams;
+import mendes.sutil.dyego.awspresignedpost.presigned.PreSignedPost;
 import mendes.sutil.dyego.awspresignedpost.signer.S3PostSigner;
 import okhttp3.Request;
-import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -21,22 +22,24 @@ import java.util.Base64;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import static mendes.sutil.dyego.awspresignedpost.TestUtils.getAmazonCredentialsProvider;
 import static mendes.sutil.dyego.awspresignedpost.postparams.PostParams.Builder.CannedAcl.PRIVATE;
 import static mendes.sutil.dyego.awspresignedpost.postparams.PostParams.Builder.StorageClass.STANDARD;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.params.provider.Arguments.of;
 
-@Disabled
-public class OptionalPostParamsIntegrationTests extends IntegrationTests {
+public class PreSignedPostOptionalPostParamsIntegrationTests extends IntegrationTests {
 
-    private static final Logger LOGGER =
-            LoggerFactory.getLogger(OptionalPostParamsIntegrationTests.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PreSignedPostOptionalPostParamsIntegrationTests.class);
+
+    @BeforeEach
+    void setup() {
+        environmentVariables.set("AWS_SESSION_TOKEN", null);
+    }
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("optionalPostParamsTestCases")
     void shouldTestUploadWithOptionalParams(String testDescription, PostParams postParams) {
-        PreSignedPost presignedPost = S3PostSigner.sign(postParams, getAmazonCredentialsProvider());
+        PreSignedPost presignedPost = S3PostSigner.sign(postParams);
         Request request =
                 createRequestFromConditions(presignedPost.getConditions(), presignedPost.getUrl());
         boolean result = postFileIntoS3(request);
@@ -51,7 +54,7 @@ public class OptionalPostParamsIntegrationTests extends IntegrationTests {
             Map<String, String> customizedUploadConditions,
             boolean expectedResult) {
         // Arrange
-        PreSignedPost presignedPost = S3PostSigner.sign(postParams, getAmazonCredentialsProvider());
+        PreSignedPost presignedPost = S3PostSigner.sign(postParams);
         Map<String, String> conditions = presignedPost.getConditions();
         conditions.putAll(customizedUploadConditions);
         Request request =

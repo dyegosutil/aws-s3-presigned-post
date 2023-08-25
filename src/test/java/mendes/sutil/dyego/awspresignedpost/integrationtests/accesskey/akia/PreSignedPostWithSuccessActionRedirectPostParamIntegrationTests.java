@@ -1,10 +1,11 @@
-package mendes.sutil.dyego.awspresignedpost.integrationtests;
+package mendes.sutil.dyego.awspresignedpost.integrationtests.accesskey.akia;
 
+import mendes.sutil.dyego.awspresignedpost.integrationtests.accesskey.IntegrationTests;
 import mendes.sutil.dyego.awspresignedpost.postparams.PostParams;
 import mendes.sutil.dyego.awspresignedpost.presigned.PreSignedPost;
 import mendes.sutil.dyego.awspresignedpost.signer.S3PostSigner;
 import okhttp3.Request;
-import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -12,19 +13,22 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import static mendes.sutil.dyego.awspresignedpost.TestUtils.getAmazonCredentialsProvider;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.params.provider.Arguments.of;
 
-@Disabled
-public class WithSuccessActionRedirectPostParamIntegrationTests extends IntegrationTests {
+public class PreSignedPostWithSuccessActionRedirectPostParamIntegrationTests extends IntegrationTests {
+
+    @BeforeEach
+    void setup() {
+        environmentVariables.set("AWS_SESSION_TOKEN", null);
+    }
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("getRedirectUploadConditionsTestCases")
     void shouldTestUploadUsingRedirectCondition(
             String testDescription, PostParams postParams, String redirectAwsConditionName) {
         // Act
-        PreSignedPost presignedPost = S3PostSigner.sign(postParams, getAmazonCredentialsProvider());
+        PreSignedPost presignedPost = S3PostSigner.sign(postParams);
 
         Map<String, String> conditions = presignedPost.getConditions();
         Request request = createRequestFromConditions(conditions, presignedPost.getUrl());
@@ -48,7 +52,7 @@ public class WithSuccessActionRedirectPostParamIntegrationTests extends Integrat
             Map<String, String> formDataParts,
             String redirectAwsConditionName) {
         // Arrange
-        PreSignedPost presignedPost = S3PostSigner.sign(postParams, getAmazonCredentialsProvider());
+        PreSignedPost presignedPost = S3PostSigner.sign(postParams);
         Map<String, String> conditions = presignedPost.getConditions();
         conditions.putAll(formDataParts);
         Request request = createRequestFromConditions(conditions, presignedPost.getUrl());

@@ -1,10 +1,10 @@
 package mendes.sutil.dyego.awspresignedpost.presigned;
 
-public class PresignedFreeTextPost {
+public class PreSignedFreeTextPost {
     private final String xAmzSignature;
     private final String policy;
 
-    public PresignedFreeTextPost(final String signature, final String policy) {
+    public PreSignedFreeTextPost(final String signature, final String policy) {
         this.xAmzSignature = signature;
         this.policy = policy;
     }
