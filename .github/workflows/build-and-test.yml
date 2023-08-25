@@ -37,4 +37,4 @@ jobs:
       - name: Build
         run: ./gradlew -q :clean :build -x test --info
       - name: Test
-        run: ./gradlew :test
+        run: ./gradlew :test --debug
