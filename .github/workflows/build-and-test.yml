@@ -36,8 +36,11 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/gradle-wrapper.properties') }}
       - name: Build
         run: ./gradlew -q :clean :build -x test --info
-      - name: Test
-        run: ./gradlew :test --debug
-      - name: Print
+      - name: Print 1
+        run: |
+          echo ${#AWS_REGION}
+      - name: Print 2
         run: |
           echo ${#AWS_ACCESS_KEY_ID}
+      - name: Test
+        run: ./gradlew :test --debug
