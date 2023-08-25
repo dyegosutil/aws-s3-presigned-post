@@ -17,7 +17,8 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.params.provider.Arguments.of;
 
-public class PreSignedPostWithSuccessActionStatusPostParamIntegrationTests extends IntegrationTests {
+public class PreSignedPostWithSuccessActionStatusPostParamIntegrationTests
+        extends IntegrationTests {
 
     @BeforeEach
     void setup() {

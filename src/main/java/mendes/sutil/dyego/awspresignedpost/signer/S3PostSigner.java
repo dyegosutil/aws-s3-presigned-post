@@ -38,9 +38,9 @@ public final class S3PostSigner {
      * 4 specification</a> <br>
      * <br>
      * This method performs several validations to prevent the generation of a faulty or invalid pre
-     * signed post
-     * <br>
-     * If an AWS session credentials is found, it is added a {@link ConditionField#SECURITY_TOKEN} to the pre signed post
+     * signed post <br>
+     * If an AWS session credentials is found, it is added a {@link ConditionField#SECURITY_TOKEN}
+     * to the pre signed post
      *
      * @param postParams Contains the conditions to be used to generate the pre signed post
      * @return The object containing all the necessary params to be used to upload a file using pre
@@ -86,7 +86,8 @@ public final class S3PostSigner {
 
     private static AwsCredentials getAwsCredentials() {
         AwsCredentialsProvider defaultCredentialsProvider = DefaultCredentialsProvider.create();
-        return validateAwsCredentials(defaultCredentialsProvider); // TODO validation might not be needed
+        return validateAwsCredentials(
+                defaultCredentialsProvider); // TODO validation might not be needed
     }
 
     private static Map<ConditionField, Condition> getConditions(PostParams postParams) {
@@ -103,15 +104,15 @@ public final class S3PostSigner {
     }
 
     /**
-     * This method, compared to {@link #sign(PostParams)}, gives more
-     * liberty to the caller who can provide more freely the conditions to generate the pre signed
-     * post. Note that this method performs only basic validations hence its use is more error-prone
-     * because the caller should know the intricacies of the <a
+     * This method, compared to {@link #sign(PostParams)}, gives more liberty to the caller who can
+     * provide more freely the conditions to generate the pre signed post. Note that this method
+     * performs only basic validations hence its use is more error-prone because the caller should
+     * know the intricacies of the <a
      * href="https://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-HTTPPOSTConstructPolicy.html">Aws
      * S3 Post Policy</a>. This method might be useful though for using new features made available
-     * by AWS not yet added to {@link #sign(PostParams)} or for
-     * troubleshooting using raw data. For reference about how to use this method, check the
-     * correspondent integration tests in the source code. <br>
+     * by AWS not yet added to {@link #sign(PostParams)} or for troubleshooting using raw data. For
+     * reference about how to use this method, check the correspondent integration tests in the
+     * source code. <br>
      * <br>
      * Creates the Pre-Signed Post using the data provided in {@link FreeTextPostParams} First the
      * policy is created and then its base64 value is used to generate the signature using the <a

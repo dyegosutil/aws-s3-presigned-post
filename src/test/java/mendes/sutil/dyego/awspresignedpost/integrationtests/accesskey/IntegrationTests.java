@@ -32,8 +32,7 @@ public class IntegrationTests {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(IntegrationTests.class);
 
-    @SystemStub
-    protected EnvironmentVariables environmentVariables;
+    @SystemStub protected EnvironmentVariables environmentVariables;
 
     public static final Region REGION = Region.of(System.getenv("AWS_REGION"));
 
