@@ -19,20 +19,20 @@ import static mendes.sutil.dyego.awspresignedpost.TestUtils.getAmzDateFormatter;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.params.provider.Arguments.of;
 
-public class PreSignedFreeTextPostAkiaAccessKeyIntegrationTest extends PreSignedFreeTextPostCommonIntegrationTest {
+public class PreSignedFreeTextPostAkiaAccessKeyIntegrationTest
+        extends PreSignedFreeTextPostCommonIntegrationTest {
 
     private static final ZonedDateTime DATE = ZonedDateTime.now(Clock.systemUTC());
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("freeTextPostParamsTestCases")
-    void shouldTestFreeTextConditionSessionToken(String testDescription, Map<String, String> formDataParts) {
+    void shouldTestFreeTextConditionSessionToken(
+            String testDescription, Map<String, String> formDataParts) {
         assertThat(uploadToAws(formDataParts, getUrl())).isTrue();
     }
 
     private static Stream<Arguments> freeTextPostParamsTestCases() {
-        return Stream.of(
-                getSimpleUploadTestCase(),
-                getEncryptionWithCustomerKeyTestCase());
+        return Stream.of(getSimpleUploadTestCase(), getEncryptionWithCustomerKeyTestCase());
     }
 
     private static Arguments getEncryptionWithCustomerKeyTestCase() {

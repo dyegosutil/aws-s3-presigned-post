@@ -30,8 +30,7 @@ public class S3PostSignerTest {
     public static final String AWS_FAKE_SECRET = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY";
     public static final String AWS_FAKE_KEY = "AKIAIOSFODNN7EXAMPLE";
 
-    @SystemStub
-    private EnvironmentVariables environmentVariables;
+    @SystemStub private EnvironmentVariables environmentVariables;
 
     @Test
     void shouldReturnCorrectPreSignedPost() {
@@ -43,7 +42,8 @@ public class S3PostSignerTest {
 
         // Act
         PreSignedPost presignedPost =
-                S3PostSigner.sign(PostParams.builder(REGION, EXPIRATION_DATE, bucket, withAnyKey()).build());
+                S3PostSigner.sign(
+                        PostParams.builder(REGION, EXPIRATION_DATE, bucket, withAnyKey()).build());
 
         // Assert
         Map<String, String> actualConditions = presignedPost.getConditions();
@@ -109,20 +109,17 @@ public class S3PostSignerTest {
 
     @Test
     void shouldThrowSdkClientExceptionIfNoCredentialsForPreSignedPost() {
-        //Arrange
+        // Arrange
         setInvalidAwsCredentials();
 
         // Act & Assert
-        assertThatThrownBy(
-                        () ->
-                                S3PostSigner.sign(
-                                        createPostParamsWithKeyStartingWith()))
+        assertThatThrownBy(() -> S3PostSigner.sign(createPostParamsWithKeyStartingWith()))
                 .isInstanceOf(SdkClientException.class);
     }
 
     @Test
     void shouldThrowSdkClientExceptionIfNoCredentialsForFreeTextPreSignedPost() {
-        //Arrange
+        // Arrange
         setInvalidAwsCredentials();
         assertThatThrownBy(() -> S3PostSigner.sign(createFreeTextPostParams()))
                 .isInstanceOf(SdkClientException.class);

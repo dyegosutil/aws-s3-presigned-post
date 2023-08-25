@@ -29,7 +29,8 @@ import static org.junit.jupiter.params.provider.Arguments.of;
 
 public class PreSignedPostOptionalPostParamsIntegrationTests extends IntegrationTests {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(PreSignedPostOptionalPostParamsIntegrationTests.class);
+    private static final Logger LOGGER =
+            LoggerFactory.getLogger(PreSignedPostOptionalPostParamsIntegrationTests.class);
 
     @BeforeEach
     void setup() {

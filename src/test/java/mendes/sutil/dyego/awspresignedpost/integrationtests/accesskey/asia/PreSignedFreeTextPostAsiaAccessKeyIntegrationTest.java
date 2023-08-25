@@ -16,11 +16,12 @@ import static mendes.sutil.dyego.awspresignedpost.TestUtils.getAmzDateFormatter;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * To run this test the following environment variables must be set: AWS_ACCESS_KEY_ID (ASIA...), AWS_BUCKET,
- * AWS_REGION, AWS_SECRET_ACCESS_KEY and AWS_SESSION_TOKEN
+ * To run this test the following environment variables must be set: AWS_ACCESS_KEY_ID (ASIA...),
+ * AWS_BUCKET, AWS_REGION, AWS_SECRET_ACCESS_KEY and AWS_SESSION_TOKEN
  */
 @Disabled
-public class PreSignedFreeTextPostAsiaAccessKeyIntegrationTest extends PreSignedFreeTextPostCommonIntegrationTest {
+public class PreSignedFreeTextPostAsiaAccessKeyIntegrationTest
+        extends PreSignedFreeTextPostCommonIntegrationTest {
 
     @Test
     @DisplayName("Should upload file using free text post params and short term credentials")
@@ -36,8 +37,9 @@ public class PreSignedFreeTextPostAsiaAccessKeyIntegrationTest extends PreSigned
 
     private static Set<String[]> getConditionsForAsiaKey() {
         Set<String[]> conditions = getCommonConditions();
-        conditions.add(new String[]{"eq", "$x-amz-credential", getCredential()});
-        conditions.add(new String[]{"eq", "$x-amz-security-token", System.getenv("AWS_SESSION_TOKEN")});
+        conditions.add(new String[] {"eq", "$x-amz-credential", getCredential()});
+        conditions.add(
+                new String[] {"eq", "$x-amz-security-token", System.getenv("AWS_SESSION_TOKEN")});
         return conditions;
     }
 

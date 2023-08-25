@@ -14,8 +14,8 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * To run this test the following environment variables must be set: AWS_ACCESS_KEY_ID (ASIA...), AWS_BUCKET,
- * AWS_REGION, AWS_SECRET_ACCESS_KEY and AWS_SESSION_TOKEN
+ * To run this test the following environment variables must be set: AWS_ACCESS_KEY_ID (ASIA...),
+ * AWS_BUCKET, AWS_REGION, AWS_SECRET_ACCESS_KEY and AWS_SESSION_TOKEN
  */
 @Disabled
 public class PreSignedPostAsiaAcessKeyIntegrationTests extends IntegrationTests {
@@ -46,8 +46,7 @@ public class PreSignedPostAsiaAcessKeyIntegrationTests extends IntegrationTests 
     void shouldNotUploadFileWithWrongSessionToken() {
         // Arrange
         PostParams postParams = createDefaultPostParamBuilder().build();
-        PreSignedPost presignedPost =
-                S3PostSigner.sign(postParams);
+        PreSignedPost presignedPost = S3PostSigner.sign(postParams);
 
         Map<String, String> conditions = presignedPost.getConditions();
         conditions.put("x-amz-security-token", "thisTokenIsWrong");

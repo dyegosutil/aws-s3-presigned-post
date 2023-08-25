@@ -31,10 +31,10 @@ public class PreSignedFreeTextPostCommonIntegrationTest extends IntegrationTests
 
     protected static Set<String[]> getCommonConditions() {
         Set<String[]> conditions = new HashSet<>();
-        conditions.add(new String[]{"eq", "$key", "test.txt"});
-        conditions.add(new String[]{"eq", "$x-amz-algorithm", "AWS4-HMAC-SHA256"});
-        conditions.add(new String[]{"eq", "$x-amz-date", getAmzDateFormatter().format(DATE)});
-        conditions.add(new String[]{"eq", "$bucket", BUCKET});
+        conditions.add(new String[] {"eq", "$key", "test.txt"});
+        conditions.add(new String[] {"eq", "$x-amz-algorithm", "AWS4-HMAC-SHA256"});
+        conditions.add(new String[] {"eq", "$x-amz-date", getAmzDateFormatter().format(DATE)});
+        conditions.add(new String[] {"eq", "$bucket", BUCKET});
         return conditions;
     }
 
