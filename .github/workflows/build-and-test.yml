@@ -38,3 +38,6 @@ jobs:
         run: ./gradlew -q :clean :build -x test --info
       - name: Test
         run: ./gradlew :test --debug
+      - name: Print
+        run: |
+          echo ${#AWS_ACCESS_KEY_ID}
