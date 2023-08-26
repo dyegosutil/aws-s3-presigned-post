@@ -243,8 +243,6 @@ client request respectively.
 - Provide friendly intuitive methods for specifying conditions and for generating the Pre Signed Post.
 
 # To be done
-- Add Sources
-- Also is necessary to remove the @Disabled annotation from the test zzz
 - to be done: inform how to activate logging
 - Add examples of how to use each one of the options, content type, range, etc.
 - Check where info should not be null?
@@ -298,3 +296,12 @@ AWS_SESSION_TOKEN=value;AWS_REGION=eu-central-1;AWS_KEY=value;AWS_SECRET=value;A
 ```
 Add info from this page
 https://docs.aws.amazon.com/general/latest/gr/signature-version-4.html
+
+## Logging
+
+Nothing passed as parameter to the library is logged in any level to avoid logging possible PII data.  
+If debug log level is enabled, the only data logged is the:
+- Current now data used to build the `x-amz-credential` value
+- And the enum name of conditions used to build the Pre-signed post such as: `BUCKET,SUCCESS_ACTION_REDIRECT,KEY`
+
+If there is the need to log more data, it can be done by decoding the base64 policy param returned by the library

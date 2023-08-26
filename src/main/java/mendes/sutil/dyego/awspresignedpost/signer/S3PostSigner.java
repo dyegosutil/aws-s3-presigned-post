@@ -63,7 +63,6 @@ public final class S3PostSigner {
                         postParams.getAmzExpirationDate().formatForPolicy(),
                         buildConditions(conditions, amzDate, credentials));
         final String policyJson = new Gson().toJson(policy);
-        LOGGER.debug("PolicyJson: {}", policyJson);
         final String policyB64 =
                 Base64.getEncoder().encodeToString(policyJson.getBytes(StandardCharsets.UTF_8));
         final String signature =
