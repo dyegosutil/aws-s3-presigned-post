@@ -2,8 +2,8 @@ package mendes.sutil.dyego.awspresignedpost.signer;
 
 import mendes.sutil.dyego.awspresignedpost.postparams.FreeTextPostParams;
 import mendes.sutil.dyego.awspresignedpost.postparams.PostParams;
-import mendes.sutil.dyego.awspresignedpost.presigned.PreSignedPost;
 import mendes.sutil.dyego.awspresignedpost.presigned.PreSignedFreeTextPost;
+import mendes.sutil.dyego.awspresignedpost.presigned.PreSignedPost;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import software.amazon.awssdk.core.exception.SdkClientException;
@@ -71,6 +71,9 @@ public class S3PostSignerTest {
     @Test
     void shouldReturnCorrectFreeTextPreSignedPost() {
         // Arrange
+        environmentVariables.set("AWS_ACCESS_KEY_ID", AWS_FAKE_KEY);
+        environmentVariables.set("AWS_SECRET_ACCESS_KEY", AWS_FAKE_SECRET);
+        environmentVariables.set("AWS_SESSION_TOKEN", "fakeSessionToken");
         ZonedDateTime date = ZonedDateTime.of(2022, 1, 1, 1, 1, 1, 1, ZoneOffset.UTC);
         ZonedDateTime expirationDate = Instant.parse("2900-01-01T10:15:30Z").atZone(ZoneOffset.UTC);
         Region region = Region.EU_CENTRAL_1;

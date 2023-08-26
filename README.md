@@ -243,9 +243,6 @@ client request respectively.
 - Provide friendly intuitive methods for specifying conditions and for generating the Pre Signed Post.
 
 # To be done
-- Use credentials defined in my computer instead of env variables
-- Explain point above in the read.me
-- Remove getAmazonCredentialsProvider
 - Add Sources
 - Also is necessary to remove the @Disabled annotation from the test zzz
 - to be done: inform how to activate logging
@@ -282,6 +279,11 @@ client request respectively.
 - Have one more look in the logs, Input validation failures e.g. protocol violations, unacceptable encodings, invalid parameter names and values
 - how to make your library to be found by searches on google.
 - Regenerate any access key, password, token, just to make sure.
+
+Trivial 
+
+- Use credentials defined in my computer instead of env variables
+- Explain point above in the read.me
 
 ## Contributing
 
