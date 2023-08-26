@@ -1,7 +1,7 @@
 val jupiterVersion = "5.10.0"
 
 group = "mendes.sutil.dyego"
-version = "1.2-SNAPSHOT"
+version = "0.1.0-alpha"
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 
 plugins {
@@ -36,6 +36,10 @@ dependencies {
 
 tasks.getByName<Test>("test") {
     useJUnitPlatform()
+}
+
+java {
+    withSourcesJar()
 }
 
 publishing {
