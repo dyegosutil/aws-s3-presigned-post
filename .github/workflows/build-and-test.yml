@@ -39,8 +39,18 @@ jobs:
       - name: Print 1
         run: |
           echo "${AWS_REGION}"
+        env:
+          AWS_REGION: ${{ secrets.AWS_REGION }}
       - name: Print 2
         run: |
           echo "${AWS_ACCESS_KEY_ID}"
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       - name: Test
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          AWS_BUCKET: ${{ secrets.AWS_BUCKET }}
+          AWS_KMS_S3_KEY: ${{ secrets.AWS_KMS_S3_KEY }}
         run: ./gradlew :test --debug
