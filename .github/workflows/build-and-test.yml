@@ -53,4 +53,4 @@ jobs:
           AWS_REGION: ${{ secrets.AWS_REGION }}
           AWS_BUCKET: ${{ secrets.AWS_BUCKET }}
           AWS_KMS_S3_KEY: ${{ secrets.AWS_KMS_S3_KEY }}
-        run: ./gradlew :test --info
+        run: ./gradlew :test
