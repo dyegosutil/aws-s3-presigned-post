@@ -38,9 +38,9 @@ jobs:
         run: ./gradlew -q :clean :build -x test --info
       - name: Print 1
         run: |
-          echo ${#AWS_REGION}
+          echo ${AWS_REGION}
       - name: Print 2
         run: |
-          echo ${#AWS_ACCESS_KEY_ID}
+          echo ${AWS_ACCESS_KEY_ID}
       - name: Test
         run: ./gradlew :test --debug
