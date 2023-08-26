@@ -21,11 +21,6 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: 17
-#          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-#          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#          AWS_REGION: ${{ secrets.AWS_REGION }}
-#          AWS_BUCKET: ${{ secrets.AWS_BUCKET }}
-#          AWS_KMS_S3_KEY: ${{ secrets.AWS_KMS_S3_KEY }}
       - uses: actions/cache@v3
         with:
           path: ~/.gradle/caches
@@ -43,4 +38,4 @@ jobs:
           AWS_REGION: ${{ secrets.AWS_REGION }}
           AWS_BUCKET: ${{ secrets.AWS_BUCKET }}
           AWS_KMS_S3_KEY: ${{ secrets.AWS_KMS_S3_KEY }}
-        run: ./gradlew :test --debug
+        run: ./gradlew :test
