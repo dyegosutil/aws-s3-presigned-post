@@ -1,10 +1,14 @@
-package mendes.sutil.dyego.awspresignedpost.integrationtests;
+package mendes.sutil.dyego.awspresignedpost.integrationtests.accesskey;
 
 import mendes.sutil.dyego.awspresignedpost.postparams.PostParams;
 import okhttp3.*;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.regions.Region;
+import uk.org.webcompere.systemstubs.environment.EnvironmentVariables;
+import uk.org.webcompere.systemstubs.jupiter.SystemStub;
+import uk.org.webcompere.systemstubs.jupiter.SystemStubsExtension;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -23,18 +27,22 @@ import java.util.Objects;
 import static mendes.sutil.dyego.awspresignedpost.conditions.KeyConditionUtil.withAnyKey;
 import static mendes.sutil.dyego.awspresignedpost.conditions.KeyConditionUtil.withKey;
 
+@ExtendWith(SystemStubsExtension.class)
 public class IntegrationTests {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(IntegrationTests.class);
+
+    @SystemStub protected EnvironmentVariables environmentVariables;
+
     public static final Region REGION = Region.of(System.getenv("AWS_REGION"));
 
     protected static final ZonedDateTime EXPIRATION_DATE =
-            Instant.now(Clock.systemUTC()).plus(1, ChronoUnit.MINUTES).atZone(ZoneOffset.UTC);
+            Instant.now(Clock.systemUTC()).plus(3, ChronoUnit.MINUTES).atZone(ZoneOffset.UTC);
 
     protected static final String BUCKET = System.getenv("AWS_BUCKET");
     protected static final String encryptionKey256bits = "PcI54Y7WIu8aU1fSoEN&34mS#$*S21%3";
 
-    boolean postFileIntoS3(Request request) {
+    protected boolean postFileIntoS3(Request request) {
         try (Response response = new OkHttpClient().newCall(request).execute()) {
             return checkSuccessAndPrintResponseIfError(response);
         } catch (Exception e) {
@@ -43,7 +51,7 @@ public class IntegrationTests {
         }
     }
 
-    String postFileIntoS3ReturningRedirect(Request request) {
+    protected String postFileIntoS3ReturningRedirect(Request request) {
         try (Response response = new OkHttpClient().newCall(request).execute()) {
             HttpUrl httpUrl = response.request().url();
             checkSuccessAndPrintResponseIfError(response);
@@ -54,7 +62,7 @@ public class IntegrationTests {
         }
     }
 
-    int postFileIntoS3ReturningSuccessActionStatus(Request request) {
+    protected int postFileIntoS3ReturningSuccessActionStatus(Request request) {
         try (Response response = new OkHttpClient().newCall(request).execute()) {
             checkSuccessAndPrintResponseIfError(response);
             return response.code();

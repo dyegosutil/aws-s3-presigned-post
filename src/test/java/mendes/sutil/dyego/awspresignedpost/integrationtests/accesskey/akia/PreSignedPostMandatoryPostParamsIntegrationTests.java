@@ -1,13 +1,14 @@
-package mendes.sutil.dyego.awspresignedpost.integrationtests;
+package mendes.sutil.dyego.awspresignedpost.integrationtests.accesskey.akia;
 
-import mendes.sutil.dyego.awspresignedpost.signer.S3PostSigner;
 import mendes.sutil.dyego.awspresignedpost.conditions.key.ExactKeyCondition;
 import mendes.sutil.dyego.awspresignedpost.conditions.key.KeyCondition;
 import mendes.sutil.dyego.awspresignedpost.conditions.key.KeyStartingWithCondition;
+import mendes.sutil.dyego.awspresignedpost.integrationtests.accesskey.IntegrationTests;
 import mendes.sutil.dyego.awspresignedpost.postparams.PostParams;
 import mendes.sutil.dyego.awspresignedpost.presigned.PreSignedPost;
+import mendes.sutil.dyego.awspresignedpost.signer.S3PostSigner;
 import okhttp3.Request;
-import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -18,20 +19,23 @@ import java.time.ZonedDateTime;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import static mendes.sutil.dyego.awspresignedpost.TestUtils.getAmazonCredentialsProvider;
 import static mendes.sutil.dyego.awspresignedpost.conditions.KeyConditionUtil.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.params.provider.Arguments.of;
 
-@Disabled
-public class MandatoryPostParamsIntegrationTests extends IntegrationTests {
+public class PreSignedPostMandatoryPostParamsIntegrationTests extends IntegrationTests {
+
+    @BeforeEach
+    void setup() {
+        environmentVariables.set("AWS_SESSION_TOKEN", null);
+    }
 
     @Test
     void shouldUploadFileWithMandatoryParams() {
         // Arrange
         PostParams postParams =
                 PostParams.builder(REGION, EXPIRATION_DATE, BUCKET, withKey("test.txt")).build();
-        PreSignedPost presignedPost = S3PostSigner.sign(postParams, getAmazonCredentialsProvider());
+        PreSignedPost presignedPost = S3PostSigner.sign(postParams);
         Map<String, String> conditions = presignedPost.getConditions();
         Request request = createRequestFromConditions(conditions, presignedPost.getUrl());
 
@@ -59,7 +63,7 @@ public class MandatoryPostParamsIntegrationTests extends IntegrationTests {
             boolean expectedResult) {
         // Arrange
         PostParams postParams = createPostParams(region, expirationDate, bucket, keyCondition);
-        PreSignedPost presignedPost = S3PostSigner.sign(postParams, getAmazonCredentialsProvider());
+        PreSignedPost presignedPost = S3PostSigner.sign(postParams);
         Map<String, String> conditions = presignedPost.getConditions();
         conditions.putAll(customizedUploadConditions);
 
@@ -138,7 +142,7 @@ public class MandatoryPostParamsIntegrationTests extends IntegrationTests {
                 of(
                         "Should fail while uploading file to S3 using a different region then the"
                                 + " one configured in the policy",
-                        Region.of(System.getenv("AWS_WRONG_REGION")),
+                        Region.IL_CENTRAL_1,
                         EXPIRATION_DATE,
                         BUCKET,
                         withKey("test.txt"),

@@ -1,5 +1,6 @@
-package mendes.sutil.dyego.awspresignedpost.integrationtests;
+package mendes.sutil.dyego.awspresignedpost.integrationtests.accesskey.asia;
 
+import mendes.sutil.dyego.awspresignedpost.integrationtests.accesskey.IntegrationTests;
 import mendes.sutil.dyego.awspresignedpost.presigned.PreSignedPost;
 import mendes.sutil.dyego.awspresignedpost.postparams.PostParams;
 import mendes.sutil.dyego.awspresignedpost.signer.S3PostSigner;
@@ -10,11 +11,14 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 
-import static mendes.sutil.dyego.awspresignedpost.TestUtils.getAmazonCredentialsProviderWithAwsSessionCredentials;
 import static org.assertj.core.api.Assertions.assertThat;
 
+/**
+ * To run this test the following environment variables must be set: AWS_ACCESS_KEY_ID (ASIA...),
+ * AWS_BUCKET, AWS_REGION, AWS_SECRET_ACCESS_KEY and AWS_SESSION_TOKEN
+ */
 @Disabled
-public class SessionTokenIntegrationTests extends IntegrationTests {
+public class PreSignedPostAsiaAcessKeyIntegrationTests extends IntegrationTests {
 
     @Test
     @DisplayName(
@@ -23,9 +27,7 @@ public class SessionTokenIntegrationTests extends IntegrationTests {
     void shouldUploadFileWithSessionToken() {
         // Arrange
         PostParams postParams = createDefaultPostParamBuilderSpecifyingKey().build();
-        PreSignedPost presignedPost =
-                S3PostSigner.sign(
-                        postParams, getAmazonCredentialsProviderWithAwsSessionCredentials());
+        PreSignedPost presignedPost = S3PostSigner.sign(postParams);
 
         Map<String, String> conditions = presignedPost.getConditions();
         Request request = createRequestFromConditions(conditions, presignedPost.getUrl());
@@ -44,9 +46,7 @@ public class SessionTokenIntegrationTests extends IntegrationTests {
     void shouldNotUploadFileWithWrongSessionToken() {
         // Arrange
         PostParams postParams = createDefaultPostParamBuilder().build();
-        PreSignedPost presignedPost =
-                S3PostSigner.sign(
-                        postParams, getAmazonCredentialsProviderWithAwsSessionCredentials());
+        PreSignedPost presignedPost = S3PostSigner.sign(postParams);
 
         Map<String, String> conditions = presignedPost.getConditions();
         conditions.put("x-amz-security-token", "thisTokenIsWrong");
