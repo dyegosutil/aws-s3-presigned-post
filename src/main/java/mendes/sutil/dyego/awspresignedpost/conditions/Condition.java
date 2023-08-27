@@ -15,11 +15,7 @@ public abstract class Condition {
         return conditionField;
     }
 
-    /**
-     * Generates this condition's correspondent String array to be added to the policy
-     *
-     * @return
-     */
+    /** Generates this condition's correspondent String array to be added to the policy */
     public abstract String[] asAwsPolicyCondition();
 
     @Override

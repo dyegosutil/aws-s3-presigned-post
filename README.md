@@ -16,6 +16,13 @@ to be used for the upload, including policy and the signature generated using th
 |    x-amz-date    |                         20221009T212242Z                         |
 |      policy      |       ```{"expiration":"2022-10-09T21:32:42.682Z" ...} ```       |
 
+## Goals
+
+- Encapsulate complexity of validations as well as compatibility of conditions, policy and signature generation.
+- Prevent generation of faulty Pre Signed Post data
+- Avoiding the library user having to dive into the AWS documentation do understand how to use the feature.
+- Provide friendly intuitive methods for specifying conditions and for generating the Pre Signed Post.
+
 ## Motivation
 
 The reason for creating this library is that AWS Java SDK 2 does not support the generation of Pre Signed Post. 
@@ -94,6 +101,26 @@ try (Response response = new OkHttpClient().newCall(request).execute()) {
     }
 }
 ```
+That is it. The file should be in S3 now.
+
+## Additional code snippets:
+
+- Allow the uploader to use the name of the file being upload as S3 object Key:
+```java
+PostParams.builder(REGION, EXPIRATION_DATE, BUCKET, withAnyKey());
+// Additionally, when passing the last parameter `file` to the http client, use the value `${filename}`
+```
+
+- Allow upload only if the object key is `test.txt`(the http param, not the file name) and the file size is between
+  7 and 20 bytes
+```java
+PostParams
+        .builder(REGION, EXPIRATION_DATE, BUCKET, withKey("test.txt"))
+        .withContentLengthRange(7, 20)
+        .build())
+```
+For more examples look into the `integrationtests` package inside `src/test`
+
 ## Features
 
 - `PreSignedPost` creation: Provides a guided approach with a builder to create a non-error prone `PreSignedPost`
@@ -136,23 +163,8 @@ check the class `PostParams`:
   - Allows specifying the base64 encoded encryption key to be used for this file upload
   - Allows specifying the base64 encoded 128-bit MD5 digest of the encryption key
 
-## How to
-
-- Use the name of the file being upload as S3 object Key
-```java
-
-```
-- Allow any S3 object key name
-```java
-
-```
-- Allow the upload only of requests on which the S3 object key name start with xxxxxxx
-```java
-
-```
-
-
 ## Notes
+- If an `ASIA` aws access key id is found, the library will return a `x-amz-security-token`
 - If you want to allow the user upload any key use ```withAnyKey()``` and submit as key name ```${filename}```
 - Generating S3 post data for uploading files into public access s3 buckets is not included in this library since it is pretty straight forward.
 That is, the only parameters necessary are the ```key``` and ```file```.
@@ -161,8 +173,9 @@ That is, the only parameters necessary are the ```key``` and ```file```.
 even though it is in the policy. Note that this is the only exception, all other valuedConditions should be passed to aws 
 otherwise it will return an error
 
-- The {filename} variable does not work for eq. Only for startsWith.
-The reason is that in the policy we cannot simply specify "". It has to have a value. Otherwise, the signature check will fail. Amazon will check in the end name_of_user_file == "" And the signature will fail. Hence the value has to be passed by the one calling the lib.
+- The `${filename}` variable does not work for `with(param)` conditions. Only for `with(param)StartingWith` 
+and `withAny(param)`. The reason is that in the policy it cannot be simply specified "". It has to have a value.
+Otherwise, the signature check will fail. Amazon will check in the end name_of_user_file == "" And the signature will fail. Hence the value has to be passed by the one calling the lib.
 For the startWith, it is okay since you will specify at list on character in front of the user file name.
 
 # Features to be added
@@ -172,7 +185,7 @@ In next releases, the method ```withAny*``` will be made available such as  ```w
 ## Running locally
 
 The Integration Tests use AWS_KMS_S3_KEY to test the server-serid encryption.
-The best way to configure it is to run the IT xyz which will create a encription key
+The best way to configure it is to run the IT xyz which will create an encryption key
 it is does exist yet for s3. Go to KMS in AWS and copy the key from there. It should
 be in the following format: "arn:aws:kms:region:acct-id:key/key-id"
 
@@ -235,27 +248,7 @@ is not considered by AWS.What matter is that the value of the parameter `key` an
 Note that the file name would matter if `startWith()` and `{filename}` would have been used in `PostParam` and in the http 
 client request respectively.
 
-## Goals
-
-- Encapsulate complexity of validations as well as compatibility of conditions, policy and signature generation.
-- Prevent generation of faulty Pre Signed Post data
-- Save time preventing the user having to dive into the AWS documentation do understand how to use the feature.
-- Provide friendly intuitive methods for specifying conditions and for generating the Pre Signed Post.
-
 # To be done
-- Add Sources
-- Also is necessary to remove the @Disabled annotation from the test zzz
-- to be done: inform how to activate logging
-- Add examples of how to use each one of the options, content type, range, etc.
-- Check where info should not be null?
-- does not provide support for amaazon devpay
-- explain that if it is being used temporary credentials, it will be added automatically.
-- Add tags validations:
-  https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-tagging.html
-- Check if all acccess modifiers are all right, private, protected, etc.
-- Please Report any limitations that you found so that I can add validations.
-- Think about removing jaxb
-- Check about license, and legal matters=
 - Check what does it mean to develop open source, what to expect, what is good,
 - what is bad, what is expected from me, what is not expected.
 - List capabilities of the lib/pre-signed post
@@ -279,13 +272,20 @@ client request respectively.
 - Have one more look in the logs, Input validation failures e.g. protocol violations, unacceptable encodings, invalid parameter names and values
 - how to make your library to be found by searches on google.
 - Regenerate any access key, password, token, just to make sure.
+- Fix packaging using github one
+- Fill about section of git: No description, website, or topics provided.
+- how to add a change long in the release
+
 
 Trivial 
 
 - Use credentials defined in my computer instead of env variables
 - Explain point above in the read.me
+- Add badges
 
 ## Contributing
+
+Feel free to suggest changes, report bugs or give feedback by creating an Issue.
 
 ## Reference documents
 
@@ -298,3 +298,14 @@ AWS_SESSION_TOKEN=value;AWS_REGION=eu-central-1;AWS_KEY=value;AWS_SECRET=value;A
 ```
 Add info from this page
 https://docs.aws.amazon.com/general/latest/gr/signature-version-4.html
+
+## Logging
+
+Nothing passed as parameter to the library is logged in any level to avoid logging possible PII data.  
+If debug log level is enabled, the only data logged is the:
+- Current now data used to build the `x-amz-credential` value
+- And the enum name of conditions used to build the Pre-signed post such as: `BUCKET,SUCCESS_ACTION_REDIRECT,KEY`
+
+If there is the need to log more data, it can be done by decoding the base64 policy param returned by the library
+
+## License
