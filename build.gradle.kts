@@ -1,6 +1,6 @@
 val jupiterVersion = "5.10.0"
 
-group = "mendes.sutil.dyego"
+group = "io.github.dyegosutil"
 version = "0.1.0-alpha"
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 

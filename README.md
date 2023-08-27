@@ -41,7 +41,7 @@ and many others.
 [//]: # (TODO Correct version of library to automatic and correct name and version)
 Gradle Kotlin:
 ```kotlin
-implementation("mendes.sutil.dyego:aws-s3-presigned-post:1.0-SNAPSHOT")
+implementation("io.github.dyegosutil:aws-s3-presigned-post:0.1.0")
 ```
 
 ### 2. Create the `PreSignedPost`
@@ -194,9 +194,9 @@ Expalin that this is the return when you set 201 as response
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <PostResponse>
-    <Location>https://dyegosutil.s3.eu-central-1.amazonaws.com/pira.txt</Location>
+    <Location>https://dyegosutil.s3.eu-central-1.amazonaws.com/my-file.txt</Location>
     <Bucket>dyegosutil</Bucket>
-    <Key>pira.txt</Key>
+    <Key>my-file.txt</Key>
     <ETag>"d41d8cd98f00b204e9800998ecf8427e"</ETag>
 </PostResponse>
 ```
@@ -249,6 +249,7 @@ client request respectively.
 - general review of all files
 - java 8 was used for bigger compatibility
 - explain how the credentials are obtained and link the aws doc
+- create a test bucket that is not called dyegosutil
 
 
 Trivial 
