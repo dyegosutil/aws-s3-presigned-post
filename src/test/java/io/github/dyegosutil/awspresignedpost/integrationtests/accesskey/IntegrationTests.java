@@ -37,7 +37,7 @@ public class IntegrationTests {
     public static final Region REGION = Region.of(System.getenv("AWS_REGION"));
 
     protected static final ZonedDateTime EXPIRATION_DATE =
-            Instant.now(Clock.systemUTC()).plus(3, ChronoUnit.MINUTES).atZone(ZoneOffset.UTC);
+            Instant.now(Clock.systemUTC()).plus(10, ChronoUnit.MINUTES).atZone(ZoneOffset.UTC);
 
     protected static final String BUCKET = System.getenv("AWS_BUCKET");
     protected static final String encryptionKey256bits = "PcI54Y7WIu8aU1fSoEN&34mS#$*S21%3";

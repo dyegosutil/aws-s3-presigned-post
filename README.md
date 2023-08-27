@@ -239,8 +239,6 @@ client request respectively.
 
 # To be done
 
-- Regenerate any access key, password, token, just to make sure.
-- Fix packaging using github one
 - Fill about section of git: No description, website, or topics provided.
 - how to add a change long in the release
 - rewrite the running locally part
@@ -252,6 +250,7 @@ client request respectively.
 - create a test bucket that is not called dyegosutil
 - - Fill about section of git: No description, website, or topics provided.
 - how to add a change long in the release
+- Regenerate any access key, password, token, just to make sure.
 
 
 Trivial 
