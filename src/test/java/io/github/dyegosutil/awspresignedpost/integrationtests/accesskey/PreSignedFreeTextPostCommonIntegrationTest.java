@@ -1,6 +1,7 @@
 package io.github.dyegosutil.awspresignedpost.integrationtests.accesskey;
 
-import io.github.dyegosutil.awspresignedpost.TestUtils;import io.github.dyegosutil.awspresignedpost.postparams.FreeTextPostParams;
+import io.github.dyegosutil.awspresignedpost.TestUtils;
+import io.github.dyegosutil.awspresignedpost.postparams.FreeTextPostParams;
 import io.github.dyegosutil.awspresignedpost.presigned.PreSignedFreeTextPost;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -17,7 +18,8 @@ import java.util.Set;
 public class PreSignedFreeTextPostCommonIntegrationTest extends IntegrationTests {
 
     protected static final ZonedDateTime DATE = ZonedDateTime.now(Clock.systemUTC());
-    private static final DateTimeFormatter YYYYMMDD_DATE_FORMATTER = TestUtils.getYyyyMmDdDateFormatter();
+    private static final DateTimeFormatter YYYYMMDD_DATE_FORMATTER =
+            TestUtils.getYyyyMmDdDateFormatter();
 
     protected static Map<String, String> getFormData(
             PreSignedFreeTextPost preSignedPost, Map<String, String> formDataParts) {
@@ -30,7 +32,8 @@ public class PreSignedFreeTextPostCommonIntegrationTest extends IntegrationTests
         Set<String[]> conditions = new HashSet<>();
         conditions.add(new String[] {"eq", "$key", "test.txt"});
         conditions.add(new String[] {"eq", "$x-amz-algorithm", "AWS4-HMAC-SHA256"});
-        conditions.add(new String[] {"eq", "$x-amz-date", TestUtils.getAmzDateFormatter().format(DATE)});
+        conditions.add(
+                new String[] {"eq", "$x-amz-date", TestUtils.getAmzDateFormatter().format(DATE)});
         conditions.add(new String[] {"eq", "$bucket", BUCKET});
         return conditions;
     }

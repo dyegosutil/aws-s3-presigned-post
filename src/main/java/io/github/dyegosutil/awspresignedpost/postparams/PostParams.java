@@ -159,7 +159,8 @@ public class PostParams {
             this.region = region;
             this.amzExpirationDate = expirationDate;
             this.conditions.put(ConditionField.KEY, keyCondition);
-            this.conditions.put(ConditionField.BUCKET, new MatchCondition(ConditionField.BUCKET, EQ, bucket));
+            this.conditions.put(
+                    ConditionField.BUCKET, new MatchCondition(ConditionField.BUCKET, EQ, bucket));
             this.bucket = bucket;
         }
 
@@ -254,7 +255,8 @@ public class PostParams {
         }
 
         private Builder withTaggingCondition(String value) {
-            this.conditions.put(ConditionField.TAGGING, new MatchCondition(ConditionField.TAGGING, EQ, value));
+            this.conditions.put(
+                    ConditionField.TAGGING, new MatchCondition(ConditionField.TAGGING, EQ, value));
             return this;
         }
 
@@ -278,7 +280,12 @@ public class PostParams {
         }
 
         private Builder assertUniquenessAndAdd(ChecksumCondition checksumCondition) {
-            new HashSet<>(asList(ConditionField.CHECKSUM_CRC32, ConditionField.CHECKSUM_CRC32C, ConditionField.CHECKSUM_SHA1, ConditionField.CHECKSUM_SHA256))
+            new HashSet<>(
+                            asList(
+                                    ConditionField.CHECKSUM_CRC32,
+                                    ConditionField.CHECKSUM_CRC32C,
+                                    ConditionField.CHECKSUM_SHA1,
+                                    ConditionField.CHECKSUM_SHA256))
                     .forEach(
                             a -> {
                                 if (conditions.containsKey(a)) {
@@ -376,7 +383,8 @@ public class PostParams {
          * @return The {@link Builder} object
          */
         public Builder withSuccessActionStatus(SuccessActionStatus successActionStatus) {
-            return withCondition(ConditionField.SUCCESS_ACTION_STATUS, successActionStatus.getCode());
+            return withCondition(
+                    ConditionField.SUCCESS_ACTION_STATUS, successActionStatus.getCode());
         }
 
         public enum EncryptionAlgorithm {
@@ -682,7 +690,8 @@ public class PostParams {
         public Builder withMetaStartingWith(String metaName, String startingValue) {
             Objects.requireNonNull(metaName);
             Objects.requireNonNull(startingValue);
-            conditions.put(ConditionField.META, new MetaCondition(STARTS_WITH, metaName, startingValue));
+            conditions.put(
+                    ConditionField.META, new MetaCondition(STARTS_WITH, metaName, startingValue));
             return this;
         }
 
@@ -751,7 +760,8 @@ public class PostParams {
          */
         public Builder withChecksumSha256(String checksumSha256Base64Encoded) {
             return assertUniquenessAndAdd(
-                    new ChecksumCondition(ConditionField.CHECKSUM_SHA256, checksumSha256Base64Encoded));
+                    new ChecksumCondition(
+                            ConditionField.CHECKSUM_SHA256, checksumSha256Base64Encoded));
         }
 
         /** Allows specifying which algorithm should be used for server-side encryption. */
@@ -804,7 +814,8 @@ public class PostParams {
          * @return The {@link Builder} object
          */
         public Builder withServerSideEncryptionCustomerAlgorithmAES256() {
-            return withCondition(ConditionField.SERVER_SIDE_ENCRYPTION_CUSTOMER_ALGORITHM, "AES256");
+            return withCondition(
+                    ConditionField.SERVER_SIDE_ENCRYPTION_CUSTOMER_ALGORITHM, "AES256");
         }
 
         /**
@@ -816,7 +827,9 @@ public class PostParams {
          * @return The {@link Builder} object
          */
         public Builder withServerSideEncryptionCustomerKey(String encryptionKeyDigestAsBase64) {
-            return withCondition(ConditionField.SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY, encryptionKeyDigestAsBase64);
+            return withCondition(
+                    ConditionField.SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY,
+                    encryptionKeyDigestAsBase64);
         }
 
         /**
@@ -830,7 +843,8 @@ public class PostParams {
          */
         public Builder withServerSideEncryptionCustomerKeyMD5(String encryptionKeyDigestAsBase64) {
             return withCondition(
-                    ConditionField.SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY_MD5, encryptionKeyDigestAsBase64);
+                    ConditionField.SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY_MD5,
+                    encryptionKeyDigestAsBase64);
         }
     }
 

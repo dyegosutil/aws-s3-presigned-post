@@ -2,7 +2,8 @@ package io.github.dyegosutil.awspresignedpost.signer;
 
 import com.google.gson.Gson;
 import com.google.gson.annotations.Expose;
-import io.github.dyegosutil.awspresignedpost.AmzDate;import io.github.dyegosutil.awspresignedpost.presigned.PreSignedFreeTextPost;
+import io.github.dyegosutil.awspresignedpost.AmzDate;
+import io.github.dyegosutil.awspresignedpost.presigned.PreSignedFreeTextPost;
 import io.github.dyegosutil.awspresignedpost.conditions.Condition;
 import io.github.dyegosutil.awspresignedpost.conditions.ConditionField;
 import io.github.dyegosutil.awspresignedpost.conditions.MetaCondition;

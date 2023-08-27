@@ -1,6 +1,7 @@
 package io.github.dyegosutil.awspresignedpost.integrationtests.accesskey.asia;
 
-import io.github.dyegosutil.awspresignedpost.TestUtils;import io.github.dyegosutil.awspresignedpost.integrationtests.accesskey.PreSignedFreeTextPostCommonIntegrationTest;
+import io.github.dyegosutil.awspresignedpost.TestUtils;
+import io.github.dyegosutil.awspresignedpost.integrationtests.accesskey.PreSignedFreeTextPostCommonIntegrationTest;
 import io.github.dyegosutil.awspresignedpost.postparams.FreeTextPostParams;
 import io.github.dyegosutil.awspresignedpost.presigned.PreSignedFreeTextPost;
 import io.github.dyegosutil.awspresignedpost.signer.S3PostSigner;

@@ -1,6 +1,7 @@
 package io.github.dyegosutil.awspresignedpost.signer;
 
-import io.github.dyegosutil.awspresignedpost.TestUtils;import io.github.dyegosutil.awspresignedpost.postparams.FreeTextPostParams;
+import io.github.dyegosutil.awspresignedpost.TestUtils;
+import io.github.dyegosutil.awspresignedpost.postparams.FreeTextPostParams;
 import io.github.dyegosutil.awspresignedpost.postparams.PostParams;
 import io.github.dyegosutil.awspresignedpost.presigned.PreSignedFreeTextPost;
 import io.github.dyegosutil.awspresignedpost.presigned.PreSignedPost;
@@ -42,7 +43,8 @@ public class S3PostSignerTest {
         // Act
         PreSignedPost presignedPost =
                 S3PostSigner.sign(
-                        PostParams.builder(REGION, TestUtils.EXPIRATION_DATE, bucket, withAnyKey()).build());
+                        PostParams.builder(REGION, TestUtils.EXPIRATION_DATE, bucket, withAnyKey())
+                                .build());
 
         // Assert
         Map<String, String> actualConditions = presignedPost.getConditions();
@@ -79,7 +81,8 @@ public class S3PostSignerTest {
         Set<String[]> conditions = new HashSet<>();
         conditions.add(new String[] {"eq", "$key", "test.txt"});
         conditions.add(new String[] {"eq", "$x-amz-algorithm", "AWS4-HMAC-SHA256"});
-        conditions.add(new String[] {"eq", "$x-amz-date", TestUtils.getAmzDateFormatter().format(date)});
+        conditions.add(
+                new String[] {"eq", "$x-amz-date", TestUtils.getAmzDateFormatter().format(date)});
         conditions.add(new String[] {"eq", "$bucket", "myBucket"});
         conditions.add(
                 new String[] {

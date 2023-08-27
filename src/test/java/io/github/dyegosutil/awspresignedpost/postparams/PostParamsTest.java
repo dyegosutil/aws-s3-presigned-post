@@ -127,7 +127,11 @@ class PostParamsTest {
     void createBuilderTest() {
         // Act
         PostParams.Builder builder =
-                PostParams.builder(Region.AP_EAST_1, TestUtils.EXPIRATION_DATE, "testBucket", KeyConditionUtil.withAnyKey());
+                PostParams.builder(
+                        Region.AP_EAST_1,
+                        TestUtils.EXPIRATION_DATE,
+                        "testBucket",
+                        KeyConditionUtil.withAnyKey());
 
         // Assert
         assertThat(builder).isNotNull();
@@ -138,7 +142,11 @@ class PostParamsTest {
         AmzExpirationDate amzExpirationDate = new AmzExpirationDate(TestUtils.EXPIRATION_DATE);
         // Act
         PostParams postParams =
-                PostParams.builder(Region.AP_EAST_1, TestUtils.EXPIRATION_DATE, "testBucket", KeyConditionUtil.withAnyKey())
+                PostParams.builder(
+                                Region.AP_EAST_1,
+                                TestUtils.EXPIRATION_DATE,
+                                "testBucket",
+                                KeyConditionUtil.withAnyKey())
                         .build();
 
         // Assert
@@ -177,7 +185,11 @@ class PostParamsTest {
     void contentLengthRangeConditionTest() {
         // Act
         PostParams postParams =
-                PostParams.builder(Region.AP_EAST_1, TestUtils.EXPIRATION_DATE, "testBucket", KeyConditionUtil.withAnyKey())
+                PostParams.builder(
+                                Region.AP_EAST_1,
+                                TestUtils.EXPIRATION_DATE,
+                                "testBucket",
+                                KeyConditionUtil.withAnyKey())
                         .withContentLengthRange(100, 200)
                         .build();
 
@@ -785,6 +797,10 @@ class PostParamsTest {
     }
 
     private static PostParams.Builder createBuilder() {
-        return PostParams.builder(Region.AP_EAST_1, TestUtils.EXPIRATION_DATE, "testBucket", KeyConditionUtil.withAnyKey());
+        return PostParams.builder(
+                Region.AP_EAST_1,
+                TestUtils.EXPIRATION_DATE,
+                "testBucket",
+                KeyConditionUtil.withAnyKey());
     }
 }
