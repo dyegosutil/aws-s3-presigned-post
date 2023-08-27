@@ -250,6 +250,8 @@ client request respectively.
 - java 8 was used for bigger compatibility
 - explain how the credentials are obtained and link the aws doc
 - create a test bucket that is not called dyegosutil
+- - Fill about section of git: No description, website, or topics provided.
+- how to add a change long in the release
 
 
 Trivial 
