@@ -16,7 +16,7 @@ import static io.github.dyegosutil.awspresignedpost.conditions.KeyConditionUtil.
 public class TestUtils {
 
     public static final ZonedDateTime EXPIRATION_DATE =
-            Instant.now(Clock.systemUTC()).plus(1, ChronoUnit.MINUTES).atZone(ZoneOffset.UTC);
+            Instant.now(Clock.systemUTC()).plus(10, ChronoUnit.MINUTES).atZone(ZoneOffset.UTC);
 
     public static PostParams createPostParamsWithKeyStartingWith() {
         return PostParams.builder(Region.AP_EAST_1, EXPIRATION_DATE, "myBucket", withAnyKey())
