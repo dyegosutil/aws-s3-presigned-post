@@ -30,7 +30,7 @@ jobs:
           path: ~/.gradle/wrapper
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/gradle-wrapper.properties') }}
       - name: Build
-        run: ./gradlew -q :clean :build -x test --info
+        run: ./gradlew -q :clean :build -x test --debug
       - name: Test
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
