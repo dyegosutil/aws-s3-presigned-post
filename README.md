@@ -32,14 +32,17 @@ Maven:
 <dependency>
     <groupId>io.github.dyegosutil</groupId>
     <artifactId>aws-s3-presigned-post</artifactId>
-    <version>0.1.0</version>
+    <version>0.1.0-beta</version>
 </dependency>
 ```
 
 ### 2. Create the `PreSignedPost`
 
-Giving that the AWS credentials are provided using any of [these possibilities](https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/credentials.html), use the `PostParams` builder to specify the
-parameters and conditions for the upload:
+First make sure that the AWS credentials are provided using any of 
+[these possibilities](https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/credentials.html) and that the access
+key being used has the proper permission to upload in the bucket. 
+
+After that, use the `PostParams` builder to specify the parameters and conditions for the upload:
 
 ```java
 ZonedDateTime oneMinuteFromNow = now(systemUTC()).plus(1, MINUTES).atZone(UTC);
@@ -48,7 +51,7 @@ PostParams postParams = PostParams
     .builder(
         Region.of("eu-central-1"),      // AWS Region of the bucket
         oneMinuteFromNow,               // Expiration date 
-        "dyegosutil",                   // Bucket name
+        "myBucket",                     // Bucket name
         withKey("uploads/my_file.txt")  // Name of the S3 object key
     )
     .withContentLengthRange(7, 20)      // Adds file size upload limit
@@ -88,13 +91,13 @@ That is it. The file should be in S3 now.
 
 ## Additional code snippets:
 
-- Allow the uploader to use the name of the file being upload as S3 object Key:
+Allow the uploader to use the name of the file being upload as S3 object Key:
 ```java
 PostParams.builder(REGION, EXPIRATION_DATE, BUCKET, withAnyKey());
 // Additionally, when passing the last parameter `file` to the http client, use the value `${filename}`
 ```
 
-- Allow upload only if the object key is `test.txt`(the http param, not the file name) and the file size is between
+Allow upload only if the object key is `test.txt`(the http param, not the file name) and the file size is between
   7 and 20 bytes
 ```java
 PostParams
@@ -107,7 +110,7 @@ For more examples look into the `integrationtests` package inside `src/test`
 ## Features
 
 - Provides a guided approach with a builder to create a non-error prone `PreSignedPost`
-- Adding the following conditions/restrictions using the util methods `withConditionName` and/or
+- Adding the following conditions using the util methods `withConditionName` and/or
   `withConditionNameStartingWith`:
     - Bucket
     - Region
@@ -144,10 +147,10 @@ For more examples look into the `integrationtests` package inside `src/test`
 
 ## Notes
 - The library uses `DefaultCredentialsProvider` to obtain the aws credentials.
-  Check [this](https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/credentials.html) page to verify how to provide the AWS credentials
+  Check [this](https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/credentials.html) page to check how to provide it
 - If an `ASIA` aws access key is found, the library will return a new param `x-amz-security-token`. Independently if
   it is being added with the method `withSessionToken` or not.
-- To allow the user to upload any key name use ```withAnyKey()``` and submit in the http call for the `key` param
+- To allow the user to upload any key name, use ```withAnyKey()``` and submit in the http call for the `key` param
   the value `${filename}`. Note that `${filename}` variable is not compatible for `with(param)` conditions.
   Only for `with(param)StartingWith` and `withAny(param)`.
 - When ```content-length-range``` is used, it is not necessary to specify this condition while using the pre signed post,
