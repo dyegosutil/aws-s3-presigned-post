@@ -1,6 +1,6 @@
 val jupiterVersion = "5.10.0"
 
-group = "mendes.sutil.dyego"
+group = "io.github.dyegosutil"
 version = "0.1.0-alpha"
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 
@@ -18,7 +18,7 @@ repositories {
 }
 
 dependencies {
-    api(platform("software.amazon.awssdk:bom:2.20.134"))
+    api(platform("software.amazon.awssdk:bom:2.20.135"))
     api("software.amazon.awssdk:regions")
     implementation("software.amazon.awssdk:auth")
     implementation("com.google.code.gson:gson:2.10.1")

@@ -41,7 +41,7 @@ and many others.
 [//]: # (TODO Correct version of library to automatic and correct name and version)
 Gradle Kotlin:
 ```kotlin
-implementation("mendes.sutil.dyego:aws-s3-presigned-post:1.0-SNAPSHOT")
+implementation("io.github.dyegosutil:aws-s3-presigned-post:0.1.0")
 ```
 
 ### 2. Create the `PreSignedPost`
@@ -62,17 +62,7 @@ PostParams postParams = PostParams
     .build();
 
 // Generates all the necessary parameters for the pre-signed post including signature
-PreSignedPost presignedPost = S3PostSigner.sign(postParams, getAmazonCredentialsProvider());
-```
-
-Here is one example of how to create a `AwsCredentialsProvider` for tests
-
-```java
-public AwsCredentialsProvider getAmazonCredentialsProvider() {
-    return StaticCredentialsProvider.create(
-            AwsBasicCredentials.create(System.getenv("AWS_KEY"), System.getenv("AWS_SECRET"))
-        );
-}
+PreSignedPost presignedPost = S3PostSigner.sign(postParams);
 ```
 
 ### 3. Upload the file
@@ -123,15 +113,14 @@ For more examples look into the `integrationtests` package inside `src/test`
 
 ## Features
 
-- `PreSignedPost` creation: Provides a guided approach with a builder to create a non-error prone `PreSignedPost`
-- `PresignedFreeTextPost` creation: Advanced option that provides flexibility for creating a Pre Signed Post on which
+- Provides a guided approach with a builder to create a non-error prone `PreSignedPost`
+- Provides `PresignedFreeTextPost`, a advanced option that provides flexibility for creating a Pre Signed Post on which
 parameters and conditions can be provided freely. Even if this library does not support a new AWS feature, using this
 approach will probably make it possible to use it. Note that this option requires some understanding of the AWS request
 creation and signing process.
-- Adding conditions/restrictions:  
-Example: You need to create a Pre Signed Post that will allow the user to upload a file with the name starting with 
-"Full_Report_", not bigger than 100 MB and having the tag confidential=true.  
-Note that for each condition util methods `withConditionName` and/or 
+- Adding conditions/restrictions. Example: Create a Pre Signed Post that will allow the user to upload a file with the name starting with 
+"Full_Report_", not bigger than 100 MB and having the tag `confidential=true`.
+Note that for each condition, util methods `withConditionName` and/or 
 `withConditionNameStartingWith` are available. Below are all the supported conditions. For full details of the conditions
 check the class `PostParams`:
   - Bucket
@@ -163,8 +152,18 @@ check the class `PostParams`:
   - Allows specifying the base64 encoded encryption key to be used for this file upload
   - Allows specifying the base64 encoded 128-bit MD5 digest of the encryption key
 
+## Logging
+
+Nothing passed as parameter to the library is logged in any level to avoid logging possible PII data.  
+If debug log level is enabled, the only data logged is the:
+- Current now date used to build the `x-amz-credential` value
+- And the enum name of conditions used to build the Pre-signed post such as: `BUCKET,SUCCESS_ACTION_REDIRECT,KEY`
+
+If there is the need to log more data, it can be done by decoding the base64 policy param returned by the library
+
+
 ## Notes
-- If an `ASIA` aws access key id is found, the library will return a `x-amz-security-token`
+- If an `ASIA` aws access key id is found, the library will return a new param `x-amz-security-token`
 - If you want to allow the user upload any key use ```withAnyKey()``` and submit as key name ```${filename}```
 - Generating S3 post data for uploading files into public access s3 buckets is not included in this library since it is pretty straight forward.
 That is, the only parameters necessary are the ```key``` and ```file```.
@@ -205,9 +204,9 @@ Expalin that this is the return when you set 201 as response
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <PostResponse>
-    <Location>https://dyegosutil.s3.eu-central-1.amazonaws.com/pira.txt</Location>
+    <Location>https://dyegosutil.s3.eu-central-1.amazonaws.com/my-file.txt</Location>
     <Bucket>dyegosutil</Bucket>
-    <Key>pira.txt</Key>
+    <Key>my-file.txt</Key>
     <ETag>"d41d8cd98f00b204e9800998ecf8427e"</ETag>
 </PostResponse>
 ```
@@ -248,41 +247,6 @@ is not considered by AWS.What matter is that the value of the parameter `key` an
 Note that the file name would matter if `startWith()` and `{filename}` would have been used in `PostParam` and in the http 
 client request respectively.
 
-# To be done
-- Check what does it mean to develop open source, what to expect, what is good,
-- what is bad, what is expected from me, what is not expected.
-- List capabilities of the lib/pre-signed post
-- try to remove dependencies, amazon, etc
-- search about what to think when doing a lib, how should be the methods for the person using it,
-- the construcutor, the builder, and any other things to take in consideration  code wise.
-- warns gradle build or java build
-- See if I can watch the pages of doc from amazon in case they change something.
-- check if I should remove UTC and go for the default system time zone
-- Double check the AWS_SESSION_TOKEN, AWS_SESSION_SECRET and AWS_SESSION_TOKEN, one or more values might be wrong
-- Make sure you are not mixing AWS_KEY and AWS_SECRET with session credentials
-- ASIAUNVUIU7WKO5WTRO2
-- creating non offical libraries, what to take care, can aws sue me, naming, should I say it is non official, etc
-- Add warn when date is too long
-- try to remove aws dependencies?
-- HAVE A look in well know libraries souce code to see what they are using
-- Should I think about put as well? or naming the library with a more generic name?
-- Add final where it should be
-- Test logging in ECS.
-- Add id to pre signed post generation to get meaningfull loggings, userId, etc
-- Have one more look in the logs, Input validation failures e.g. protocol violations, unacceptable encodings, invalid parameter names and values
-- how to make your library to be found by searches on google.
-- Regenerate any access key, password, token, just to make sure.
-- Fix packaging using github one
-- Fill about section of git: No description, website, or topics provided.
-- how to add a change long in the release
-
-
-Trivial 
-
-- Use credentials defined in my computer instead of env variables
-- Explain point above in the read.me
-- Add badges
-
 ## Contributing
 
 Feel free to suggest changes, report bugs or give feedback by creating an Issue.
@@ -299,13 +263,22 @@ AWS_SESSION_TOKEN=value;AWS_REGION=eu-central-1;AWS_KEY=value;AWS_SECRET=value;A
 Add info from this page
 https://docs.aws.amazon.com/general/latest/gr/signature-version-4.html
 
-## Logging
+# To be done
 
-Nothing passed as parameter to the library is logged in any level to avoid logging possible PII data.  
-If debug log level is enabled, the only data logged is the:
-- Current now data used to build the `x-amz-credential` value
-- And the enum name of conditions used to build the Pre-signed post such as: `BUCKET,SUCCESS_ACTION_REDIRECT,KEY`
+- Fill about section of git: No description, website, or topics provided.
+- how to add a change long in the release
+- rewrite the running locally part
+- Test in ECS.
+- general review of all files
+- java 8 was used for bigger compatibility
+- Change to java 8 in gradle/github actions
+- explain how the credentials are obtained and link the aws doc
+- create a test bucket that is not called dyegosutil
+- Regenerate any access key, password, token, just to make sure.
 
-If there is the need to log more data, it can be done by decoding the base64 policy param returned by the library
 
-## License
+Trivial
+
+- Use credentials defined in my computer instead of env variables
+- Explain point above in the read.me
+- Add badges
