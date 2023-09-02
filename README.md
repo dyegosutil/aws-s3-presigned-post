@@ -152,6 +152,16 @@ check the class `PostParams`:
   - Allows specifying the base64 encoded encryption key to be used for this file upload
   - Allows specifying the base64 encoded 128-bit MD5 digest of the encryption key
 
+## Logging
+
+Nothing passed as parameter to the library is logged in any level to avoid logging possible PII data.  
+If debug log level is enabled, the only data logged is the:
+- Current now date used to build the `x-amz-credential` value
+- And the enum name of conditions used to build the Pre-signed post such as: `BUCKET,SUCCESS_ACTION_REDIRECT,KEY`
+
+If there is the need to log more data, it can be done by decoding the base64 policy param returned by the library
+
+
 ## Notes
 - If an `ASIA` aws access key id is found, the library will return a new param `x-amz-security-token`
 - If you want to allow the user upload any key use ```withAnyKey()``` and submit as key name ```${filename}```
@@ -237,28 +247,6 @@ is not considered by AWS.What matter is that the value of the parameter `key` an
 Note that the file name would matter if `startWith()` and `{filename}` would have been used in `PostParam` and in the http 
 client request respectively.
 
-# To be done
-
-- Fill about section of git: No description, website, or topics provided.
-- how to add a change long in the release
-- rewrite the running locally part
-- Fix package name putting the github one
-- Test in ECS.
-- general review of all files
-- java 8 was used for bigger compatibility
-- explain how the credentials are obtained and link the aws doc
-- create a test bucket that is not called dyegosutil
-- - Fill about section of git: No description, website, or topics provided.
-- how to add a change long in the release
-- Regenerate any access key, password, token, just to make sure.
-
-
-Trivial 
-
-- Use credentials defined in my computer instead of env variables
-- Explain point above in the read.me
-- Add badges
-
 ## Contributing
 
 Feel free to suggest changes, report bugs or give feedback by creating an Issue.
@@ -275,11 +263,22 @@ AWS_SESSION_TOKEN=value;AWS_REGION=eu-central-1;AWS_KEY=value;AWS_SECRET=value;A
 Add info from this page
 https://docs.aws.amazon.com/general/latest/gr/signature-version-4.html
 
-## Logging
+# To be done
 
-Nothing passed as parameter to the library is logged in any level to avoid logging possible PII data.  
-If debug log level is enabled, the only data logged is the:
-- Current now data used to build the `x-amz-credential` value
-- And the enum name of conditions used to build the Pre-signed post such as: `BUCKET,SUCCESS_ACTION_REDIRECT,KEY`
+- Fill about section of git: No description, website, or topics provided.
+- how to add a change long in the release
+- rewrite the running locally part
+- Test in ECS.
+- general review of all files
+- java 8 was used for bigger compatibility
+- Change to java 8 in gradle/github actions
+- explain how the credentials are obtained and link the aws doc
+- create a test bucket that is not called dyegosutil
+- Regenerate any access key, password, token, just to make sure.
 
-If there is the need to log more data, it can be done by decoding the base64 policy param returned by the library
+
+Trivial
+
+- Use credentials defined in my computer instead of env variables
+- Explain point above in the read.me
+- Add badges
