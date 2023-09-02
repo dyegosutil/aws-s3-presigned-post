@@ -7,7 +7,7 @@ java.sourceCompatibility = JavaVersion.VERSION_1_8
 plugins {
     java
     idea
-    id("org.sonarqube") version "4.3.0.3225"
+    id("org.sonarqube") version "4.3.1.3277"
     id ("maven-publish")
     id ("java-library")
 }
@@ -18,7 +18,7 @@ repositories {
 }
 
 dependencies {
-    api(platform("software.amazon.awssdk:bom:2.20.135"))
+    api(platform("software.amazon.awssdk:bom:2.20.140"))
     api("software.amazon.awssdk:regions")
     implementation("software.amazon.awssdk:auth")
     implementation("com.google.code.gson:gson:2.10.1")
@@ -31,7 +31,7 @@ dependencies {
     testImplementation("com.squareup.okhttp3:okhttp:4.11.0")
     testImplementation("org.assertj:assertj-core:3.24.2")
     testImplementation("org.mockito:mockito-core:5.5.0")
-    testImplementation("uk.org.webcompere:system-stubs-jupiter:1.1.0")
+    testImplementation("uk.org.webcompere:system-stubs-jupiter:2.0.2")
 }
 
 tasks.getByName<Test>("test") {

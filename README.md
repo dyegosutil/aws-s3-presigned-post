@@ -2,7 +2,7 @@
 
 Generates authenticated request data to be used by a chosen http client to upload files to AWS S3 using POST.
 
-The library receives the mandatory and optional parameters alongside with the conditions supported by AWS S3 giving back the data 
+The library receives the mandatory and optional parameters alongside with the conditions supported by AWS S3 giving back the data
 to be used for the upload, including policy and the signature generated using the
 [AWS Signature Version 4](https://docs.aws.amazon.com/AmazonS3/latest/API/sig-v4-authenticating-requests.html) specification.
 
@@ -109,34 +109,34 @@ For more examples look into the `integrationtests` package inside `src/test`
 - Provides a guided approach with a builder to create a non-error prone `PreSignedPost`
 - Adding the following conditions/restrictions using the util methods `withConditionName` and/or
   `withConditionNameStartingWith`:
-  - Bucket
-  - Region
-  - Expiration Date
-  - Key Name
-  - Tags
-  - File size
-  - Success Action Status
-  - Cache Control
-  - File Content Type
-  - Content Disposition
-  - Content encoding
-  - File Expire
-  - Success Action Redirect
-  - Acl
-  - Metadata
-  - Storage Class
-  - Website Redirect Location
-  - Checksum CRC-32
-  - Checksum CRC-32C
-  - Checksum SHA-1
-  - Checksum SHA-256
-  - Server Side Encryption Algorithm
-  - AWS KMS KEY to be used to for server-side encryption
-  - Server Side Encryption Context
-  - Allows specifying if Amazon S3 should use an S3 Bucket Key with SSE-KMS or not
-  - Allows specifying the algorithm to use to when encrypting the object.
-  - Allows specifying the base64 encoded encryption key to be used for this file upload
-  - Allows specifying the base64 encoded 128-bit MD5 digest of the encryption key
+    - Bucket
+    - Region
+    - Expiration Date
+    - Key Name
+    - Tags
+    - File size
+    - Success Action Status
+    - Cache Control
+    - File Content Type
+    - Content Disposition
+    - Content encoding
+    - File Expire
+    - Success Action Redirect
+    - Acl
+    - Metadata
+    - Storage Class
+    - Website Redirect Location
+    - Checksum CRC-32
+    - Checksum CRC-32C
+    - Checksum SHA-1
+    - Checksum SHA-256
+    - Server Side Encryption Algorithm
+    - AWS KMS KEY to be used to for server-side encryption
+    - Server Side Encryption Context
+    - Allows specifying if Amazon S3 should use an S3 Bucket Key with SSE-KMS or not
+    - Allows specifying the algorithm to use to when encrypting the object.
+    - Allows specifying the base64 encoded encryption key to be used for this file upload
+    - Allows specifying the base64 encoded 128-bit MD5 digest of the encryption key
 - Provides `PresignedFreeTextPost`, an advanced option that provides flexibility for creating a Pre Signed Post on which
   parameters and conditions can be provided freely. Even if this library does not support a new AWS feature, using this
   approach will probably make it possible to use it. Note that this option requires some understanding of the AWS request
@@ -144,17 +144,17 @@ For more examples look into the `integrationtests` package inside `src/test`
 
 ## Notes
 - The library uses `DefaultCredentialsProvider` to obtain the aws credentials.
-Check [this](https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/credentials.html) page to verify how to provide the AWS credentials
+  Check [this](https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/credentials.html) page to verify how to provide the AWS credentials
 - If an `ASIA` aws access key is found, the library will return a new param `x-amz-security-token`. Independently if
-it is being added with the method `withSessionToken` or not.
-- To allow the user to upload any key name use ```withAnyKey()``` and submit in the http call for the `key` param 
-the value `${filename}`. Note that `${filename}` variable is not compatible for `with(param)` conditions.
-Only for `with(param)StartingWith` and `withAny(param)`.
+  it is being added with the method `withSessionToken` or not.
+- To allow the user to upload any key name use ```withAnyKey()``` and submit in the http call for the `key` param
+  the value `${filename}`. Note that `${filename}` variable is not compatible for `with(param)` conditions.
+  Only for `with(param)StartingWith` and `withAny(param)`.
 - When ```content-length-range``` is used, it is not necessary to specify this condition while using the pre signed post,
-even though it is in the policy. Note that this is the only exception, all other valuedConditions should be passed to aws 
-otherwise it will return an error
+  even though it is in the policy. Note that this is the only exception, all other valuedConditions should be passed to aws
+  otherwise it will return an error
 - Generating S3 post data for uploading files into public access s3 buckets is not included in this library since it is pretty straight forward.
-    That is, the only parameters necessary are the ```key``` and ```file```.
+  That is, the only parameters necessary are the ```key``` and ```file```.
 
 ## Logging
 
