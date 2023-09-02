@@ -1,7 +1,7 @@
 val jupiterVersion = "5.10.0"
 
 group = "io.github.dyegosutil"
-version = "0.1.0-alpha"
+version = "0.1.0-beta"
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 
 plugins {
