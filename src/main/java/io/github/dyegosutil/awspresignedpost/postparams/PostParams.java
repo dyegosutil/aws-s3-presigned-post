@@ -631,8 +631,8 @@ public class PostParams {
         }
 
         /**
-         * Allows specifying any success_action_redirect for this upload.
-         * This condition is used to redirect the user to another page after the upload <br>
+         * Allows specifying any success_action_redirect for this upload. This condition is used to
+         * redirect the user to another page after the upload <br>
          * <br>
          * This condition is used to redirect the user to another page after the upload. AWS will
          * add correspondent query parameters into the end of the url such as {@code

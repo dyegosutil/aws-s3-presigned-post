@@ -27,14 +27,17 @@ public class PreSignedPostWithSuccessActionRedirectPostParamIntegrationTests
     }
 
     @Test
-    @DisplayName(value = "Should succeed while uploading file to S3 when using the samesuccess_action_redirect " +
-            "specified in the policy and having the correct return from the http client")
-    void shouldTestUploadUsingRedirectCondition(
-    ) {
+    @DisplayName(
+            value =
+                    "Should succeed while uploading file to S3 when using the"
+                        + " samesuccess_action_redirect specified in the policy and having the"
+                        + " correct return from the http client")
+    void shouldTestUploadUsingRedirectCondition() {
         // Arrange
-        PostParams postParams = createDefaultPostParamBuilderSpecifyingKey()
-                .withSuccessActionRedirect("https://www.google.com")
-                .build();
+        PostParams postParams =
+                createDefaultPostParamBuilderSpecifyingKey()
+                        .withSuccessActionRedirect("https://www.google.com")
+                        .build();
 
         // Act
         PreSignedPost presignedPost = S3PostSigner.sign(postParams);
@@ -50,9 +53,7 @@ public class PreSignedPostWithSuccessActionRedirectPostParamIntegrationTests
     @ParameterizedTest(name = "{0}")
     @MethodSource("getRedirectUploadStartWithConditionsTestCases")
     void shouldTestUploadUsingRedirectConditionStartingWith(
-            String testDescription,
-            PostParams postParams
-    ) {
+            String testDescription, PostParams postParams) {
         // Arrange
         String successActionRedirectValue = "https://www.google.com";
 
@@ -67,7 +68,6 @@ public class PreSignedPostWithSuccessActionRedirectPostParamIntegrationTests
         // Arrange
         assertThat(redirectInResponse).isEqualTo(successActionRedirectValue);
     }
-
 
     /**
      * When the upload is not successful, the redirect in the response is in the following format
@@ -110,9 +110,7 @@ public class PreSignedPostWithSuccessActionRedirectPostParamIntegrationTests
                                 + " correct return from the http client",
                         createDefaultPostParamBuilderSpecifyingKey()
                                 .withAnySuccessActionRedirect()
-                                .build())
-
-        );
+                                .build()));
     }
 
     public static Stream<Arguments> getCustomizedRedirectUploadConditionsTestCases() {
