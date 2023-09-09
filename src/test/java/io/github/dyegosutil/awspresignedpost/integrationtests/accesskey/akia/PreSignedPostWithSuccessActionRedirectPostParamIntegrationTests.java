@@ -95,8 +95,8 @@ public class PreSignedPostWithSuccessActionRedirectPostParamIntegrationTests
                 // success_action_redirect
                 of(
                         "Should succeed while uploading file to S3 when using the same initial"
-                            + " string success_action_redirect specified in the policy and having"
-                            + " the correct return from the http client",
+                                + " string success_action_redirect specified in the policy and having"
+                                + " the correct return from the http client",
                         createDefaultPostParamBuilder()
                                 .withSuccessActionRedirectStartingWith("https://www.google.")
                                 .build(),

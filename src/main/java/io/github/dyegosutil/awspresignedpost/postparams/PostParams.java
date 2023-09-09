@@ -204,8 +204,8 @@ public class PostParams {
                                                     throw new IllegalArgumentException(
                                                             String.format(
                                                                     "The condition %s requires the"
-                                                                        + " condition(s) %s to be"
-                                                                        + " present",
+                                                                            + " condition(s) %s to be"
+                                                                            + " present",
                                                                     conditionField,
                                                                     requiredConditions));
                                                 }
@@ -306,7 +306,8 @@ public class PostParams {
             return this;
         }
 
-        private void throwExceptionIfConditionIsPresent(ConditionField conditionField, String errorMessage) {
+        private void throwExceptionIfConditionIsPresent(
+                ConditionField conditionField, String errorMessage) {
             if (conditions.containsKey(conditionField)) {
                 throw new IllegalArgumentException(errorMessage);
             }
