@@ -7,7 +7,6 @@ java.sourceCompatibility = JavaVersion.VERSION_1_8
 plugins {
     java
     idea
-    id("org.sonarqube") version "4.3.1.3277"
     id ("maven-publish")
     id ("java-library")
 }
