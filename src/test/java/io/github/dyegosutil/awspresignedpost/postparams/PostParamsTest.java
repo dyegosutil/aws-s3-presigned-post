@@ -338,8 +338,7 @@ class PostParamsTest {
                         EQ),
                 of(
                         "Should assert that condition withAnyCacheControl was added",
-                        (Supplier<PostParams.Builder>)
-                                () -> createBuilder().withAnyCacheControl(),
+                        (Supplier<PostParams.Builder>) () -> createBuilder().withAnyCacheControl(),
                         CACHE_CONTROL,
                         STARTS_WITH),
                 of(
@@ -356,8 +355,7 @@ class PostParamsTest {
                         EQ),
                 of(
                         "Should assert that condition withAnyContentType was added",
-                        (Supplier<PostParams.Builder>)
-                                () -> createBuilder().withAnyContentType(),
+                        (Supplier<PostParams.Builder>) () -> createBuilder().withAnyContentType(),
                         CONTENT_TYPE,
                         STARTS_WITH),
                 of(

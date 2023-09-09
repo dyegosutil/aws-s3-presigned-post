@@ -322,7 +322,7 @@ public class PreSignedPostOptionalPostParamsIntegrationTests extends Integration
                 // Cache-Control - withAny
                 of(
                         "Should succeed while uploading file to S3 when any cache-control is"
-                            + " allowed",
+                                + " allowed",
                         createDefaultPostParamBuilder().withAnyCacheControl().build(),
                         createFormDataPartsWithKeyCondition(
                                 "Cache-Control", "public, max-age=7200"),
@@ -351,7 +351,7 @@ public class PreSignedPostOptionalPostParamsIntegrationTests extends Integration
                 // Content-Type - withAny
                 of(
                         "Should succeed while uploading file to S3 when any Content-Type is"
-                            + " allowed",
+                                + " allowed",
                         createDefaultPostParamBuilder().withAnyContentType().build(),
                         createFormDataPartsWithKeyCondition("Content-Type", "text/plain"),
                         true),
