@@ -1,10 +1,13 @@
 package io.github.dyegosutil.awspresignedpost.integrationtests.accesskey.asia;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.github.dyegosutil.awspresignedpost.TestUtils;
 import io.github.dyegosutil.awspresignedpost.integrationtests.accesskey.PreSignedFreeTextPostCommonIntegrationTest;
 import io.github.dyegosutil.awspresignedpost.postparams.FreeTextPostParams;
 import io.github.dyegosutil.awspresignedpost.presigned.PreSignedFreeTextPost;
 import io.github.dyegosutil.awspresignedpost.signer.S3PostSigner;
+
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,8 +15,6 @@ import org.junit.jupiter.api.Test;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * To run this test the following environment variables must be set: AWS_ACCESS_KEY_ID (ASIA...),

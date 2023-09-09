@@ -1,15 +1,29 @@
 package io.github.dyegosutil.awspresignedpost.postparams;
 
+import static io.github.dyegosutil.awspresignedpost.conditions.ConditionField.*;
+import static io.github.dyegosutil.awspresignedpost.conditions.MatchCondition.Operator.EQ;
+import static io.github.dyegosutil.awspresignedpost.conditions.MatchCondition.Operator.STARTS_WITH;
+import static io.github.dyegosutil.awspresignedpost.postparams.PostParams.Builder.CannedAcl.PRIVATE;
+import static io.github.dyegosutil.awspresignedpost.postparams.PostParams.Builder.EncryptionAlgorithm.AWS_KMS;
+import static io.github.dyegosutil.awspresignedpost.postparams.PostParams.Builder.StorageClass.STANDARD;
+import static io.github.dyegosutil.awspresignedpost.postparams.PostParams.Builder.SuccessActionStatus;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.params.provider.Arguments.of;
+
 import io.github.dyegosutil.awspresignedpost.TestUtils;
 import io.github.dyegosutil.awspresignedpost.conditions.*;
 import io.github.dyegosutil.awspresignedpost.conditions.key.ExactKeyCondition;
 import io.github.dyegosutil.awspresignedpost.conditions.key.KeyStartingWithCondition;
+
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+
 import software.amazon.awssdk.regions.Region;
 
 import java.time.Clock;
@@ -20,17 +34,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.Map;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
-
-import static io.github.dyegosutil.awspresignedpost.conditions.ConditionField.*;
-import static io.github.dyegosutil.awspresignedpost.conditions.MatchCondition.Operator.EQ;
-import static io.github.dyegosutil.awspresignedpost.conditions.MatchCondition.Operator.STARTS_WITH;
-import static io.github.dyegosutil.awspresignedpost.postparams.PostParams.Builder.CannedAcl.PRIVATE;
-import static io.github.dyegosutil.awspresignedpost.postparams.PostParams.Builder.EncryptionAlgorithm.AWS_KMS;
-import static io.github.dyegosutil.awspresignedpost.postparams.PostParams.Builder.StorageClass.STANDARD;
-import static io.github.dyegosutil.awspresignedpost.postparams.PostParams.Builder.SuccessActionStatus;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.params.provider.Arguments.of;
 
 class PostParamsTest {
 

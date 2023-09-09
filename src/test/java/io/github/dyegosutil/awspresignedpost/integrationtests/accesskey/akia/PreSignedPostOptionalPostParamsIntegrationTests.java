@@ -1,10 +1,20 @@
 package io.github.dyegosutil.awspresignedpost.integrationtests.accesskey.akia;
 
+import static io.github.dyegosutil.awspresignedpost.postparams.PostParams.Builder.CannedAcl.PRIVATE;
+import static io.github.dyegosutil.awspresignedpost.postparams.PostParams.Builder.EncryptionAlgorithm.AES256;
+import static io.github.dyegosutil.awspresignedpost.postparams.PostParams.Builder.EncryptionAlgorithm.AWS_KMS;
+import static io.github.dyegosutil.awspresignedpost.postparams.PostParams.Builder.StorageClass.STANDARD;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.params.provider.Arguments.of;
+
 import io.github.dyegosutil.awspresignedpost.integrationtests.accesskey.IntegrationTests;
 import io.github.dyegosutil.awspresignedpost.postparams.PostParams;
 import io.github.dyegosutil.awspresignedpost.presigned.PreSignedPost;
 import io.github.dyegosutil.awspresignedpost.signer.S3PostSigner;
+
 import okhttp3.Request;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -21,13 +31,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.Map;
 import java.util.stream.Stream;
-
-import static io.github.dyegosutil.awspresignedpost.postparams.PostParams.Builder.CannedAcl.PRIVATE;
-import static io.github.dyegosutil.awspresignedpost.postparams.PostParams.Builder.EncryptionAlgorithm.AES256;
-import static io.github.dyegosutil.awspresignedpost.postparams.PostParams.Builder.EncryptionAlgorithm.AWS_KMS;
-import static io.github.dyegosutil.awspresignedpost.postparams.PostParams.Builder.StorageClass.STANDARD;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.params.provider.Arguments.of;
 
 public class PreSignedPostOptionalPostParamsIntegrationTests extends IntegrationTests {
 

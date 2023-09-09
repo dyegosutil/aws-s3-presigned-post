@@ -1,18 +1,19 @@
 package io.github.dyegosutil.awspresignedpost.postparams;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.params.provider.Arguments.of;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+
 import software.amazon.awssdk.regions.Region;
 
 import java.time.ZonedDateTime;
 import java.util.HashSet;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
-
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.params.provider.Arguments.of;
 
 class FreeTextPostParamsTest {
 

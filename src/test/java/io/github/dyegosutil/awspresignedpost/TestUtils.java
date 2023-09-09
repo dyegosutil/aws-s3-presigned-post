@@ -1,6 +1,9 @@
 package io.github.dyegosutil.awspresignedpost;
 
+import static io.github.dyegosutil.awspresignedpost.conditions.KeyConditionUtil.withAnyKey;
+
 import io.github.dyegosutil.awspresignedpost.postparams.PostParams;
+
 import software.amazon.awssdk.regions.Region;
 
 import java.time.Clock;
@@ -10,8 +13,6 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Locale;
-
-import static io.github.dyegosutil.awspresignedpost.conditions.KeyConditionUtil.withAnyKey;
 
 public class TestUtils {
 

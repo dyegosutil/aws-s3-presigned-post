@@ -1,10 +1,14 @@
 package io.github.dyegosutil.awspresignedpost.integrationtests.accesskey.akia;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.params.provider.Arguments.of;
+
 import io.github.dyegosutil.awspresignedpost.TestUtils;
 import io.github.dyegosutil.awspresignedpost.integrationtests.accesskey.PreSignedFreeTextPostCommonIntegrationTest;
 import io.github.dyegosutil.awspresignedpost.postparams.FreeTextPostParams;
 import io.github.dyegosutil.awspresignedpost.presigned.PreSignedFreeTextPost;
 import io.github.dyegosutil.awspresignedpost.signer.S3PostSigner;
+
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -15,9 +19,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.params.provider.Arguments.of;
 
 public class PreSignedFreeTextPostAkiaAccessKeyIntegrationTest
         extends PreSignedFreeTextPostCommonIntegrationTest {
