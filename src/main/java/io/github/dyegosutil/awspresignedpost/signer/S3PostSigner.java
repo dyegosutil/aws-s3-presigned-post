@@ -55,8 +55,7 @@ public final class S3PostSigner {
 
         final String bucket = postParams.getBucket();
         final String region = postParams.getRegion().id();
-        final String credentials =
-                buildCredentialField(awsCredentials, postParams.getRegion(), amzDate);
+        final String credentials = buildCredentialField(awsCredentials, postParams.getRegion(), amzDate);
 
         final Policy policy =
                 new Policy(
@@ -201,7 +200,9 @@ public final class S3PostSigner {
                 .collect(
                         Collectors.toMap(
                                 entry -> getUploadKey((MatchCondition) entry.getValue()),
-                                entry -> getValueOrEmptyString((MatchCondition) entry.getValue())));
+                                entry -> getValueOrEmptyString((MatchCondition) entry.getValue())
+                        )
+                );
     }
 
     private static String getUploadKey(MatchCondition matchCondition) {
@@ -213,7 +214,7 @@ public final class S3PostSigner {
     }
 
     /**
-     * In case an exact condition was used, the value so be sent to AWS S3 is known and thus can be
+     * In case an exact condition was used, the value to be sent to AWS S3 is known and thus can be
      * returned. Otherwise, a "start with" condition was used and therefore is not possible to
      * foresee which value will be used by the pre signed post caller
      *
@@ -246,8 +247,7 @@ public final class S3PostSigner {
     private static void addSessionTokenIfNeeded(
             Map<ConditionField, Condition> conditions, final AwsCredentials awsCredentials) {
         if (awsCredentials instanceof AwsSessionCredentials) {
-            LOGGER.debug(
-                    "Adding {} since Aws Session credential is being used", SECURITY_TOKEN.name());
+            LOGGER.debug("Adding {} since Aws Session credential is being used", SECURITY_TOKEN.name());
             conditions.put(
                     SECURITY_TOKEN,
                     new MatchCondition(

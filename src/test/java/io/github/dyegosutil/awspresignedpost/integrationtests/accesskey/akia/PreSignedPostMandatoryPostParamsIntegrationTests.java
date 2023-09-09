@@ -48,8 +48,8 @@ public class PreSignedPostMandatoryPostParamsIntegrationTests extends Integratio
 
     /**
      * @param customizedUploadConditions Used for specifying different values than the ones provided
-     *     by the pre-signed post, which are either values for "startWith" conditions or wrong
-     *     values for asserting failure
+     *                                   by the pre-signed post, which are either values for "startWith" conditions or wrong
+     *                                   values for asserting failure
      */
     @ParameterizedTest(name = "{0}")
     @MethodSource("getCustomizedUploadConditionsTestCases")
@@ -180,6 +180,17 @@ public class PreSignedPostMandatoryPostParamsIntegrationTests extends Integratio
                         BUCKET,
                         withAnyKey(),
                         createFormDataParts("key", "myDifferentFileName.txt"),
-                        true));
+                        true),
+                // key using variable ${filename}
+                of(
+                        "Should succeed while uploading file to S3 when the ${filename} is used",
+                        REGION,
+                        EXPIRATION_DATE,
+                        BUCKET,
+                        withKeyStartingWith("user/leo/box/"),
+                        createFormDataParts("key", "user/leo/box/${filename}"),
+                        true
+                )
+        );
     }
 }
