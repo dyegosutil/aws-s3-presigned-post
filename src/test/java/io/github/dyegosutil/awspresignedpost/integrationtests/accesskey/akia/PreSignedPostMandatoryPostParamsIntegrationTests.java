@@ -48,8 +48,8 @@ public class PreSignedPostMandatoryPostParamsIntegrationTests extends Integratio
 
     /**
      * @param customizedUploadConditions Used for specifying different values than the ones provided
-     *                                   by the pre-signed post, which are either values for "startWith" conditions or wrong
-     *                                   values for asserting failure
+     *     by the pre-signed post, which are either values for "startWith" conditions or wrong
+     *     values for asserting failure
      */
     @ParameterizedTest(name = "{0}")
     @MethodSource("getCustomizedUploadConditionsTestCases")
@@ -189,8 +189,6 @@ public class PreSignedPostMandatoryPostParamsIntegrationTests extends Integratio
                         BUCKET,
                         withKeyStartingWith("user/leo/box/"),
                         createFormDataParts("key", "user/leo/box/${filename}"),
-                        true
-                )
-        );
+                        true));
     }
 }
