@@ -337,6 +337,11 @@ class PostParamsTest {
                         CACHE_CONTROL,
                         EQ),
                 of(
+                        "Should assert that condition withAnyCacheControl was added",
+                        (Supplier<PostParams.Builder>) () -> createBuilder().withAnyCacheControl(),
+                        CACHE_CONTROL,
+                        STARTS_WITH),
+                of(
                         "Should assert that condition withContentTypeStartingWith was added",
                         (Supplier<PostParams.Builder>)
                                 () -> createBuilder().withContentTypeStartingWith("test"),
@@ -348,6 +353,11 @@ class PostParamsTest {
                                 () -> createBuilder().withContentType("test"),
                         CONTENT_TYPE,
                         EQ),
+                of(
+                        "Should assert that condition withAnyContentType was added",
+                        (Supplier<PostParams.Builder>) () -> createBuilder().withAnyContentType(),
+                        CONTENT_TYPE,
+                        STARTS_WITH),
                 of(
                         "Should assert that condition withContentDispositionStartingWith was added",
                         (Supplier<PostParams.Builder>)
@@ -361,6 +371,12 @@ class PostParamsTest {
                         CONTENT_DISPOSITION,
                         EQ),
                 of(
+                        "Should assert that condition withAnyContentDisposition was added",
+                        (Supplier<PostParams.Builder>)
+                                () -> createBuilder().withAnyContentDisposition(),
+                        CONTENT_DISPOSITION,
+                        STARTS_WITH),
+                of(
                         "Should assert that condition withContentEncodingStartingWith was added",
                         (Supplier<PostParams.Builder>)
                                 () -> createBuilder().withContentEncodingStartingWith("test"),
@@ -370,6 +386,12 @@ class PostParamsTest {
                         "Should assert that condition withContentEncoding was added",
                         (Supplier<PostParams.Builder>)
                                 () -> createBuilder().withContentEncoding("test"),
+                        CONTENT_ENCODING,
+                        EQ),
+                of(
+                        "Should assert that condition withAnyContentEncoding was added",
+                        (Supplier<PostParams.Builder>)
+                                () -> createBuilder().withAnyContentEncoding(),
                         CONTENT_ENCODING,
                         EQ),
                 of(
@@ -384,6 +406,11 @@ class PostParamsTest {
                         EXPIRES,
                         EQ),
                 of(
+                        "Should assert that condition withAnyExpires was added",
+                        (Supplier<PostParams.Builder>) () -> createBuilder().withAnyExpires(),
+                        EXPIRES,
+                        STARTS_WITH),
+                of(
                         "Should assert that condition withSuccessActionRedirectStartingWith was"
                                 + " added",
                         (Supplier<PostParams.Builder>)
@@ -396,6 +423,12 @@ class PostParamsTest {
                                 () -> createBuilder().withSuccessActionRedirect("test"),
                         SUCCESS_ACTION_REDIRECT,
                         EQ),
+                of(
+                        "Should assert that condition withAnySuccessActionRedirect was added",
+                        (Supplier<PostParams.Builder>)
+                                () -> createBuilder().withAnySuccessActionRedirect(),
+                        SUCCESS_ACTION_REDIRECT,
+                        STARTS_WITH),
                 of(
                         "Should assert that condition withSuccessActionStatus was added",
                         (Supplier<PostParams.Builder>)
@@ -415,6 +448,11 @@ class PostParamsTest {
                         (Supplier<PostParams.Builder>) () -> createBuilder().withAcl(PRIVATE),
                         ACL,
                         EQ),
+                of(
+                        "Should assert that condition withAnyAcl was added",
+                        (Supplier<PostParams.Builder>) () -> createBuilder().withAnyAcl(),
+                        ACL,
+                        STARTS_WITH),
                 of(
                         "Should assert that condition withTagging was added",
                         (Supplier<PostParams.Builder>) () -> createBuilder().withTagging("test"),

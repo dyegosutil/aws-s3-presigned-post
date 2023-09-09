@@ -10,6 +10,7 @@ import software.amazon.awssdk.regions.Region;
 import java.time.ZonedDateTime;
 import java.util.*;
 
+import static io.github.dyegosutil.awspresignedpost.conditions.ConditionField.*;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static io.github.dyegosutil.awspresignedpost.conditions.MatchCondition.Operator.EQ;
@@ -119,32 +120,32 @@ public class PostParams {
         {
             dependentConditionFields = new HashMap<>();
             dependentConditionFields.put(
-                    ConditionField.SERVER_SIDE_ENCRYPTION_AWS_KMS_KEY_ID,
-                    new TreeSet<>(singletonList(ConditionField.SERVER_SIDE_ENCRYPTION)));
+                    SERVER_SIDE_ENCRYPTION_AWS_KMS_KEY_ID,
+                    new TreeSet<>(singletonList(SERVER_SIDE_ENCRYPTION)));
             dependentConditionFields.put(
-                    ConditionField.SERVER_SIDE_ENCRYPTION_CONTEXT,
-                    new TreeSet<>(singletonList(ConditionField.SERVER_SIDE_ENCRYPTION)));
+                    SERVER_SIDE_ENCRYPTION_CONTEXT,
+                    new TreeSet<>(singletonList(SERVER_SIDE_ENCRYPTION)));
             dependentConditionFields.put(
-                    ConditionField.SERVER_SIDE_ENCRYPTION_BUCKET_KEY_ENABLED,
-                    new TreeSet<>(singletonList(ConditionField.SERVER_SIDE_ENCRYPTION)));
+                    SERVER_SIDE_ENCRYPTION_BUCKET_KEY_ENABLED,
+                    new TreeSet<>(singletonList(SERVER_SIDE_ENCRYPTION)));
             dependentConditionFields.put(
-                    ConditionField.SERVER_SIDE_ENCRYPTION_CUSTOMER_ALGORITHM,
+                    SERVER_SIDE_ENCRYPTION_CUSTOMER_ALGORITHM,
                     new TreeSet<>(
                             asList(
-                                    ConditionField.SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY,
-                                    ConditionField.SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY_MD5)));
+                                    SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY,
+                                    SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY_MD5)));
             dependentConditionFields.put(
-                    ConditionField.SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY,
+                    SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY,
                     new TreeSet<>(
                             asList(
-                                    ConditionField.SERVER_SIDE_ENCRYPTION_CUSTOMER_ALGORITHM,
-                                    ConditionField.SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY_MD5)));
+                                    SERVER_SIDE_ENCRYPTION_CUSTOMER_ALGORITHM,
+                                    SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY_MD5)));
             dependentConditionFields.put(
-                    ConditionField.SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY_MD5,
+                    SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY_MD5,
                     new TreeSet<>(
                             asList(
-                                    ConditionField.SERVER_SIDE_ENCRYPTION_CUSTOMER_ALGORITHM,
-                                    ConditionField.SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY)));
+                                    SERVER_SIDE_ENCRYPTION_CUSTOMER_ALGORITHM,
+                                    SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY)));
         }
 
         private Builder(
@@ -159,8 +160,7 @@ public class PostParams {
             this.region = region;
             this.amzExpirationDate = expirationDate;
             this.conditions.put(ConditionField.KEY, keyCondition);
-            this.conditions.put(
-                    ConditionField.BUCKET, new MatchCondition(ConditionField.BUCKET, EQ, bucket));
+            this.conditions.put(BUCKET, new MatchCondition(BUCKET, EQ, bucket));
             this.bucket = bucket;
         }
 
@@ -248,15 +248,14 @@ public class PostParams {
          *
          * @param conditionField Condition type specified
          * @param value Specifiled value for this condition
-         * @return @return The {@link Builder} object
+         * @return The {@link Builder} object
          */
         private Builder withCondition(ConditionField conditionField, String value) {
             return assertUniquenessAndAdd(new MatchCondition(conditionField, EQ, value));
         }
 
         private Builder withTaggingCondition(String value) {
-            this.conditions.put(
-                    ConditionField.TAGGING, new MatchCondition(ConditionField.TAGGING, EQ, value));
+            this.conditions.put(TAGGING, new MatchCondition(TAGGING, EQ, value));
             return this;
         }
 
@@ -267,7 +266,7 @@ public class PostParams {
          *
          * @param conditionField Condition type specified
          * @param value Specifiled value for this condition
-         * @return @return The {@link Builder} object
+         * @return The {@link Builder} object
          */
         private Builder withStartingWithCondition(ConditionField conditionField, String value) {
             return assertUniquenessAndAdd(new MatchCondition(conditionField, STARTS_WITH, value));
@@ -280,12 +279,7 @@ public class PostParams {
         }
 
         private Builder assertUniquenessAndAdd(ChecksumCondition checksumCondition) {
-            new HashSet<>(
-                            asList(
-                                    ConditionField.CHECKSUM_CRC32,
-                                    ConditionField.CHECKSUM_CRC32C,
-                                    ConditionField.CHECKSUM_SHA1,
-                                    ConditionField.CHECKSUM_SHA256))
+            new HashSet<>(asList(CHECKSUM_CRC32, CHECKSUM_CRC32C, CHECKSUM_SHA1, CHECKSUM_SHA256))
                     .forEach(
                             a -> {
                                 if (conditions.containsKey(a)) {
@@ -324,7 +318,7 @@ public class PostParams {
 
         private Builder assertUniquenessAndAddTag(String key, String value) {
             throwExceptionIfConditionIsPresent(
-                    ConditionField.TAGGING,
+                    TAGGING,
                     "Either the method withTag() or withTagging() can be used for adding tagging,"
                             + " not both");
             tags.add(new Tag(key, value));
@@ -383,8 +377,7 @@ public class PostParams {
          * @return The {@link Builder} object
          */
         public Builder withSuccessActionStatus(SuccessActionStatus successActionStatus) {
-            return withCondition(
-                    ConditionField.SUCCESS_ACTION_STATUS, successActionStatus.getCode());
+            return withCondition(SUCCESS_ACTION_STATUS, successActionStatus.getCode());
         }
 
         public enum EncryptionAlgorithm {
@@ -450,7 +443,7 @@ public class PostParams {
          * @return The {@link Builder} object
          */
         public Builder withCacheControl(String value) {
-            return withCondition(ConditionField.CACHE_CONTROL, value);
+            return withCondition(CACHE_CONTROL, value);
         }
 
         /**
@@ -460,7 +453,16 @@ public class PostParams {
          * @return The {@link Builder} object
          */
         public Builder withCacheControlStartingWith(String value) {
-            return withStartingWithCondition(ConditionField.CACHE_CONTROL, value);
+            return withStartingWithCondition(CACHE_CONTROL, value);
+        }
+
+        /**
+         * Allows the uploader to specify any cache control value.
+         *
+         * @return The {@link Builder} object
+         */
+        public Builder withAnyCacheControl() {
+            return withStartingWithCondition(CACHE_CONTROL, "");
         }
 
         /**
@@ -469,10 +471,10 @@ public class PostParams {
          * Not to be confused with file extension. To limit that use {@link KeyConditionUtil}
          *
          * @param value Content Type to be used
-         * @return @return The {@link Builder} object
+         * @return The {@link Builder} object
          */
         public Builder withContentType(String value) {
-            return withCondition(ConditionField.CONTENT_TYPE, value);
+            return withCondition(CONTENT_TYPE, value);
         }
 
         /**
@@ -482,10 +484,21 @@ public class PostParams {
          * KeyConditionUtil}
          *
          * @param value Content Type to be used
-         * @return @return The {@link Builder} object
+         * @return The {@link Builder} object
          */
         public Builder withContentTypeStartingWith(String value) {
-            return withStartingWithCondition(ConditionField.CONTENT_TYPE, value);
+            return withStartingWithCondition(CONTENT_TYPE, value);
+        }
+
+        /**
+         * Allows specifying any content type for this upload. Example: 'audio/aac', 'text/plain'.
+         * This can be seen in the metadata information in the s3 bucket. Not to be confused with
+         * file extension. To limit that use {@link KeyConditionUtil}
+         *
+         * @return The {@link Builder} object
+         */
+        public Builder withAnyContentType() {
+            return withStartingWithCondition(CONTENT_TYPE, "");
         }
 
         /**
@@ -496,7 +509,7 @@ public class PostParams {
          * @return The {@link Builder} object
          */
         public Builder withContentDisposition(String value) {
-            return withCondition(ConditionField.CONTENT_DISPOSITION, value);
+            return withCondition(CONTENT_DISPOSITION, value);
         }
 
         /**
@@ -507,7 +520,16 @@ public class PostParams {
          * @return The {@link Builder} object
          */
         public Builder withContentDispositionStartingWith(String value) {
-            return withStartingWithCondition(ConditionField.CONTENT_DISPOSITION, value);
+            return withStartingWithCondition(CONTENT_DISPOSITION, value);
+        }
+
+        /**
+         * Allows the uploader to specify any content disposition.
+         *
+         * @return The {@link Builder} object
+         */
+        public Builder withAnyContentDisposition() {
+            return withStartingWithCondition(CONTENT_DISPOSITION, "");
         }
 
         /**
@@ -518,7 +540,7 @@ public class PostParams {
          * @return The {@link Builder} object
          */
         public Builder withContentEncoding(String value) {
-            return withCondition(ConditionField.CONTENT_ENCODING, value);
+            return withCondition(CONTENT_ENCODING, value);
         }
 
         /**
@@ -529,7 +551,16 @@ public class PostParams {
          * @return The {@link Builder} object
          */
         public Builder withContentEncodingStartingWith(String value) {
-            return withStartingWithCondition(ConditionField.CONTENT_ENCODING, value);
+            return withStartingWithCondition(CONTENT_ENCODING, value);
+        }
+
+        /**
+         * Allows the uploader to specify any content encoding for this upload.
+         *
+         * @return The {@link Builder} object
+         */
+        public Builder withAnyContentEncoding() {
+            return withStartingWithCondition(CONTENT_ENCODING, "");
         }
 
         /**
@@ -540,7 +571,7 @@ public class PostParams {
          * @return The {@link Builder} object
          */
         public Builder withExpires(String value) {
-            return withCondition(ConditionField.EXPIRES, value);
+            return withCondition(EXPIRES, value);
         }
 
         /**
@@ -551,7 +582,16 @@ public class PostParams {
          * @return The {@link Builder} object
          */
         public Builder withExpiresStartingWith(String value) {
-            return withStartingWithCondition(ConditionField.EXPIRES, value);
+            return withStartingWithCondition(EXPIRES, value);
+        }
+
+        /**
+         * Allows specifying any Expires condition for this upload.
+         *
+         * @return The {@link Builder} object
+         */
+        public Builder withAnyExpires() {
+            return withStartingWithCondition(EXPIRES, "");
         }
 
         /**
@@ -569,7 +609,7 @@ public class PostParams {
          * @return The {@link Builder} object
          */
         public Builder withSuccessActionRedirect(String value) {
-            return withCondition(ConditionField.SUCCESS_ACTION_REDIRECT, value);
+            return withCondition(SUCCESS_ACTION_REDIRECT, value);
         }
 
         /**
@@ -587,7 +627,23 @@ public class PostParams {
          * @return The {@link Builder} object
          */
         public Builder withSuccessActionRedirectStartingWith(String value) {
-            return withStartingWithCondition(ConditionField.SUCCESS_ACTION_REDIRECT, value);
+            return withStartingWithCondition(SUCCESS_ACTION_REDIRECT, value);
+        }
+
+        /**
+         * Allows specifying any success_action_redirect for this upload. This condition is used to
+         * redirect the user to another page after the upload <br>
+         * <br>
+         * This condition is used to redirect the user to another page after the upload. AWS will
+         * add correspondent query parameters into the end of the url such as {@code
+         * https://www.mydomain.com/?bucket=mybucket&key=test.txt&etag=%2254b0c58c7ce9f2a8b551351102ee0938%22}
+         * <br>
+         * <br>
+         *
+         * @return The {@link Builder} object
+         */
+        public Builder withAnySuccessActionRedirect() {
+            return withStartingWithCondition(SUCCESS_ACTION_REDIRECT, "");
         }
 
         /**
@@ -603,7 +659,7 @@ public class PostParams {
          * link to understand what each one of the canned acl permissions mean.
          */
         public Builder withAcl(CannedAcl cannedAcl) {
-            return withCondition(ConditionField.ACL, cannedAcl.cannedAcl);
+            return withCondition(ACL, cannedAcl.cannedAcl);
         }
 
         /**
@@ -612,14 +668,30 @@ public class PostParams {
          * recommends that you disable ACLs except in unusual circumstances where you need to
          * control access for each object individually.</a>.
          *
-         * <p>Allows specifying how should be the begging of the value of the acl for this object.
+         * <p>Allows specifying how should be the beginning of the value of the acl for this object.
          *
          * <p>Check <a
          * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/acl-overview.html">this</a>
          * link to understand what each one of the canned acl permissions mean.
          */
         public Builder withAclStartingWith(String value) {
-            return withStartingWithCondition(ConditionField.ACL, value);
+            return withStartingWithCondition(ACL, value);
+        }
+
+        /**
+         * Warning: <a
+         * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/about-object-ownership.html">Aws
+         * recommends that you disable ACLs except in unusual circumstances where you need to
+         * control access for each object individually.</a>.
+         *
+         * <p>Allows specifying any value for the for this object.
+         *
+         * <p>Check <a
+         * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/acl-overview.html">this</a>
+         * link to understand what each one of the canned acl permissions mean.
+         */
+        public Builder withAnyAcl() {
+            return withStartingWithCondition(ACL, "");
         }
 
         /**
@@ -673,7 +745,7 @@ public class PostParams {
         public Builder withMeta(String metaName, String value) {
             Objects.requireNonNull(metaName);
             Objects.requireNonNull(value);
-            conditions.put(ConditionField.META, new MetaCondition(EQ, metaName, value));
+            conditions.put(META, new MetaCondition(EQ, metaName, value));
             return this;
         }
 
@@ -690,8 +762,7 @@ public class PostParams {
         public Builder withMetaStartingWith(String metaName, String startingValue) {
             Objects.requireNonNull(metaName);
             Objects.requireNonNull(startingValue);
-            conditions.put(
-                    ConditionField.META, new MetaCondition(STARTS_WITH, metaName, startingValue));
+            conditions.put(META, new MetaCondition(STARTS_WITH, metaName, startingValue));
             return this;
         }
 
@@ -704,7 +775,7 @@ public class PostParams {
          * @return The {@link Builder} object
          */
         public Builder withStorageClass(StorageClass storageClass) {
-            return withCondition(ConditionField.STORAGE_CLASS, storageClass.name());
+            return withCondition(STORAGE_CLASS, storageClass.name());
         }
 
         /**
@@ -720,7 +791,7 @@ public class PostParams {
          * @return The {@link Builder} object
          */
         public Builder withWebsiteRedirectLocation(String value) {
-            return withCondition(ConditionField.WEBSITE_REDIRECT_LOCATION, value);
+            return withCondition(WEBSITE_REDIRECT_LOCATION, value);
         }
 
         /**
@@ -730,7 +801,7 @@ public class PostParams {
          */
         public Builder withChecksumCrc32(String checksumCrc32Value) {
             return assertUniquenessAndAdd(
-                    new ChecksumCondition(ConditionField.CHECKSUM_CRC32, checksumCrc32Value));
+                    new ChecksumCondition(CHECKSUM_CRC32, checksumCrc32Value));
         }
 
         /**
@@ -740,7 +811,7 @@ public class PostParams {
          */
         public Builder withChecksumCrc32c(String checksumCrc32cValue) {
             return assertUniquenessAndAdd(
-                    new ChecksumCondition(ConditionField.CHECKSUM_CRC32C, checksumCrc32cValue));
+                    new ChecksumCondition(CHECKSUM_CRC32C, checksumCrc32cValue));
         }
 
         /**
@@ -750,7 +821,7 @@ public class PostParams {
          */
         public Builder withChecksumSha1(String checksumSha1Base64Encoded) {
             return assertUniquenessAndAdd(
-                    new ChecksumCondition(ConditionField.CHECKSUM_SHA1, checksumSha1Base64Encoded));
+                    new ChecksumCondition(CHECKSUM_SHA1, checksumSha1Base64Encoded));
         }
 
         /**
@@ -760,13 +831,12 @@ public class PostParams {
          */
         public Builder withChecksumSha256(String checksumSha256Base64Encoded) {
             return assertUniquenessAndAdd(
-                    new ChecksumCondition(
-                            ConditionField.CHECKSUM_SHA256, checksumSha256Base64Encoded));
+                    new ChecksumCondition(CHECKSUM_SHA256, checksumSha256Base64Encoded));
         }
 
         /** Allows specifying which algorithm should be used for server-side encryption. */
         public Builder withServerSideEncryption(EncryptionAlgorithm encryptionAlgorithm) {
-            return withCondition(ConditionField.SERVER_SIDE_ENCRYPTION, encryptionAlgorithm.value);
+            return withCondition(SERVER_SIDE_ENCRYPTION, encryptionAlgorithm.value);
         }
 
         /**
@@ -777,14 +847,14 @@ public class PostParams {
          * @return The {@link Builder} object
          */
         public Builder withServerSideEncryptionAwsKmsKeyId(String awsKmsKeyId) {
-            return withCondition(ConditionField.SERVER_SIDE_ENCRYPTION_AWS_KMS_KEY_ID, awsKmsKeyId);
+            return withCondition(SERVER_SIDE_ENCRYPTION_AWS_KMS_KEY_ID, awsKmsKeyId);
         }
 
         /**
          * Allows specifying the encryption context for this file upload. That is, and optional set
          * of key-value pairs that can contain contextual information about the upload. It is used
          * as ADD, that is, non-secret data that is provided to encryption and decryption operations
-         * to add an additional integrity and authenticity check on the encrypted data. For more
+         * to set an additional integrity and authenticity check on the encrypted data. For more
          * information vide 'Encryption context' in the <a
          * href="https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html">aws
          * documentation.</a>
@@ -793,7 +863,7 @@ public class PostParams {
          * @return The {@link Builder} object
          */
         public Builder withServerSideEncryptionContext(String awsKmsKeyId) {
-            return withCondition(ConditionField.SERVER_SIDE_ENCRYPTION_CONTEXT, awsKmsKeyId);
+            return withCondition(SERVER_SIDE_ENCRYPTION_CONTEXT, awsKmsKeyId);
         }
 
         /**
@@ -805,7 +875,7 @@ public class PostParams {
          * @return The {@link Builder} object
          */
         public Builder withServerSideEncryptionBucketKeyEnabled() {
-            return withCondition(ConditionField.SERVER_SIDE_ENCRYPTION_BUCKET_KEY_ENABLED, "true");
+            return withCondition(SERVER_SIDE_ENCRYPTION_BUCKET_KEY_ENABLED, "true");
         }
 
         /**
@@ -814,8 +884,7 @@ public class PostParams {
          * @return The {@link Builder} object
          */
         public Builder withServerSideEncryptionCustomerAlgorithmAES256() {
-            return withCondition(
-                    ConditionField.SERVER_SIDE_ENCRYPTION_CUSTOMER_ALGORITHM, "AES256");
+            return withCondition(SERVER_SIDE_ENCRYPTION_CUSTOMER_ALGORITHM, "AES256");
         }
 
         /**
@@ -827,9 +896,7 @@ public class PostParams {
          * @return The {@link Builder} object
          */
         public Builder withServerSideEncryptionCustomerKey(String encryptionKeyDigestAsBase64) {
-            return withCondition(
-                    ConditionField.SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY,
-                    encryptionKeyDigestAsBase64);
+            return withCondition(SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY, encryptionKeyDigestAsBase64);
         }
 
         /**
@@ -843,8 +910,7 @@ public class PostParams {
          */
         public Builder withServerSideEncryptionCustomerKeyMD5(String encryptionKeyDigestAsBase64) {
             return withCondition(
-                    ConditionField.SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY_MD5,
-                    encryptionKeyDigestAsBase64);
+                    SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY_MD5, encryptionKeyDigestAsBase64);
         }
     }
 

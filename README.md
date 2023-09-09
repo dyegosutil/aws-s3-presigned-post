@@ -4,7 +4,7 @@ Generates authenticated request data to be used by a chosen http client to uploa
 
 The library receives the mandatory and optional parameters alongside with the conditions supported by AWS S3 giving back the data
 to be used for the upload, including policy and the signature generated using the
-[AWS Signature Version 4](https://docs.aws.amazon.com/AmazonS3/latest/API/sig-v4-authenticating-requests.html) specification.
+[AWS Signature Version 4](https://docs.aws.amazon.com/AmazonS3/latest/API/sig-v4-authenticating-requests.html) specification:
 
 
 |     Param Name     | Value                                                              |
@@ -13,7 +13,7 @@ to be used for the upload, including policy and the signature generated using th
 | `x-amz-algorithm`  | `AWS4-HMAC-SHA256`                                                 |
 | `x-amz-credential` | `AKIA0000000000000000/20221009/eu-central-1/s3/aws4_request`       |
 | `x-amz-signature`  | `a4cee4221d15970bf80e24b393658465fdf67e32df7bbd77e54f5182d3a14esd` |
-|    `x-amz-date`    | `20221009T212242Z`                                                 |
+|    `x-amz-date`    | `20231009T212242Z`                                                 |
 |      `policy`      | `{"expiration":"2022-10-09T21:32:42.682Z" ...}`                    |
 
 ## Usage
@@ -24,7 +24,7 @@ to be used for the upload, including policy and the signature generated using th
 [//]: # (TODO Correct version of library to automatic and correct name and version)
 Gradle Kotlin:
 ```kotlin
-implementation("io.github.dyegosutil:aws-s3-presigned-post:0.1.0")
+implementation("io.github.dyegosutil:aws-s3-presigned-post:0.1.0-beta")
 ```
 
 Maven:
@@ -114,11 +114,20 @@ PostParams
 ```
 For more examples look into the `integrationtests` package inside `src/test`.
 
+Allow the uploader to add any content type but enforce that the server side encryption `AES256` should be specified. 
+```java
+PostParams
+        .builder(Region.EU_CENTRAL_1, EXPIRATION_DATE, "myBucket", withKey("test.txt"))
+        .withAnyContentType()
+        .withServerSideEncryption(AES256)
+        .build())
+```
+
 ## Features
 
 - Provides a guided approach with a builder to create a non-error prone `PreSignedPost`
-- Adding the following conditions using the util methods `withConditionName` and/or
-  `withConditionNameStartingWith`:
+- Adding the following conditions using the util methods `withConditionName`, `withAnyConditionName` and/or 
+`withConditionNameStartingWith`. The `ConditionName` here can be any of the following:
     - Bucket
     - Region
     - Expiration Date
@@ -147,21 +156,21 @@ For more examples look into the `integrationtests` package inside `src/test`.
     - Allows specifying the algorithm to use to when encrypting the object.
     - Allows specifying the base64 encoded encryption key to be used for this file upload
     - Allows specifying the base64 encoded 128-bit MD5 digest of the encryption key
-- Provides `PresignedFreeTextPost`, an advanced option that provides flexibility for creating a Pre Signed Post on which
+- `PresignedFreeTextPost`: an advanced option that provides flexibility for creating a Pre Signed Post on which
   parameters and conditions can be provided freely. Even if this library does not support a new AWS feature, using this
   approach will probably make it possible to use it. Note that this option requires some understanding of the AWS request
   creation and signing process.
 
 ## Notes
-- Remember that when using `with(param)StartingWith` conditions, the library cannot foresee which value to used. Hence, 
+- Remember that when using `withConditionNameStartingWith` conditions, the library cannot foresee which value to used. Hence, 
 the PreSignedPost won't provide this data letting the uploader to decided how to fill up this value.
 - The library uses `DefaultCredentialsProvider` to obtain the aws credentials.
-  Check [this](https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/credentials.html) page to check how to provide it
+  Check [this](https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/credentials.html) page to decide how to provide it
 - If an `ASIA` aws access key is found, the library will return a new param `x-amz-security-token`. Independently if
   it is being added with the method `withSessionToken` or not.
 - To allow the user to upload any key name, use ```withAnyKey()``` and submit in the http call for the `key` param
-  the value `${filename}`. Note that `${filename}` variable is not compatible for `with(param)` conditions.
-  Only for `with(param)StartingWith` and `withAny(param)`.
+  the value `${filename}`. Note that `${filename}` variable is not compatible with `withKey()` condition.
+  Only for `withKeyStartingWith` and `withAnyKey()`.
 - When ```content-length-range``` is used, it is not necessary to specify this condition while using the pre signed post,
   even though it is in the policy. Note that this is the only exception, all other valuedConditions should be passed to aws
   otherwise it will return an error
@@ -258,8 +267,6 @@ It is because you first have to enable ACL usage in the bucket before using it i
 The AWS Java SDK 2 does not support the generation of Pre Signed Post, different from other AWS SDKs such as JS which does
 support it. What is offered for Java is the [Pre Signed Put](https://github.com/aws/aws-sdk-java-v2/blob/13887532e50932bb3a93680884e94bd087a58abb/services/s3/src/main/java/software/amazon/awssdk/services/s3/presigner/S3Presigner.java#L325) which does not support all the conditions available in the Pre Signed Post such as limiting the file size of the upload
 and many others.
-
-
 
 ## Contributing
 

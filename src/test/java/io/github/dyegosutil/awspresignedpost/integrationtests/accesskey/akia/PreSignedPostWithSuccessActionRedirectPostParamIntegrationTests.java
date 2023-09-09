@@ -6,6 +6,8 @@ import io.github.dyegosutil.awspresignedpost.presigned.PreSignedPost;
 import io.github.dyegosutil.awspresignedpost.signer.S3PostSigner;
 import okhttp3.Request;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -24,21 +26,47 @@ public class PreSignedPostWithSuccessActionRedirectPostParamIntegrationTests
         environmentVariables.set("AWS_SESSION_TOKEN", null);
     }
 
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("getRedirectUploadConditionsTestCases")
-    void shouldTestUploadUsingRedirectCondition(
-            String testDescription, PostParams postParams, String redirectAwsConditionName) {
+    @Test
+    @DisplayName(
+            value =
+                    "Should succeed while uploading file to S3 when using the"
+                            + " samesuccess_action_redirect specified in the policy and having the"
+                            + " correct return from the http client")
+    void shouldTestUploadUsingRedirectCondition() {
+        // Arrange
+        PostParams postParams =
+                createDefaultPostParamBuilderSpecifyingKey()
+                        .withSuccessActionRedirect("https://www.google.com")
+                        .build();
+
         // Act
         PreSignedPost presignedPost = S3PostSigner.sign(postParams);
 
         Map<String, String> conditions = presignedPost.getConditions();
         Request request = createRequestFromConditions(conditions, presignedPost.getUrl());
-
-        // Act
         String redirectInResponse = postFileIntoS3ReturningRedirect(request);
 
         // Arrange
-        assertThat(redirectInResponse).isEqualTo(conditions.get(redirectAwsConditionName));
+        assertThat(redirectInResponse).isEqualTo(conditions.get("success_action_redirect"));
+    }
+
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getRedirectUploadStartWithConditionsTestCases")
+    void shouldTestUploadUsingRedirectConditionStartingWith(
+            String testDescription, PostParams postParams) {
+        // Arrange
+        String successActionRedirectValue = "https://www.google.com";
+
+        // Act
+        PreSignedPost presignedPost = S3PostSigner.sign(postParams);
+
+        Map<String, String> conditions = presignedPost.getConditions();
+        conditions.put("success_action_redirect", successActionRedirectValue);
+        Request request = createRequestFromConditions(conditions, presignedPost.getUrl());
+        String redirectInResponse = postFileIntoS3ReturningRedirect(request);
+
+        // Arrange
+        assertThat(redirectInResponse).isEqualTo(successActionRedirectValue);
     }
 
     /**
@@ -65,17 +93,24 @@ public class PreSignedPostWithSuccessActionRedirectPostParamIntegrationTests
         assertThat(redirectInResponse).isEqualTo(conditions.get(redirectAwsConditionName));
     }
 
-    public static Stream<Arguments> getRedirectUploadConditionsTestCases() {
+    public static Stream<Arguments> getRedirectUploadStartWithConditionsTestCases() {
         return Stream.of(
-                // success_action_redirect
+                // success_action_redirect - startingWith
                 of(
                         "Should succeed while uploading file to S3 when using the same"
                                 + " success_action_redirect specified in the policy and having the"
                                 + " correct return from the http client",
                         createDefaultPostParamBuilderSpecifyingKey()
-                                .withSuccessActionRedirect("https://www.google.com")
-                                .build(),
-                        "success_action_redirect"));
+                                .withSuccessActionRedirectStartingWith("https://www.goo")
+                                .build()),
+                // success_action_redirect - withAny
+                of(
+                        "Should succeed while uploading file to S3 when using any"
+                                + " success_action_redirect and having the"
+                                + " correct return from the http client",
+                        createDefaultPostParamBuilderSpecifyingKey()
+                                .withAnySuccessActionRedirect()
+                                .build()));
     }
 
     public static Stream<Arguments> getCustomizedRedirectUploadConditionsTestCases() {
