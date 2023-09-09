@@ -147,7 +147,7 @@ For more examples look into the `integrationtests` package inside `src/test`.
     - Allows specifying the algorithm to use to when encrypting the object.
     - Allows specifying the base64 encoded encryption key to be used for this file upload
     - Allows specifying the base64 encoded 128-bit MD5 digest of the encryption key
-- Provides `PresignedFreeTextPost`, an advanced option that provides flexibility for creating a Pre Signed Post on which
+- `PresignedFreeTextPost`: an advanced option that provides flexibility for creating a Pre Signed Post on which
   parameters and conditions can be provided freely. Even if this library does not support a new AWS feature, using this
   approach will probably make it possible to use it. Note that this option requires some understanding of the AWS request
   creation and signing process.
