@@ -30,8 +30,8 @@ public class PreSignedPostWithSuccessActionRedirectPostParamIntegrationTests
     @DisplayName(
             value =
                     "Should succeed while uploading file to S3 when using the"
-                        + " samesuccess_action_redirect specified in the policy and having the"
-                        + " correct return from the http client")
+                            + " samesuccess_action_redirect specified in the policy and having the"
+                            + " correct return from the http client")
     void shouldTestUploadUsingRedirectCondition() {
         // Arrange
         PostParams postParams =

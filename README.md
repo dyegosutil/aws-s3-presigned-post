@@ -162,7 +162,6 @@ PostParams
   creation and signing process.
 
 ## Notes
-- Java 8 compatible
 - Remember that when using `withConditionNameStartingWith` conditions, the library cannot foresee which value to used. Hence, 
 the PreSignedPost won't provide this data letting the uploader to decided how to fill up this value.
 - The library uses `DefaultCredentialsProvider` to obtain the aws credentials.
