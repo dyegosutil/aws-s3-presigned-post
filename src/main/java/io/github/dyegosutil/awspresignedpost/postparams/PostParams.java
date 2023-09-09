@@ -306,8 +306,7 @@ public class PostParams {
             return this;
         }
 
-        private void throwExceptionIfConditionIsPresent(
-                ConditionField conditionField, String errorMessage) {
+        private void throwExceptionIfConditionIsPresent(ConditionField conditionField, String errorMessage) {
             if (conditions.containsKey(conditionField)) {
                 throw new IllegalArgumentException(errorMessage);
             }

@@ -246,8 +246,7 @@ public class PreSignedPostOptionalPostParamsIntegrationTests extends Integration
                             + " server-side-encryption-context specified is the same as the one in"
                             + " the policy",
                         createDefaultPostParamBuilderSpecifyingKey()
-                                .withServerSideEncryption(
-                                        PostParams.Builder.EncryptionAlgorithm.AWS_KMS)
+                                .withServerSideEncryption(PostParams.Builder.EncryptionAlgorithm.AWS_KMS)
                                 .withServerSideEncryptionContext("ewogICJ0ZXN0IjogInRlc3QiCn0=")
                                 .build()),
                 // server-side-encryption-bucket-key-enabled
