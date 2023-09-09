@@ -279,12 +279,7 @@ public class PostParams {
         }
 
         private Builder assertUniquenessAndAdd(ChecksumCondition checksumCondition) {
-            new HashSet<>(
-                            asList(
-                                    CHECKSUM_CRC32,
-                                    CHECKSUM_CRC32C,
-                                    CHECKSUM_SHA1,
-                                    CHECKSUM_SHA256))
+            new HashSet<>(asList(CHECKSUM_CRC32, CHECKSUM_CRC32C, CHECKSUM_SHA1, CHECKSUM_SHA256))
                     .forEach(
                             a -> {
                                 if (conditions.containsKey(a)) {
@@ -462,7 +457,8 @@ public class PostParams {
         }
 
         /**
-         *  Allows the uploader to specify any cache control value.
+         * Allows the uploader to specify any cache control value.
+         *
          * @return The {@link Builder} object
          */
         public Builder withAnyCacheControl() {
@@ -495,10 +491,9 @@ public class PostParams {
         }
 
         /**
-         * Allows specifying any content type for this upload.
-         * Example: 'audio/aac', 'text/plain'. This can be seen in the metadata information in the
-         * s3 bucket. Not to be confused with file extension. To limit that use {@link
-         * KeyConditionUtil}
+         * Allows specifying any content type for this upload. Example: 'audio/aac', 'text/plain'.
+         * This can be seen in the metadata information in the s3 bucket. Not to be confused with
+         * file extension. To limit that use {@link KeyConditionUtil}
          *
          * @return The {@link Builder} object
          */
@@ -530,6 +525,7 @@ public class PostParams {
 
         /**
          * Allows the uploader to specify any content disposition.
+         *
          * @return The {@link Builder} object
          */
         public Builder withAnyContentDisposition() {
@@ -560,6 +556,7 @@ public class PostParams {
 
         /**
          * Allows the uploader to specify any content encoding for this upload.
+         *
          * @return The {@link Builder} object
          */
         public Builder withAnyContentEncoding() {
@@ -590,6 +587,7 @@ public class PostParams {
 
         /**
          * Allows specifying any Expires condition for this upload.
+         *
          * @return The {@link Builder} object
          */
         public Builder withAnyExpires() {
@@ -817,8 +815,7 @@ public class PostParams {
          */
         public Builder withChecksumSha256(String checksumSha256Base64Encoded) {
             return assertUniquenessAndAdd(
-                    new ChecksumCondition(
-                            CHECKSUM_SHA256, checksumSha256Base64Encoded));
+                    new ChecksumCondition(CHECKSUM_SHA256, checksumSha256Base64Encoded));
         }
 
         /** Allows specifying which algorithm should be used for server-side encryption. */
@@ -883,9 +880,7 @@ public class PostParams {
          * @return The {@link Builder} object
          */
         public Builder withServerSideEncryptionCustomerKey(String encryptionKeyDigestAsBase64) {
-            return withCondition(
-                    SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY,
-                    encryptionKeyDigestAsBase64);
+            return withCondition(SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY, encryptionKeyDigestAsBase64);
         }
 
         /**
@@ -899,8 +894,7 @@ public class PostParams {
          */
         public Builder withServerSideEncryptionCustomerKeyMD5(String encryptionKeyDigestAsBase64) {
             return withCondition(
-                    SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY_MD5,
-                    encryptionKeyDigestAsBase64);
+                    SERVER_SIDE_ENCRYPTION_CUSTOMER_KEY_MD5, encryptionKeyDigestAsBase64);
         }
     }
 

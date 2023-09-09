@@ -220,8 +220,7 @@ public class PreSignedPostOptionalPostParamsIntegrationTests extends Integration
                         "Should succeed while uploading file to S3 when the server-side-encryption"
                                 + " specified is AWS_KMS and is the same as the one in the policy",
                         createDefaultPostParamBuilderSpecifyingKey()
-                                .withServerSideEncryption(
-                                        AWS_KMS)
+                                .withServerSideEncryption(AWS_KMS)
                                 .build()),
                 // x-amz-server-side-encryption
                 of(
@@ -236,8 +235,7 @@ public class PreSignedPostOptionalPostParamsIntegrationTests extends Integration
                             + " server-side-encryption-aws-kms-key-id specified is the same as the"
                             + " one in the policy",
                         createDefaultPostParamBuilderSpecifyingKey()
-                                .withServerSideEncryption(
-                                        AWS_KMS)
+                                .withServerSideEncryption(AWS_KMS)
                                 .withServerSideEncryptionAwsKmsKeyId(
                                         System.getenv("AWS_KMS_S3_KEY"))
                                 .build()),
@@ -247,8 +245,7 @@ public class PreSignedPostOptionalPostParamsIntegrationTests extends Integration
                             + " server-side-encryption-context specified is the same as the one in"
                             + " the policy",
                         createDefaultPostParamBuilderSpecifyingKey()
-                                .withServerSideEncryption(
-                                        AWS_KMS)
+                                .withServerSideEncryption(AWS_KMS)
                                 .withServerSideEncryptionContext("ewogICJ0ZXN0IjogInRlc3QiCn0=")
                                 .build()),
                 // server-side-encryption-bucket-key-enabled
@@ -324,11 +321,11 @@ public class PreSignedPostOptionalPostParamsIntegrationTests extends Integration
                         false),
                 // Cache-Control - withAny
                 of(
-                        "Should succeed while uploading file to S3 when any cache-control is allowed",
-                        createDefaultPostParamBuilder()
-                                .withAnyCacheControl()
-                                .build(),
-                        createFormDataPartsWithKeyCondition("Cache-Control", "public, max-age=7200"),
+                        "Should succeed while uploading file to S3 when any cache-control is"
+                            + " allowed",
+                        createDefaultPostParamBuilder().withAnyCacheControl().build(),
+                        createFormDataPartsWithKeyCondition(
+                                "Cache-Control", "public, max-age=7200"),
                         true),
                 // Content-Type
                 of(
@@ -353,10 +350,9 @@ public class PreSignedPostOptionalPostParamsIntegrationTests extends Integration
                         false),
                 // Content-Type - withAny
                 of(
-                        "Should succeed while uploading file to S3 when any Content-Type is allowed",
-                        createDefaultPostParamBuilder()
-                                .withAnyContentType()
-                                .build(),
+                        "Should succeed while uploading file to S3 when any Content-Type is"
+                            + " allowed",
+                        createDefaultPostParamBuilder().withAnyContentType().build(),
                         createFormDataPartsWithKeyCondition("Content-Type", "text/plain"),
                         true),
                 // Content Disposition
@@ -387,9 +383,7 @@ public class PreSignedPostOptionalPostParamsIntegrationTests extends Integration
                 // Content Disposition - withAny
                 of(
                         "Should succeed while uploading file to S3 using any content disposition",
-                        createDefaultPostParamBuilder()
-                                .withAnyContentDisposition()
-                                .build(),
+                        createDefaultPostParamBuilder().withAnyContentDisposition().build(),
                         createFormDataPartsWithKeyCondition("Content-Disposition", "inline"),
                         true),
                 // Content-Encoding
@@ -420,9 +414,7 @@ public class PreSignedPostOptionalPostParamsIntegrationTests extends Integration
                 // Content-Encoding - withAny
                 of(
                         "Should succeed while uploading file to S3 with any the content encoding",
-                        createDefaultPostParamBuilder()
-                                .withAnyContentEncoding()
-                                .build(),
+                        createDefaultPostParamBuilder().withAnyContentEncoding().build(),
                         createFormDataPartsWithKeyCondition("Content-Encoding", "compress"),
                         true),
                 // Expires
@@ -454,9 +446,7 @@ public class PreSignedPostOptionalPostParamsIntegrationTests extends Integration
                 // Expires - withAny
                 of(
                         "Should succeed while uploading file to S3 using any Expires condition",
-                        createDefaultPostParamBuilder()
-                                .withAnyExpires()
-                                .build(),
+                        createDefaultPostParamBuilder().withAnyExpires().build(),
                         createFormDataPartsWithKeyCondition(
                                 "Expires", "Wed, 21 Oct 2015 07:29:00 GMT"),
                         true),
@@ -484,9 +474,7 @@ public class PreSignedPostOptionalPostParamsIntegrationTests extends Integration
                 // acl - withAny
                 of(
                         "Should succeed while uploading file to S3 with any acl",
-                        createDefaultPostParamBuilder()
-                                .withAnyAcl()
-                                .build(),
+                        createDefaultPostParamBuilder().withAnyAcl().build(),
                         createFormDataPartsWithKeyCondition("acl", "private"),
                         true),
                 // tagging
@@ -635,10 +623,7 @@ public class PreSignedPostOptionalPostParamsIntegrationTests extends Integration
                 of(
                         "Should fail while uploading file to S3 when the server-side-encryption"
                                 + " specified is not the same as the one in the policy",
-                        createDefaultPostParamBuilder()
-                                .withServerSideEncryption(
-                                        AWS_KMS)
-                                .build(),
+                        createDefaultPostParamBuilder().withServerSideEncryption(AWS_KMS).build(),
                         createFormDataPartsWithKeyCondition(
                                 "x-amz-server-side-encryption", "AES256"),
                         false),
@@ -648,8 +633,7 @@ public class PreSignedPostOptionalPostParamsIntegrationTests extends Integration
                             + " server-side-encryption-aws-kms-key-id specified is not the same as"
                             + " the one in the policy",
                         createDefaultPostParamBuilder()
-                                .withServerSideEncryption(
-                                        AWS_KMS)
+                                .withServerSideEncryption(AWS_KMS)
                                 .withServerSideEncryptionAwsKmsKeyId(
                                         System.getenv("AWS_KMS_S3_KEY"))
                                 .build(),
@@ -665,8 +649,7 @@ public class PreSignedPostOptionalPostParamsIntegrationTests extends Integration
                             + " server-side-encryption-context specified is not the same as the one"
                             + " in the policy",
                         createDefaultPostParamBuilder()
-                                .withServerSideEncryption(
-                                        AWS_KMS)
+                                .withServerSideEncryption(AWS_KMS)
                                 .withServerSideEncryptionContext("ewogICJ0ZXN0IjogInRlc3QiCn0=")
                                 .build(),
                         createFormDataPartsWithKeyCondition(
@@ -680,8 +663,7 @@ public class PreSignedPostOptionalPostParamsIntegrationTests extends Integration
                         "Should fail while uploading file to S3 when the base64 encoded json "
                                 + "server-side-encryption-context specified is not a json",
                         createDefaultPostParamBuilder()
-                                .withServerSideEncryption(
-                                        AWS_KMS)
+                                .withServerSideEncryption(AWS_KMS)
                                 .withServerSideEncryptionContext("dGhpcyBpcyBhIHRlc3Q=")
                                 .build(),
                         createFormDataPartsWithKeyCondition(
@@ -696,8 +678,7 @@ public class PreSignedPostOptionalPostParamsIntegrationTests extends Integration
                             + " server-side-encryption-bucket-key-enabled specified is not the same"
                             + " as the one in the policy",
                         createDefaultPostParamBuilder()
-                                .withServerSideEncryption(
-                                        AWS_KMS)
+                                .withServerSideEncryption(AWS_KMS)
                                 .withServerSideEncryptionBucketKeyEnabled()
                                 .build(),
                         createFormDataPartsWithKeyCondition(
