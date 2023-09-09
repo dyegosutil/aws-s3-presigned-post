@@ -112,7 +112,7 @@ PostParams
         .withContentLengthRange(7, 20)
         .build())
 ```
-For more examples look into the `integrationtests` package inside `src/test`
+For more examples look into the `integrationtests` package inside `src/test`.
 
 ## Features
 
