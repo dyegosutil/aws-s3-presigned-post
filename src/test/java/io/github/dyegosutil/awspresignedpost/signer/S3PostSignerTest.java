@@ -1,14 +1,22 @@
 package io.github.dyegosutil.awspresignedpost.signer;
 
+import static io.github.dyegosutil.awspresignedpost.conditions.KeyConditionUtil.withAnyKey;
+
+import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.InstanceOfAssertFactories.STRING;
+
 import io.github.dyegosutil.awspresignedpost.TestUtils;
 import io.github.dyegosutil.awspresignedpost.postparams.FreeTextPostParams;
 import io.github.dyegosutil.awspresignedpost.postparams.PostParams;
 import io.github.dyegosutil.awspresignedpost.presigned.PreSignedFreeTextPost;
 import io.github.dyegosutil.awspresignedpost.presigned.PreSignedPost;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+
 import software.amazon.awssdk.core.exception.SdkClientException;
 import software.amazon.awssdk.regions.Region;
+
 import uk.org.webcompere.systemstubs.environment.EnvironmentVariables;
 import uk.org.webcompere.systemstubs.jupiter.SystemStub;
 import uk.org.webcompere.systemstubs.jupiter.SystemStubsExtension;
@@ -18,10 +26,6 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-
-import static io.github.dyegosutil.awspresignedpost.conditions.KeyConditionUtil.withAnyKey;
-import static org.assertj.core.api.Assertions.*;
-import static org.assertj.core.api.InstanceOfAssertFactories.STRING;
 
 @ExtendWith(SystemStubsExtension.class)
 public class S3PostSignerTest {

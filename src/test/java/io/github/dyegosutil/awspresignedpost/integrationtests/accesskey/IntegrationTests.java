@@ -1,11 +1,18 @@
 package io.github.dyegosutil.awspresignedpost.integrationtests.accesskey;
 
+import static io.github.dyegosutil.awspresignedpost.conditions.KeyConditionUtil.withAnyKey;
+import static io.github.dyegosutil.awspresignedpost.conditions.KeyConditionUtil.withKey;
+
 import io.github.dyegosutil.awspresignedpost.postparams.PostParams;
+
 import okhttp3.*;
+
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import software.amazon.awssdk.regions.Region;
+
 import uk.org.webcompere.systemstubs.environment.EnvironmentVariables;
 import uk.org.webcompere.systemstubs.jupiter.SystemStub;
 import uk.org.webcompere.systemstubs.jupiter.SystemStubsExtension;
@@ -23,9 +30,6 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-
-import static io.github.dyegosutil.awspresignedpost.conditions.KeyConditionUtil.withAnyKey;
-import static io.github.dyegosutil.awspresignedpost.conditions.KeyConditionUtil.withKey;
 
 @ExtendWith(SystemStubsExtension.class)
 public class IntegrationTests {

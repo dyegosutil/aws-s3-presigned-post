@@ -1,14 +1,15 @@
 package io.github.dyegosutil.awspresignedpost.conditions;
 
+import static io.github.dyegosutil.awspresignedpost.conditions.MatchCondition.Operator.EQ;
+import static io.github.dyegosutil.awspresignedpost.conditions.MatchCondition.Operator.STARTS_WITH;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import static io.github.dyegosutil.awspresignedpost.conditions.MatchCondition.Operator.EQ;
-import static io.github.dyegosutil.awspresignedpost.conditions.MatchCondition.Operator.STARTS_WITH;
-import static org.assertj.core.api.Assertions.assertThat;
 
 class ConditionTest {
 

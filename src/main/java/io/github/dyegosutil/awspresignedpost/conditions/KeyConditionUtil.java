@@ -1,8 +1,8 @@
 package io.github.dyegosutil.awspresignedpost.conditions;
 
 import io.github.dyegosutil.awspresignedpost.conditions.key.ExactKeyCondition;
-import io.github.dyegosutil.awspresignedpost.conditions.key.KeyStartingWithCondition;
 import io.github.dyegosutil.awspresignedpost.conditions.key.KeyCondition;
+import io.github.dyegosutil.awspresignedpost.conditions.key.KeyStartingWithCondition;
 
 /** Provides util methods to create instances of {@link KeyCondition} */
 public class KeyConditionUtil {

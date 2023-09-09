@@ -1,5 +1,7 @@
 package io.github.dyegosutil.awspresignedpost.postparams;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.jupiter.api.Test;
 
 import java.time.Clock;
@@ -8,8 +10,6 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 class AmzExpirationDateTest {
 

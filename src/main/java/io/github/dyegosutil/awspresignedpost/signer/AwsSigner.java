@@ -1,15 +1,18 @@
 package io.github.dyegosutil.awspresignedpost.signer;
 
 import io.github.dyegosutil.awspresignedpost.AmzDate;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import software.amazon.awssdk.regions.Region;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 
 public final class AwsSigner {
 
