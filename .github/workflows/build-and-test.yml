@@ -1,5 +1,4 @@
 name: Build & Test
-#run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
 on: [push]
 
 concurrency:
@@ -38,4 +37,4 @@ jobs:
           AWS_REGION: ${{ secrets.AWS_REGION }}
           AWS_BUCKET: ${{ secrets.AWS_BUCKET }}
           AWS_KMS_S3_KEY: ${{ secrets.AWS_KMS_S3_KEY }}
-        run: ./gradlew :test --debug
+        run: ./gradlew :test --info
