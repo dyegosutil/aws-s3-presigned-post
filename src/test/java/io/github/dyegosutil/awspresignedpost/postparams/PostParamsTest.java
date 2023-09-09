@@ -373,7 +373,7 @@ class PostParamsTest {
                         CONTENT_DISPOSITION,
                         EQ),
                 of(
-                        "Should assert that condition withAnyDisposition was added",
+                        "Should assert that condition withAnyContentDisposition was added",
                         (Supplier<PostParams.Builder>)
                                 () -> createBuilder().withAnyContentDisposition(),
                         CONTENT_DISPOSITION,
