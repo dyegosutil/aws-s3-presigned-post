@@ -1,20 +1,22 @@
 package io.github.dyegosutil.awspresignedpost.postparams;
 
+import static io.github.dyegosutil.awspresignedpost.conditions.ConditionField.*;
+import static io.github.dyegosutil.awspresignedpost.conditions.MatchCondition.Operator.EQ;
+import static io.github.dyegosutil.awspresignedpost.conditions.MatchCondition.Operator.STARTS_WITH;
+
+import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
+
 import io.github.dyegosutil.awspresignedpost.conditions.*;
 import io.github.dyegosutil.awspresignedpost.conditions.key.ExactKeyCondition;
 import io.github.dyegosutil.awspresignedpost.conditions.key.KeyCondition;
 import io.github.dyegosutil.awspresignedpost.conditions.key.KeyStartingWithCondition;
 import io.github.dyegosutil.awspresignedpost.signer.S3PostSigner;
+
 import software.amazon.awssdk.regions.Region;
 
 import java.time.ZonedDateTime;
 import java.util.*;
-
-import static io.github.dyegosutil.awspresignedpost.conditions.ConditionField.*;
-import static java.util.Arrays.asList;
-import static java.util.Collections.singletonList;
-import static io.github.dyegosutil.awspresignedpost.conditions.MatchCondition.Operator.EQ;
-import static io.github.dyegosutil.awspresignedpost.conditions.MatchCondition.Operator.STARTS_WITH;
 
 /**
  * A pre-signed POST request that can be executed at a later time without requiring additional

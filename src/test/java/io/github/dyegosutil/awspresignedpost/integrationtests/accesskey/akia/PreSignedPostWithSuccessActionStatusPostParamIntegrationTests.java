@@ -1,10 +1,15 @@
 package io.github.dyegosutil.awspresignedpost.integrationtests.accesskey.akia;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.params.provider.Arguments.of;
+
 import io.github.dyegosutil.awspresignedpost.integrationtests.accesskey.IntegrationTests;
 import io.github.dyegosutil.awspresignedpost.postparams.PostParams;
 import io.github.dyegosutil.awspresignedpost.presigned.PreSignedPost;
 import io.github.dyegosutil.awspresignedpost.signer.S3PostSigner;
+
 import okhttp3.Request;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -13,9 +18,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.Map;
 import java.util.stream.Stream;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.params.provider.Arguments.of;
 
 public class PreSignedPostWithSuccessActionStatusPostParamIntegrationTests
         extends IntegrationTests {

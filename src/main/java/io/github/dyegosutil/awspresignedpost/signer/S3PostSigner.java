@@ -1,18 +1,26 @@
 package io.github.dyegosutil.awspresignedpost.signer;
 
+import static io.github.dyegosutil.awspresignedpost.conditions.ConditionField.*;
+import static io.github.dyegosutil.awspresignedpost.conditions.MatchCondition.Operator.EQ;
+
+import static java.util.Objects.requireNonNull;
+
 import com.google.gson.Gson;
 import com.google.gson.annotations.Expose;
+
 import io.github.dyegosutil.awspresignedpost.AmzDate;
-import io.github.dyegosutil.awspresignedpost.presigned.PreSignedFreeTextPost;
 import io.github.dyegosutil.awspresignedpost.conditions.Condition;
 import io.github.dyegosutil.awspresignedpost.conditions.ConditionField;
-import io.github.dyegosutil.awspresignedpost.conditions.MetaCondition;
 import io.github.dyegosutil.awspresignedpost.conditions.MatchCondition;
-import io.github.dyegosutil.awspresignedpost.presigned.PreSignedPost;
+import io.github.dyegosutil.awspresignedpost.conditions.MetaCondition;
 import io.github.dyegosutil.awspresignedpost.postparams.FreeTextPostParams;
 import io.github.dyegosutil.awspresignedpost.postparams.PostParams;
+import io.github.dyegosutil.awspresignedpost.presigned.PreSignedFreeTextPost;
+import io.github.dyegosutil.awspresignedpost.presigned.PreSignedPost;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import software.amazon.awssdk.auth.credentials.AwsCredentials;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.AwsSessionCredentials;
@@ -22,10 +30,6 @@ import software.amazon.awssdk.regions.Region;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static java.util.Objects.requireNonNull;
-import static io.github.dyegosutil.awspresignedpost.conditions.ConditionField.*;
-import static io.github.dyegosutil.awspresignedpost.conditions.MatchCondition.Operator.EQ;
 
 public final class S3PostSigner {
 

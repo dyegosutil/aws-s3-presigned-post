@@ -1,11 +1,12 @@
 package io.github.dyegosutil.awspresignedpost.conditions;
 
-import io.github.dyegosutil.awspresignedpost.conditions.key.ExactKeyCondition;
-import io.github.dyegosutil.awspresignedpost.conditions.key.KeyStartingWithCondition;
-import io.github.dyegosutil.awspresignedpost.conditions.key.KeyCondition;
-import org.junit.jupiter.api.Test;
-
 import static org.assertj.core.api.Assertions.assertThat;
+
+import io.github.dyegosutil.awspresignedpost.conditions.key.ExactKeyCondition;
+import io.github.dyegosutil.awspresignedpost.conditions.key.KeyCondition;
+import io.github.dyegosutil.awspresignedpost.conditions.key.KeyStartingWithCondition;
+
+import org.junit.jupiter.api.Test;
 
 class KeyConditionUtilTest {
 

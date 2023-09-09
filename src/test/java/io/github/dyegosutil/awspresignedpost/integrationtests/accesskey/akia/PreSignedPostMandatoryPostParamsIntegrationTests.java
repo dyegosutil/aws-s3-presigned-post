@@ -1,5 +1,10 @@
 package io.github.dyegosutil.awspresignedpost.integrationtests.accesskey.akia;
 
+import static io.github.dyegosutil.awspresignedpost.conditions.KeyConditionUtil.*;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.params.provider.Arguments.of;
+
 import io.github.dyegosutil.awspresignedpost.conditions.key.ExactKeyCondition;
 import io.github.dyegosutil.awspresignedpost.conditions.key.KeyCondition;
 import io.github.dyegosutil.awspresignedpost.conditions.key.KeyStartingWithCondition;
@@ -7,21 +12,20 @@ import io.github.dyegosutil.awspresignedpost.integrationtests.accesskey.Integrat
 import io.github.dyegosutil.awspresignedpost.postparams.PostParams;
 import io.github.dyegosutil.awspresignedpost.presigned.PreSignedPost;
 import io.github.dyegosutil.awspresignedpost.signer.S3PostSigner;
+
 import okhttp3.Request;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+
 import software.amazon.awssdk.regions.Region;
 
 import java.time.ZonedDateTime;
 import java.util.Map;
 import java.util.stream.Stream;
-
-import static io.github.dyegosutil.awspresignedpost.conditions.KeyConditionUtil.*;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.params.provider.Arguments.of;
 
 public class PreSignedPostMandatoryPostParamsIntegrationTests extends IntegrationTests {
 

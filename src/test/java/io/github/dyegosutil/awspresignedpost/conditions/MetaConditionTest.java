@@ -1,9 +1,10 @@
 package io.github.dyegosutil.awspresignedpost.conditions;
 
-import org.junit.jupiter.api.Test;
-
 import static io.github.dyegosutil.awspresignedpost.conditions.MatchCondition.Operator.EQ;
+
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+
+import org.junit.jupiter.api.Test;
 
 class MetaConditionTest {
 
