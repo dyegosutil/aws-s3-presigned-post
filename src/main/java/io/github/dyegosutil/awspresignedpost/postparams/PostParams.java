@@ -633,6 +633,22 @@ public class PostParams {
         }
 
         /**
+         * Allows specifying any success_action_redirect for this upload.
+         * This condition is used to redirect the user to another page after the upload <br>
+         * <br>
+         * This condition is used to redirect the user to another page after the upload. AWS will
+         * add correspondent query parameters into the end of the url such as {@code
+         * https://www.mydomain.com/?bucket=mybucket&key=test.txt&etag=%2254b0c58c7ce9f2a8b551351102ee0938%22}
+         * <br>
+         * <br>
+         *
+         * @return The {@link Builder} object
+         */
+        public Builder withAnySuccessActionRedirect() {
+            return withStartingWithCondition(SUCCESS_ACTION_REDIRECT, "");
+        }
+
+        /**
          * Warning: <a
          * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/about-object-ownership.html">Aws
          * recommends that you disable ACLs except in unusual circumstances where you need to
