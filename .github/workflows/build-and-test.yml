@@ -39,5 +39,5 @@ jobs:
           AWS_KMS_S3_KEY: ${{ secrets.AWS_KMS_S3_KEY }}
         run: |
           echo "$AWS_ACCESS_KEY_ID"
-          run: echo "AWS_SECRET_ACCESS_KEY"
+          echo "AWS_SECRET_ACCESS_KEY"
           ./gradlew :test --debug
