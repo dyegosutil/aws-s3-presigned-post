@@ -7,9 +7,7 @@ jobs:
   formatting:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3 # v2 minimum required
+      - uses: actions/checkout@v3
       - uses: axel-op/googlejavaformat-action@v3
         with:
           args: "--skip-sorting-imports --aosp --replace"
-          # Recommended if you use MacOS:
-          # github-token: ${{ secrets.GITHUB_TOKEN }}

@@ -180,6 +180,15 @@ public class PreSignedPostMandatoryPostParamsIntegrationTests extends Integratio
                         BUCKET,
                         withAnyKey(),
                         createFormDataParts("key", "myDifferentFileName.txt"),
+                        true),
+                // key using variable ${filename}
+                of(
+                        "Should succeed while uploading file to S3 when the ${filename} is used",
+                        REGION,
+                        EXPIRATION_DATE,
+                        BUCKET,
+                        withKeyStartingWith("user/leo/box/"),
+                        createFormDataParts("key", "user/leo/box/${filename}"),
                         true));
     }
 }

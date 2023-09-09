@@ -26,15 +26,14 @@ public class KeyConditionUtil {
      *
      * @param value The value which the key should start with when provided by the pre-signed post
      *     user
-     * @return @link KeyStartsWithCondition}
+     * @return {@link KeyStartingWithCondition}
      */
     public static KeyCondition withKeyStartingWith(String value) {
         return new KeyStartingWithCondition(value);
     }
 
     /**
-     * Allow any key to be specified by the pre-signed post user. If the value provided by the user
-     * for the param 'key' is ${filename}, the name of the file being uploaded will be used.
+     * Allow any key to be specified by the pre-signed post user.
      *
      * @return {@link KeyStartingWithCondition}
      */

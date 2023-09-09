@@ -93,19 +93,26 @@ That is it. The file should be in S3 now.
 
 Allow the uploader to use the name of the file being upload as S3 object Key:
 ```java
-PostParams.builder(REGION, EXPIRATION_DATE, BUCKET, withAnyKey());
-// Additionally, when passing the last parameter `file` to the http client, use the value `${filename}`
+PostParams.builder(Region.EU_CENTRAL_1, EXPIRATION_DATE, "myBucket", withAnyKey());
+// Additionally, when passing the last parameter `key` to the http client, use the value `${filename}`
 ```
 
-Allow upload only if the object key is `test.txt`(the http param, not the file name) and the file size is between
+Allow the uploader to upload to a path starting with a defined value and to use the name of the file being upload as S3
+object Key:
+```java
+PostParams.builder(Region.EU_CENTRAL_1, EXPIRATION_DATE, "myBucket", "user/leo/box/");
+// Additionally, when passing the last parameter `key` to the http client, use the value `user/leo/box/${filename}`
+```
+
+Only Allow upload only if the object key is `test.txt`(the http param, not the file name) and the file size is between
   7 and 20 bytes
 ```java
 PostParams
-        .builder(REGION, EXPIRATION_DATE, BUCKET, withKey("test.txt"))
+        .builder(Region.EU_CENTRAL_1, EXPIRATION_DATE, "myBucket", withKey("test.txt"))
         .withContentLengthRange(7, 20)
         .build())
 ```
-For more examples look into the `integrationtests` package inside `src/test`
+For more examples look into the `integrationtests` package inside `src/test`.
 
 ## Features
 
@@ -146,6 +153,8 @@ For more examples look into the `integrationtests` package inside `src/test`
   creation and signing process.
 
 ## Notes
+- Remember that when using `with(param)StartingWith` conditions, the library cannot foresee which value to used. Hence, 
+the PreSignedPost won't provide this data letting the uploader to decided how to fill up this value.
 - The library uses `DefaultCredentialsProvider` to obtain the aws credentials.
   Check [this](https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/credentials.html) page to check how to provide it
 - If an `ASIA` aws access key is found, the library will return a new param `x-amz-security-token`. Independently if
@@ -167,7 +176,7 @@ For more examples look into the `integrationtests` package inside `src/test`
 Nothing passed as parameter to the library is logged in any level to avoid logging possible PII data.  
 If debug log level is enabled, the only data logged is the:
 - Current now date used to build certain request params.
-- And the enum name of conditions used to build the Pre-signed post such as: `BUCKET,SUCCESS_ACTION_REDIRECT,KEY`
+- The enum name of conditions used to build the Pre-signed post such as: `BUCKET,SUCCESS_ACTION_REDIRECT,KEY`
 
 If there is the need to log more data, it can be done by decoding the base64 policy param returned by the library
 </details>
@@ -218,7 +227,7 @@ when the name of the uploaded file is `wrong_file_name.txt`, the upload still wo
 
 The parameter `key` set in the request has the correct value `uploads/my_file.txt`.  
 When `withKey("uploads/my_file.txt")` is used, the value of the parameter `file` or the name of the file being uploaded
-is not considered by AWS.What matter is that the value of the parameter `key` and that is how the file will be named in S3.    
+is not considered by AWS. What matter is that the value of the parameter `key`. That is how the file will be named in S3.    
 Note that the file name would matter if `startWith()` and `{filename}` would have been used in `PostParam` and in the http
 client request respectively.
 

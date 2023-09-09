@@ -213,7 +213,7 @@ public final class S3PostSigner {
     }
 
     /**
-     * In case an exact condition was used, the value so be sent to AWS S3 is known and thus can be
+     * In case an exact condition was used, the value to be sent to AWS S3 is known and thus can be
      * returned. Otherwise, a "start with" condition was used and therefore is not possible to
      * foresee which value will be used by the pre signed post caller
      *
