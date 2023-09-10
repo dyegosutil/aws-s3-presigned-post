@@ -1,5 +1,7 @@
 package io.github.dyegosutil.awspresignedpost.conditions;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.Objects;
 
 public class MetaCondition extends MatchCondition {
@@ -8,9 +10,9 @@ public class MetaCondition extends MatchCondition {
 
     public MetaCondition(Operator operator, String metaName, String value) {
         super(ConditionField.META, operator, value);
-        Objects.requireNonNull(operator);
-        Objects.requireNonNull(metaName);
-        Objects.requireNonNull(value);
+        requireNonNull(operator);
+        requireNonNull(metaName);
+        requireNonNull(value);
         this.metaName = metaName;
     }
 

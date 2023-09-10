@@ -1,5 +1,7 @@
 package io.github.dyegosutil.awspresignedpost.signer;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import io.github.dyegosutil.awspresignedpost.AmzDate;
 
 import org.slf4j.Logger;
@@ -7,7 +9,6 @@ import org.slf4j.LoggerFactory;
 
 import software.amazon.awssdk.regions.Region;
 
-import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
@@ -23,12 +24,11 @@ public final class AwsSigner {
         final String service = "s3";
         byte[] dateKey =
                 signMac(
-                        ("AWS4" + secretKey).getBytes(StandardCharsets.UTF_8),
-                        xAmzDate.formatForSigningKey().getBytes(StandardCharsets.UTF_8));
-        byte[] dateRegionKey = signMac(dateKey, region.id().getBytes(StandardCharsets.UTF_8));
-        byte[] dateRegionServiceKey =
-                signMac(dateRegionKey, service.getBytes(StandardCharsets.UTF_8));
-        return signMac(dateRegionServiceKey, "aws4_request".getBytes(StandardCharsets.UTF_8));
+                        ("AWS4" + secretKey).getBytes(UTF_8),
+                        xAmzDate.formatForSigningKey().getBytes(UTF_8));
+        byte[] dateRegionKey = signMac(dateKey, region.id().getBytes(UTF_8));
+        byte[] dateRegionServiceKey = signMac(dateRegionKey, service.getBytes(UTF_8));
+        return signMac(dateRegionServiceKey, "aws4_request".getBytes(UTF_8));
     }
 
     static byte[] signMac(byte[] key, byte[] data) {

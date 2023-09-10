@@ -104,7 +104,7 @@ PostParams.builder(Region.EU_CENTRAL_1, EXPIRATION_DATE, "myBucket", "user/leo/b
 // Additionally, when passing the last parameter `key` to the http client, use the value `user/leo/box/${filename}`
 ```
 
-Only Allow upload only if the object key is `test.txt`(the http param, not the file name) and the file size is between
+Only allow upload if the object key is `test.txt`(the http param, not the file name) and the file size is between
   7 and 20 bytes
 ```java
 PostParams
@@ -112,7 +112,6 @@ PostParams
         .withContentLengthRange(7, 20)
         .build())
 ```
-For more examples look into the `integrationtests` package inside `src/test`.
 
 Allow the uploader to add any content type but enforce that the server side encryption `AES256` should be specified. 
 ```java
@@ -123,10 +122,12 @@ PostParams
         .build())
 ```
 
+For more examples look into the `integrationtests` package inside `src/test`.
+
 ## Features
 
 - Provides a guided approach with a builder to create a non-error prone `PreSignedPost`
-- Adding the following conditions using the util methods `withConditionName`, `withAnyConditionName` and/or 
+- Adding the following conditions using the util methods `withConditionName`, `withAnyConditionName` and  
 `withConditionNameStartingWith`. The `ConditionName` here can be any of the following:
     - Bucket
     - Region
@@ -163,15 +164,14 @@ PostParams
 
 ## Notes
 - Java 8 compatible
-- Remember that when using `withConditionNameStartingWith` conditions, the library cannot foresee which value to used. Hence, 
-the PreSignedPost won't provide this data letting the uploader to decided how to fill up this value.
+- Remember that when using `withConditionNameStartingWith`, the library cannot foresee which value should be used in the client. Hence, 
+the PreSignedPost will provide only the `key` but not the `value` for this data letting the uploader decide how to fill up this value.
 - The library uses `DefaultCredentialsProvider` to obtain the aws credentials.
   Check [this](https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/credentials.html) page to decide how to provide it
-- If an `ASIA` aws access key is found, the library will return a new param `x-amz-security-token`. Independently if
-  it is being added with the method `withSessionToken` or not.
+- If an `ASIA` aws access key is found, the library will return a new param `x-amz-security-token`.
 - To allow the user to upload any key name, use ```withAnyKey()``` and submit in the http call for the `key` param
   the value `${filename}`. Note that `${filename}` variable is not compatible with `withKey()` condition.
-  Only for `withKeyStartingWith` and `withAnyKey()`.
+  Only for `withKeyStartingWith()` and `withAnyKey()`.
 - When ```content-length-range``` is used, it is not necessary to specify this condition while using the pre signed post,
   even though it is in the policy. Note that this is the only exception, all other valuedConditions should be passed to aws
   otherwise it will return an error
@@ -186,9 +186,9 @@ the PreSignedPost won't provide this data letting the uploader to decided how to
 Nothing passed as parameter to the library is logged in any level to avoid logging possible PII data.  
 If debug log level is enabled, the only data logged is the:
 - Current now date used to build certain request params.
-- The enum name of conditions used to build the Pre-signed post such as: `BUCKET,SUCCESS_ACTION_REDIRECT,KEY`
+- The enum name of conditions used to build the Pre-signed post such as: `BUCKET, SUCCESS_ACTION_REDIRECT, KEY`
 
-If there is the need to log more data, it can be done by decoding the base64 policy param returned by the library
+If there is the need to log more data, it can be done by decoding the base64 policy param returned in the `PresignedPost`
 </details>
 
 ## Running locally
@@ -238,14 +238,14 @@ when the name of the uploaded file is `wrong_file_name.txt`, the upload still wo
 The parameter `key` set in the request has the correct value `uploads/my_file.txt`.  
 When `withKey("uploads/my_file.txt")` is used, the value of the parameter `file` or the name of the file being uploaded
 is not considered by AWS. What matter is that the value of the parameter `key`. That is how the file will be named in S3.    
-Note that the file name would matter if `startWith()` and `{filename}` would have been used in `PostParam` and in the http
+Note that the file name would matter if `startWith()` and `${filename}` would have been used in `PostParam` and in the http
 client request respectively.
 
 ### If while trying to use ACLs you receive the message
 
 #### Description
 
-If while trying to use ACLs you receive the message
+While trying to use ACLs you receive the message
 
 ```
 <Message>The bucket does not allow ACLs</Message>
@@ -253,7 +253,7 @@ If while trying to use ACLs you receive the message
 
 #### Solution
 
-It is because you first have to enable ACL usage in the bucket before using it in he pre-signed post.
+First have to enable ACL usage in the bucket before using it in the pre-signed post.
 </details>
 
 ## Goals

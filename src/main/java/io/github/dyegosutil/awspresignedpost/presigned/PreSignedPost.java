@@ -1,7 +1,8 @@
 package io.github.dyegosutil.awspresignedpost.presigned;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.Map;
-import java.util.Objects;
 
 public class PreSignedPost {
     private final String url;
@@ -9,8 +10,8 @@ public class PreSignedPost {
     private final Map<String, String> conditions;
 
     public PreSignedPost(String url, Map<String, String> conditions) {
-        Objects.requireNonNull(url);
-        Objects.requireNonNull(conditions);
+        requireNonNull(url);
+        requireNonNull(conditions);
         this.url = url;
         this.conditions = conditions;
     }

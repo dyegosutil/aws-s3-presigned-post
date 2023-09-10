@@ -9,7 +9,6 @@ class TagTest {
     // Act
     @Test
     public void shouldTestTag() {
-
         // Act
         Tag tag = new Tag("testKey", "testValue");
 

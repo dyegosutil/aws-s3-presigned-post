@@ -46,9 +46,6 @@ public class PreSignedFreeTextPostAkiaAccessKeyIntegrationTest
                 getFormData(preSignedPost, getFormDataPartsForUploadWithCustomerEncryptionKey()));
     }
 
-    /**
-     * @return Simple test using mandatory params
-     */
     private static Arguments getSimpleUploadTestCase() {
         FreeTextPostParams freeTextPostParams = getFreeTextPostParams(getMandatoryConditions());
         PreSignedFreeTextPost preSignedPost = S3PostSigner.sign(freeTextPostParams);

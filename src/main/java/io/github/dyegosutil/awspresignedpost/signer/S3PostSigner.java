@@ -3,6 +3,7 @@ package io.github.dyegosutil.awspresignedpost.signer;
 import static io.github.dyegosutil.awspresignedpost.conditions.ConditionField.*;
 import static io.github.dyegosutil.awspresignedpost.conditions.MatchCondition.Operator.EQ;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Objects.requireNonNull;
 
 import com.google.gson.Gson;
@@ -27,7 +28,6 @@ import software.amazon.awssdk.auth.credentials.AwsSessionCredentials;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -67,8 +67,7 @@ public final class S3PostSigner {
                         postParams.getAmzExpirationDate().formatForPolicy(),
                         buildConditions(conditions, amzDate, credentials));
         final String policyJson = new Gson().toJson(policy);
-        final String policyB64 =
-                Base64.getEncoder().encodeToString(policyJson.getBytes(StandardCharsets.UTF_8));
+        final String policyB64 = Base64.getEncoder().encodeToString(policyJson.getBytes(UTF_8));
         final String signature =
                 generateSignature(postParams.getRegion(), amzDate, policyB64, awsCredentials);
 
@@ -89,8 +88,7 @@ public final class S3PostSigner {
 
     private static AwsCredentials getAwsCredentials() {
         AwsCredentialsProvider defaultCredentialsProvider = DefaultCredentialsProvider.create();
-        return validateAwsCredentials(
-                defaultCredentialsProvider); // TODO validation might not be needed
+        return validateAwsCredentials(defaultCredentialsProvider);
     }
 
     private static Map<ConditionField, Condition> getConditions(PostParams postParams) {
@@ -117,8 +115,9 @@ public final class S3PostSigner {
      * reference about how to use this method, check the correspondent integration tests in the
      * source code. <br>
      * <br>
-     * Creates the Pre-Signed Post using the data provided in {@link FreeTextPostParams} First the
-     * policy is created and then its base64 value is used to generate the signature using the <a
+     * Creates the {@link PreSignedFreeTextPost} using the data provided in {@link
+     * FreeTextPostParams} First the policy is created and then its base64 value is used to generate
+     * the signature using the <a
      * href="https://docs.aws.amazon.com/general/latest/gr/sigv4_signing.html">Aws Signature Version
      * 4 specification</a>
      *
@@ -135,8 +134,7 @@ public final class S3PostSigner {
         final Policy policy =
                 new Policy(params.getAmzExpirationDate().formatForPolicy(), params.getConditions());
         final String policyJson = new Gson().toJson(policy);
-        final String policyB64 =
-                Base64.getEncoder().encodeToString(policyJson.getBytes(StandardCharsets.UTF_8));
+        final String policyB64 = Base64.getEncoder().encodeToString(policyJson.getBytes(UTF_8));
         final String signature =
                 generateSignature(params.getRegion(), amzDate, policyB64, awsCredentials);
 
@@ -244,7 +242,7 @@ public final class S3PostSigner {
                 AwsSigner.signMac(
                         AwsSigner.generateSigningKey(
                                 awsCredentials.secretAccessKey(), region, amzDate),
-                        policyB64.getBytes(StandardCharsets.UTF_8)));
+                        policyB64.getBytes(UTF_8)));
     }
 
     private static void addSessionTokenIfNeeded(

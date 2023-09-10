@@ -1,5 +1,7 @@
 package io.github.dyegosutil.awspresignedpost.conditions;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.Objects;
 
 public abstract class Condition {
@@ -7,7 +9,7 @@ public abstract class Condition {
     protected final ConditionField conditionField;
 
     Condition(ConditionField conditionField) {
-        Objects.requireNonNull(conditionField);
+        requireNonNull(conditionField);
         this.conditionField = conditionField;
     }
 
