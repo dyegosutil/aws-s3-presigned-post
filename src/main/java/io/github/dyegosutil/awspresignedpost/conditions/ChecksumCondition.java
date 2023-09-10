@@ -1,9 +1,11 @@
 package io.github.dyegosutil.awspresignedpost.conditions;
 
+import static io.github.dyegosutil.awspresignedpost.conditions.MatchCondition.Operator.EQ;
+
 public class ChecksumCondition extends MatchCondition {
 
     public ChecksumCondition(ConditionField conditionField, String value) {
-        super(conditionField, Operator.EQ, value);
+        super(conditionField, EQ, value);
     }
 
     @Override

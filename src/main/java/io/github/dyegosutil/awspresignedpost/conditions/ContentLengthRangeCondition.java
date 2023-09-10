@@ -1,5 +1,7 @@
 package io.github.dyegosutil.awspresignedpost.conditions;
 
+import static io.github.dyegosutil.awspresignedpost.conditions.ConditionField.CONTENT_LENGTH_RANGE;
+
 /** Used to specify minimum and maximum size condition to accept the upload of a file */
 public class ContentLengthRangeCondition extends Condition {
 
@@ -7,7 +9,7 @@ public class ContentLengthRangeCondition extends Condition {
     private final long maximumValue;
 
     public ContentLengthRangeCondition(long minimumValue, long maximumValue) {
-        super(ConditionField.CONTENT_LENGTH_RANGE);
+        super(CONTENT_LENGTH_RANGE);
         this.minimumValue = minimumValue;
         this.maximumValue = maximumValue;
     }

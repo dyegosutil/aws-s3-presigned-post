@@ -6,6 +6,7 @@ import static io.github.dyegosutil.awspresignedpost.conditions.MatchCondition.Op
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
+import static java.util.Objects.requireNonNull;
 
 import io.github.dyegosutil.awspresignedpost.conditions.*;
 import io.github.dyegosutil.awspresignedpost.conditions.key.ExactKeyCondition;
@@ -19,14 +20,13 @@ import java.time.ZonedDateTime;
 import java.util.*;
 
 /**
- * A pre-signed POST request that can be executed at a later time without requiring additional
- * signing or authentication.
+ * Represents the parameters to be used to generate a pre-signed POST request that can be executed at a later time
+ * without requiring additional signing or authentication.
  */
 public class PostParams {
 
     private final String bucket;
     private final Region region;
-
     private final AmzExpirationDate amzExpirationDate;
     private final Map<ConditionField, Condition> conditions;
 
@@ -35,10 +35,10 @@ public class PostParams {
             Region region,
             AmzExpirationDate amzExpirationDate,
             Map<ConditionField, Condition> conditions) {
-        Objects.requireNonNull(bucket);
-        Objects.requireNonNull(region);
-        Objects.requireNonNull(amzExpirationDate);
-        Objects.requireNonNull(conditions);
+        requireNonNull(bucket);
+        requireNonNull(region);
+        requireNonNull(amzExpirationDate);
+        requireNonNull(conditions);
         this.amzExpirationDate = amzExpirationDate;
         this.bucket = bucket;
         this.region = region;
@@ -49,39 +49,39 @@ public class PostParams {
      * Used to instantiate the {@link Builder} object to be used to provide all the conditions that
      * must be fulfilled by for the AWS S3 post upload to be successful. This method accepts all the
      * minimum necessary parameters to generate a valid pre-signed POST. After the instantiation,
-     * optional conditions can be added using the methods like {@link
+     * optional conditions can be added using the methods such as {@link
      * Builder#withContentLengthRange(long, long)} or {@link
      * Builder#withContentTypeStartingWith(String)}. When said methods are called, validations are
      * done to guarantee that conflicting conditions are not added.
      *
-     * @param region Region to be used in the signature
+     * @param region Region to be used in the signature and credential field
      * @param expirationDate Date indicating util when the pre-signed post can be used. Ultimately,
      *     the value passed here will be converted to ISO8601 UTC format in the policy as per
      *     specified by AWS.
      * @param exactKeyCondition Specifies which is the exact value that should be used to perform
      *     the upload. For convenience, use the {@link KeyConditionUtil#withKey(String)} to build
      *     the condition.
-     * @param bucket The bucket when the file should be uploaded to.
-     * @return A PostParams builder which allows more fine-grained conditions to be added
+     * @param bucket The bucket where the file should be uploaded to.
+     * @return A PostParams builder which allows optional conditions to be added
      */
     public static Builder builder(
             Region region,
             ZonedDateTime expirationDate,
             String bucket,
             ExactKeyCondition exactKeyCondition) {
-        Objects.requireNonNull(expirationDate, "Argument expirationDate must not be null");
+        requireNonNull(expirationDate, "Argument expirationDate must not be null");
         return new Builder(
-                Objects.requireNonNull(region, "Argument region must not be null"),
+                requireNonNull(region, "Argument region must not be null"),
                 new AmzExpirationDate(expirationDate),
-                Objects.requireNonNull(exactKeyCondition, "Argument keyCondition must not be null"),
-                Objects.requireNonNull(bucket, "Argument bucket must not be null"));
+                requireNonNull(exactKeyCondition, "Argument exactKeyCondition must not be null"),
+                requireNonNull(bucket, "Argument bucket must not be null"));
     }
 
     /**
      * Used to instantiate the {@link Builder} object to be used to provide all the conditions that
      * must be fulfilled for the AWS S3 post upload to be successful. This method accepts all the
      * minimum necessary parameters to generate a valid pre-signed POST. After the instantiation,
-     * optional conditions can be added using the variation of methods like {@link
+     * optional conditions can be added using the variation of methods such as {@link
      * Builder#withContentLengthRange(long, long)} or {@link
      * Builder#withContentTypeStartingWith(String)}. When said methods are called, validations are
      * done to guarantee that conflicting conditions are not added.
@@ -90,10 +90,10 @@ public class PostParams {
      * @param expirationDate Date indicating util when the pre-signed post can be used. Ultimately,
      *     the value passed here will be converted to ISO8601 UTC format in the policy as per
      *     specified by AWS.
-     * @param keyStartingWithCondition Specifies which is the exact value that should be used to
-     *     perform the upload. For convenience, use the {@link
-     *     KeyConditionUtil#withKeyStartingWith(String)} {@link
-     *     KeyConditionUtil#withKeyStartingWith(String)} or to build the condition.
+     * @param keyStartingWithCondition Specifies which is starting value of the object key
+     *                                 that must be used to perform the upload. For convenience, use the {@link
+     *     KeyConditionUtil#withKeyStartingWith(String)}, {@link
+     *     KeyConditionUtil#withKeyStartingWith(String)} or {@link KeyConditionUtil#withAnyKey()} to build the condition.
      * @param bucket The bucket when the file should be uploaded to.
      * @return A PostParams builder which allows more fine-grained conditions to be added
      */
@@ -102,13 +102,13 @@ public class PostParams {
             ZonedDateTime expirationDate,
             String bucket,
             KeyStartingWithCondition keyStartingWithCondition) {
-        Objects.requireNonNull(expirationDate, "Argument expirationDate must not be null");
+        requireNonNull(expirationDate, "Argument expirationDate must not be null");
         return new Builder(
-                Objects.requireNonNull(region, "Argument region must not be null"),
+                requireNonNull(region, "Argument region must not be null"),
                 new AmzExpirationDate(expirationDate),
-                Objects.requireNonNull(
+                requireNonNull(
                         keyStartingWithCondition, "Argument keyCondition must not be null"),
-                Objects.requireNonNull(bucket, "Argument bucket must not be null"));
+                requireNonNull(bucket, "Argument bucket must not be null"));
     }
 
     public static final class Builder {
@@ -155,10 +155,10 @@ public class PostParams {
                 AmzExpirationDate expirationDate,
                 KeyCondition keyCondition,
                 String bucket) {
-            Objects.requireNonNull(region);
+            requireNonNull(region);
             validateExpirationDate(expirationDate);
-            Objects.requireNonNull(keyCondition);
-            Objects.requireNonNull(bucket);
+            requireNonNull(keyCondition);
+            requireNonNull(bucket);
             this.region = region;
             this.amzExpirationDate = expirationDate;
             this.conditions.put(ConditionField.KEY, keyCondition);
@@ -167,7 +167,7 @@ public class PostParams {
         }
 
         private void validateExpirationDate(AmzExpirationDate expirationDate) {
-            Objects.requireNonNull(expirationDate);
+            requireNonNull(expirationDate);
             if (expirationDate.isExpired()) {
                 throw new IllegalArgumentException(
                         "The condition expiration date "
@@ -180,7 +180,7 @@ public class PostParams {
          * Builds the {@link PostParams} object. <br>
          * <br>
          * Some conditions require other conditions to be present for the pre signed post to be
-         * valid. This method validates if said conditions where added, failing fast otherwise
+         * valid. This method validates if said conditions were added, failing fast otherwise.
          *
          * @return The {@link PostParams} to be used while calling {@link
          *     S3PostSigner#sign(PostParams)}
@@ -249,7 +249,7 @@ public class PostParams {
          * condition.
          *
          * @param conditionField Condition type specified
-         * @param value Specifiled value for this condition
+         * @param value Specified value for this condition
          * @return The {@link Builder} object
          */
         private Builder withCondition(ConditionField conditionField, String value) {
@@ -262,12 +262,12 @@ public class PostParams {
         }
 
         /**
-         * Makes sure that a startsWith ({@link MatchCondition.Operator#STARTS_WITH})mutually
+         * Makes sure that a startsWith ({@link MatchCondition.Operator#STARTS_WITH}) mutually
          * exclusive condition is not added with an exact ({@link MatchCondition.Operator#EQ})
          * condition.
          *
          * @param conditionField Condition type specified
-         * @param value Specifiled value for this condition
+         * @param value Specified value for this condition
          * @return The {@link Builder} object
          */
         private Builder withStartingWithCondition(ConditionField conditionField, String value) {
@@ -716,7 +716,7 @@ public class PostParams {
          * @return The {@link Builder} object
          */
         public Builder withTagging(String xml) {
-            Objects.requireNonNull(xml);
+            requireNonNull(xml);
             return assertUniquenessAndAddTagging(xml);
         }
 
@@ -729,8 +729,8 @@ public class PostParams {
          * @return The {@link Builder} object
          */
         public Builder withTag(String key, String value) {
-            Objects.requireNonNull(key, "Cannot add a S3 tag with a null key");
-            Objects.requireNonNull(value, "Cannot add a S3 tag with a null value");
+            requireNonNull(key, "Cannot add a S3 tag with a null key");
+            requireNonNull(value, "Cannot add a S3 tag with a null value");
             return assertUniquenessAndAddTag(key, value);
         }
 
@@ -745,8 +745,8 @@ public class PostParams {
          * @return The {@link Builder} object
          */
         public Builder withMeta(String metaName, String value) {
-            Objects.requireNonNull(metaName);
-            Objects.requireNonNull(value);
+            requireNonNull(metaName);
+            requireNonNull(value);
             conditions.put(META, new MetaCondition(EQ, metaName, value));
             return this;
         }
@@ -762,8 +762,8 @@ public class PostParams {
          * @return The {@link Builder} object
          */
         public Builder withMetaStartingWith(String metaName, String startingValue) {
-            Objects.requireNonNull(metaName);
-            Objects.requireNonNull(startingValue);
+            requireNonNull(metaName);
+            requireNonNull(startingValue);
             conditions.put(META, new MetaCondition(STARTS_WITH, metaName, startingValue));
             return this;
         }
@@ -844,7 +844,7 @@ public class PostParams {
         /**
          * Allows specifying the id of the AWS KMS KEY to be used to for server-side encryption
          *
-         * @param awsKmsKeyId The value shold be in the format
+         * @param awsKmsKeyId The value must be in the format
          *     'arn:aws:kms:region:acct-id:key/key-id'
          * @return The {@link Builder} object
          */

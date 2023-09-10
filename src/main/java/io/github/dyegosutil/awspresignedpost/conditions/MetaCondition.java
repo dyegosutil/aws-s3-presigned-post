@@ -2,15 +2,17 @@ package io.github.dyegosutil.awspresignedpost.conditions;
 
 import java.util.Objects;
 
+import static java.util.Objects.requireNonNull;
+
 public class MetaCondition extends MatchCondition {
 
     private final String metaName;
 
     public MetaCondition(Operator operator, String metaName, String value) {
         super(ConditionField.META, operator, value);
-        Objects.requireNonNull(operator);
-        Objects.requireNonNull(metaName);
-        Objects.requireNonNull(value);
+        requireNonNull(operator);
+        requireNonNull(metaName);
+        requireNonNull(value);
         this.metaName = metaName;
     }
 

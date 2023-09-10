@@ -34,14 +34,14 @@ public enum ConditionField {
 
     /**
      * Generally starting with '$', indicates a condition to be fulfilled for the upload to be
-     * successful. This value is placed in the policy and sent to S3 AWS in the 'policy' field
+     * successful. This value is placed in the policy and sent to AWS S3 in the 'policy' field
      */
     public final String valueForAwsPolicy;
 
     /**
      * Does not start with '$', indicates a condition to be fulfilled for the upload to be
-     * successful. This value is the one to be used as parameters in the client used to perform the
-     * POST to S3 AWS
+     * successful. This value is the one to be used as parameters in the http client used to perform the
+     * POST to AWS S3
      */
     public final String valueForApiCall;
 

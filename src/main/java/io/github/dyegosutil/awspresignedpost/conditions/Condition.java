@@ -2,12 +2,14 @@ package io.github.dyegosutil.awspresignedpost.conditions;
 
 import java.util.Objects;
 
+import static java.util.Objects.requireNonNull;
+
 public abstract class Condition {
 
     protected final ConditionField conditionField;
 
     Condition(ConditionField conditionField) {
-        Objects.requireNonNull(conditionField);
+        requireNonNull(conditionField);
         this.conditionField = conditionField;
     }
 
