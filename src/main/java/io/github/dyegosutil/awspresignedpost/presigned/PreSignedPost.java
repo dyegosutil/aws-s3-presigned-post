@@ -1,8 +1,8 @@
 package io.github.dyegosutil.awspresignedpost.presigned;
 
-import java.util.Map;
-
 import static java.util.Objects.requireNonNull;
+
+import java.util.Map;
 
 public class PreSignedPost {
     private final String url;

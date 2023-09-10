@@ -28,7 +28,6 @@ import software.amazon.awssdk.auth.credentials.AwsSessionCredentials;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -68,8 +67,7 @@ public final class S3PostSigner {
                         postParams.getAmzExpirationDate().formatForPolicy(),
                         buildConditions(conditions, amzDate, credentials));
         final String policyJson = new Gson().toJson(policy);
-        final String policyB64 =
-                Base64.getEncoder().encodeToString(policyJson.getBytes(UTF_8));
+        final String policyB64 = Base64.getEncoder().encodeToString(policyJson.getBytes(UTF_8));
         final String signature =
                 generateSignature(postParams.getRegion(), amzDate, policyB64, awsCredentials);
 
@@ -105,6 +103,7 @@ public final class S3PostSigner {
         LOGGER.debug("Date used to generate pre signed post {}", amzDate.formatForPolicy());
         return amzDate;
     }
+
     /**
      * This method, compared to {@link #sign(PostParams)}, gives more liberty to the caller who can
      * provide more freely the conditions to generate the pre signed post. Note that this method
@@ -116,8 +115,9 @@ public final class S3PostSigner {
      * reference about how to use this method, check the correspondent integration tests in the
      * source code. <br>
      * <br>
-     * Creates the {@link PreSignedFreeTextPost} using the data provided in {@link FreeTextPostParams} First the
-     * policy is created and then its base64 value is used to generate the signature using the <a
+     * Creates the {@link PreSignedFreeTextPost} using the data provided in {@link
+     * FreeTextPostParams} First the policy is created and then its base64 value is used to generate
+     * the signature using the <a
      * href="https://docs.aws.amazon.com/general/latest/gr/sigv4_signing.html">Aws Signature Version
      * 4 specification</a>
      *
@@ -134,8 +134,7 @@ public final class S3PostSigner {
         final Policy policy =
                 new Policy(params.getAmzExpirationDate().formatForPolicy(), params.getConditions());
         final String policyJson = new Gson().toJson(policy);
-        final String policyB64 =
-                Base64.getEncoder().encodeToString(policyJson.getBytes(UTF_8));
+        final String policyB64 = Base64.getEncoder().encodeToString(policyJson.getBytes(UTF_8));
         final String signature =
                 generateSignature(params.getRegion(), amzDate, policyB64, awsCredentials);
 

@@ -40,8 +40,8 @@ public enum ConditionField {
 
     /**
      * Does not start with '$', indicates a condition to be fulfilled for the upload to be
-     * successful. This value is the one to be used as parameters in the http client used to perform the
-     * POST to AWS S3
+     * successful. This value is the one to be used as parameters in the http client used to perform
+     * the POST to AWS S3
      */
     public final String valueForApiCall;
 
