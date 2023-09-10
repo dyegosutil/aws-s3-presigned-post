@@ -270,7 +270,7 @@ class PostParamsTest {
                         ZonedDateTime.now(),
                         "testBucket",
                         null,
-                        "Argument keyCondition must not be null"));
+                        "Argument exactKeyCondition must not be null"));
     }
 
     private static Stream<Arguments> createBuilderWithNullArgKeyStartingWithConditionTestCases() {
