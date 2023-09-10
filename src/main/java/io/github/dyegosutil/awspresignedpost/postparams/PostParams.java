@@ -20,8 +20,8 @@ import java.time.ZonedDateTime;
 import java.util.*;
 
 /**
- * Represents the parameters to be used to generate a pre-signed POST request that can be executed at a later time
- * without requiring additional signing or authentication.
+ * Represents the parameters to be used to generate a pre-signed POST request that can be executed
+ * at a later time without requiring additional signing or authentication.
  */
 public class PostParams {
 
@@ -90,10 +90,11 @@ public class PostParams {
      * @param expirationDate Date indicating util when the pre-signed post can be used. Ultimately,
      *     the value passed here will be converted to ISO8601 UTC format in the policy as per
      *     specified by AWS.
-     * @param keyStartingWithCondition Specifies which is starting value of the object key
-     *                                 that must be used to perform the upload. For convenience, use the {@link
+     * @param keyStartingWithCondition Specifies which is starting value of the object key that must
+     *     be used to perform the upload. For convenience, use the {@link
      *     KeyConditionUtil#withKeyStartingWith(String)}, {@link
-     *     KeyConditionUtil#withKeyStartingWith(String)} or {@link KeyConditionUtil#withAnyKey()} to build the condition.
+     *     KeyConditionUtil#withKeyStartingWith(String)} or {@link KeyConditionUtil#withAnyKey()} to
+     *     build the condition.
      * @param bucket The bucket when the file should be uploaded to.
      * @return A PostParams builder which allows more fine-grained conditions to be added
      */
@@ -106,8 +107,7 @@ public class PostParams {
         return new Builder(
                 requireNonNull(region, "Argument region must not be null"),
                 new AmzExpirationDate(expirationDate),
-                requireNonNull(
-                        keyStartingWithCondition, "Argument keyCondition must not be null"),
+                requireNonNull(keyStartingWithCondition, "Argument keyCondition must not be null"),
                 requireNonNull(bucket, "Argument bucket must not be null"));
     }
 

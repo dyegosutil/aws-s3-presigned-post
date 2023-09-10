@@ -1,8 +1,8 @@
 package io.github.dyegosutil.awspresignedpost.conditions;
 
-import java.util.Objects;
-
 import static java.util.Objects.requireNonNull;
+
+import java.util.Objects;
 
 public abstract class Condition {
 
