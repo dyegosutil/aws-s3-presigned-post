@@ -20,9 +20,9 @@ public class KeyConditionUtil {
     }
 
     /**
-     * Used to specify how the s3 key should start. Note that it allows the pre-signed post
-     * user to specify as many folders as they want after the starting value chosen here and then
-     * finally set the key name.
+     * Used to specify how the s3 key should start. Note that it allows the pre-signed post user to
+     * specify as many folders as they want after the starting value chosen here and then finally
+     * set the key name.
      *
      * @param value The value which the key should start with when provided by the pre-signed post
      *     user
