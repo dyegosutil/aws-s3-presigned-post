@@ -19,3 +19,5 @@ jobs:
         env:
           MAVEN_USERNAME: ${{ secrets.SONATYPE_USER_NAME }}
           MAVEN_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+          signing.gnupg.keyName: ${{ secrets.SIGNING_GNUPG_KEYNAME }}
+          signing.gnupg.passphrase: ${{ secrets.SIGNING_GNUPG_PASSPHRASE }}
