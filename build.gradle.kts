@@ -46,54 +46,66 @@ java {
     withJavadocJar()
 }
 
+//val hello by tasks.registering {
+//    doLast {
+//        println("hello world")
+//    }
+//}
+//
+//hello {
+//    val skipProvider = providers.gradleProperty("skipHello")
+//    onlyIf("there is no property skipHello") {
+//        !skipProvider.isPresent()
+//    }
+//}
+
 // TODO add profile to run this not in all builds
 
-//publishing {
-//    publications {
-//        create<MavenPublication>("MavenPublication") {
-//            pom {
-//                name.set("AWS S3 Pre Signed Post")
-//                description.set("A Java library to generate pre-signed post data be used to upload files to S3")
-//                url.set("https://github.com/dyegosutil/aws-s3-presigned-post")
-//                licenses {
-//                    license {
-//                        name.set("MIT License")
-//                        url.set("https://www.opensource.org/licenses/mit-license.php")
-//                    }
-//                }
-//                developers {
-//                    developer {
-//                        id.set("dyego.sutil")
-//                        name.set("Dyego Sutil Mendes")
-//                        email.set("aws.s3.presigned.post@gmail.com")
-//                    }
-//                }
-//                scm {
-//                    connection.set("scm:git:git://github.com/dyegosutil/aws-s3-presigned-post.git")
-//                    developerConnection.set("scm:git:ssh://github.com:dyegosutil/aws-s3-presigned-post.git")
-//                    url.set("github.com/dyegosutil/aws-s3-presigned-post/tree/main")
-//                }
-//            }
-//            from(
-//                components.getByName("java")
-//            )
-//        }
-//    }
-//
-//    repositories {
-//        maven {
-//            name = "OSSRH"
-//            url = URI("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
-//            credentials {
-//                username = System.getenv("SONATYPE_USER_NAME")
-//                password = System.getenv("SONATYPE_PASSWORD")
-//            }
-//        }
-//    }
-//}
-//
-//signing {
-//    useGpgCmd()
-//    sign(configurations.runtimeElements.get()) // Remove it?
-//    sign(publishing.publications["MavenPublication"])
-//}
+publishing {
+    publications {
+        create<MavenPublication>("MavenPublication") {
+            pom {
+                name.set("AWS S3 Pre Signed Post")
+                description.set("A Java library to generate pre-signed post data be used to upload files to S3")
+                url.set("https://github.com/dyegosutil/aws-s3-presigned-post")
+                licenses {
+                    license {
+                        name.set("MIT License")
+                        url.set("https://www.opensource.org/licenses/mit-license.php")
+                    }
+                }
+                developers {
+                    developer {
+                        id.set("dyego.sutil")
+                        name.set("Dyego Sutil Mendes")
+                        email.set("aws.s3.presigned.post@gmail.com")
+                    }
+                }
+                scm {
+                    connection.set("scm:git:git://github.com/dyegosutil/aws-s3-presigned-post.git")
+                    developerConnection.set("scm:git:ssh://github.com:dyegosutil/aws-s3-presigned-post.git")
+                    url.set("github.com/dyegosutil/aws-s3-presigned-post/tree/main")
+                }
+            }
+            from(
+                components.getByName("java")
+            )
+        }
+    }
+
+    repositories {
+        maven {
+            name = "OSSRH"
+            url = URI("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
+            credentials {
+                username = System.getenv("SONATYPE_USER_NAME")
+                password = System.getenv("SONATYPE_PASSWORD")
+            }
+        }
+    }
+}
+
+signing {
+    useGpgCmd()
+    sign(publishing.publications["MavenPublication"])
+}
