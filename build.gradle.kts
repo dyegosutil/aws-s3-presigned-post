@@ -46,21 +46,6 @@ java {
     withJavadocJar()
 }
 
-//val hello by tasks.registering {
-//    doLast {
-//        println("hello world")
-//    }
-//}
-//
-//hello {
-//    val skipProvider = providers.gradleProperty("skipHello")
-//    onlyIf("there is no property skipHello") {
-//        !skipProvider.isPresent()
-//    }
-//}
-
-// TODO add profile to run this not in all builds
-
 publishing {
     publications {
         create<MavenPublication>("MavenPublication") {
