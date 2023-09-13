@@ -271,7 +271,7 @@ and many others.
 
 ## Contributing
 
-Feel free to report bugs or give feedback by creating an Issue.
+Feel free to engage, report bugs or give feedback by creating an Issue.
 
 ## Reference documents
 
