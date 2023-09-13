@@ -20,4 +20,4 @@ jobs:
           MAVEN_USERNAME: ${{ secrets.SONATYPE_USER_NAME }}
           MAVEN_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
           GPG_PRIVATE_KEY: ${{ secrets.SIGNING_GNUPG_KEYNAME }}
-          PASSPHRASE: ${{ secrets.SIGNING_GNUPG_PASSPHRASE }}
+          GPG_KEY_PASSPHRASE: ${{ secrets.SIGNING_GNUPG_PASSPHRASE }}
