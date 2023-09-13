@@ -17,6 +17,8 @@ jobs:
         env:
           MAVEN_USERNAME: ${{ secrets.SONATYPE_USER_NAME }}
           MAVEN_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+          SONATYPE_USER_NAME: ${{ secrets.SONATYPE_USER_NAME }}
           GPG_PRIVATE_KEY: ${{ secrets.SIGNING_GNUPG_KEYNAME }}
           GPG_KEY_PASSPHRASE: ${{ secrets.SIGNING_GNUPG_PASSPHRASE }}
           ORG_GRADLE_PROJECT_signingKey: ${{ secrets.ORG_GRADLE_PROJECT_SIGNINGKEY }}
