@@ -15,9 +15,13 @@ jobs:
       - name: Validate Gradle wrapper
         uses: gradle/wrapper-validation-action@ccb4328a959376b642e027874838f60f8e596de3
       - name: Publish package
-        uses: gradle/gradle-build-action@ef76a971e2fa3f867b617efd72f2fbd72cf6f8bc
+        uses: gradle/gradle-build-action@749f47bda3e44aa060e82d7b3ef7e40d953bd629
+        env:
+          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+          SONATYPE_USER_NAME: ${{ secrets.SONATYPE_USER_NAME }}
+          GPG_PRIVATE_KEY: ${{ secrets.SIGNING_GNUPG_KEYNAME }}
+          GPG_KEY_PASSPHRASE: ${{ secrets.SIGNING_GNUPG_PASSPHRASE }}
+          ORG_GRADLE_PROJECT_signingKey: ${{ secrets.ORG_GRADLE_PROJECT_SIGNINGKEY }}
+          ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.ORG_GRADLE_PROJECT_SIGNINGPASSWORD }}
         with:
           arguments: publish
-        env:
-          MAVEN_USERNAME: ${{ secrets.SONATYPE_USER_NAME }}
-          MAVEN_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
