@@ -91,10 +91,8 @@ publishing {
 }
 
 signing {
-//    useGpgCmd()
     val signingKey: String? by project
     val signingPassword: String? by project
-    project.logger.info("dyego"+signingKey?.count().toString())
     useInMemoryPgpKeys(signingKey, signingPassword)
     sign(publishing.publications["MavenPublication"])
 }
