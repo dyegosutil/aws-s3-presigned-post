@@ -1,7 +1,7 @@
 import java.net.URI
 
 group = "io.github.dyegosutil"
-version = "0.1.0-beta"
+version = "0.1.0-beta.1"
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 
 val jupiterVersion = "5.10.0"
@@ -51,7 +51,7 @@ publishing {
         create<MavenPublication>("MavenPublication") {
             pom {
                 name.set("AWS S3 Pre Signed Post")
-                description.set("A Java library to generate pre-signed post data be used to upload files to S3")
+                description.set("A Java library to generate pre-signed post data to be used to upload files to S3")
                 url.set("https://github.com/dyegosutil/aws-s3-presigned-post")
                 licenses {
                     license {
