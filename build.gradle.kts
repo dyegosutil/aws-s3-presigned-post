@@ -21,7 +21,7 @@ repositories {
 }
 
 dependencies {
-    api(platform("software.amazon.awssdk:bom:2.20.159"))
+    api(platform("software.amazon.awssdk:bom:2.20.160"))
     api("software.amazon.awssdk:regions")
     implementation("software.amazon.awssdk:auth")
     implementation("com.google.code.gson:gson:2.10.1")
