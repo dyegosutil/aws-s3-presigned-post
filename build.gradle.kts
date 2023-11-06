@@ -4,7 +4,7 @@ group = "io.github.dyegosutil"
 version = "0.1.0-beta.2"
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 
-val jupiterVersion = "5.10.0"
+val jupiterVersion = "5.10.1"
 
 plugins {
     java
