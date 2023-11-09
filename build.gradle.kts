@@ -34,7 +34,7 @@ dependencies {
     testImplementation("com.squareup.okhttp3:okhttp:4.12.0")
     testImplementation("org.assertj:assertj-core:3.24.2")
     testImplementation("org.mockito:mockito-core:5.7.0")
-    testImplementation("uk.org.webcompere:system-stubs-jupiter:2.1.3")
+    testImplementation("uk.org.webcompere:system-stubs-jupiter:2.1.4")
 }
 
 tasks.getByName<Test>("test") {
