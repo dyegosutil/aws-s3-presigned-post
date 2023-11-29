@@ -28,7 +28,7 @@ dependencies {
     implementation("org.slf4j:slf4j-api:2.0.9")
 
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$jupiterVersion")
-    testRuntimeOnly("ch.qos.logback:logback-classic:1.4.11")
+    testRuntimeOnly("ch.qos.logback:logback-classic:1.4.13")
 
     testImplementation("org.junit.jupiter:junit-jupiter-params:$jupiterVersion")
     testImplementation("com.squareup.okhttp3:okhttp:4.12.0")
