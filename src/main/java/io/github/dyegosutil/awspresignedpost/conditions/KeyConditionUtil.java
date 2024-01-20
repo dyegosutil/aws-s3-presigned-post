@@ -28,7 +28,7 @@ public class KeyConditionUtil {
      *     user
      * @return {@link KeyStartingWithCondition}
      */
-    public static KeyCondition withKeyStartingWith(String value) {
+    public static KeyStartingWithCondition withKeyStartingWith(String value) {
         return new KeyStartingWithCondition(value);
     }
 
