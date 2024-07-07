@@ -18,10 +18,8 @@ to be used for the upload, including policy and the signature generated using th
 
 ## Usage
 
-[//]: # (TODO add warning to first create the bucket and configure it)
 ### 1. Add the dependency
 
-[//]: # (TODO Correct version of library to automatic and correct name and version)
 Gradle Kotlin:
 ```kotlin
 implementation("io.github.dyegosutil:aws-s3-presigned-post:1.0.0")
