@@ -24,7 +24,7 @@ to be used for the upload, including policy and the signature generated using th
 [//]: # (TODO Correct version of library to automatic and correct name and version)
 Gradle Kotlin:
 ```kotlin
-implementation("io.github.dyegosutil:aws-s3-presigned-post:0.1.0-beta.3")
+implementation("io.github.dyegosutil:aws-s3-presigned-post:0.1.0-beta.4")
 ```
 
 Maven:
@@ -32,7 +32,7 @@ Maven:
 <dependency>
     <groupId>io.github.dyegosutil</groupId>
     <artifactId>aws-s3-presigned-post</artifactId>
-    <version>0.1.0-beta.3</version>
+    <version>0.1.0-beta.4</version>
 </dependency>
 ```
 
