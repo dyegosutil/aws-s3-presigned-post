@@ -96,20 +96,19 @@ public class PreSignedPostMandatoryPostParamsIntegrationTests extends Integratio
     }
 
     private PostParams createPostParamsWithExactKeyCondition(
-            Region region, ZonedDateTime expirationDate, String bucket, ExactKeyCondition exactKeyCondition) {
-        return PostParams.builder(
-                        region, expirationDate, bucket, exactKeyCondition)
-                .build();
+            Region region,
+            ZonedDateTime expirationDate,
+            String bucket,
+            ExactKeyCondition exactKeyCondition) {
+        return PostParams.builder(region, expirationDate, bucket, exactKeyCondition).build();
     }
 
     private PostParams createPostParamsWithKeyStartingWithCondition(
-            Region region, ZonedDateTime expirationDate, String bucket, KeyStartingWithCondition keyStartingWithCondition) {
-        return PostParams.builder(
-                        region,
-                        expirationDate,
-                        bucket,
-                        keyStartingWithCondition)
-                .build();
+            Region region,
+            ZonedDateTime expirationDate,
+            String bucket,
+            KeyStartingWithCondition keyStartingWithCondition) {
+        return PostParams.builder(region, expirationDate, bucket, keyStartingWithCondition).build();
     }
 
     private static Stream<Arguments> getCustomizedUploadConditionsTestCases() {
