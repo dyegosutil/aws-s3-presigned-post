@@ -21,20 +21,20 @@ repositories {
 }
 
 dependencies {
-    api(platform("software.amazon.awssdk:bom:2.25.7"))
+    api(platform("software.amazon.awssdk:bom:2.26.16"))
     api("software.amazon.awssdk:regions")
     implementation("software.amazon.awssdk:auth")
-    implementation("com.google.code.gson:gson:2.10.1")
-    implementation("org.slf4j:slf4j-api:2.0.9")
+    implementation("com.google.code.gson:gson:2.11.1")
+    implementation("org.slf4j:slf4j-api:2.0.13")
 
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$jupiterVersion")
-    testRuntimeOnly("ch.qos.logback:logback-classic:1.4.14")
+    testRuntimeOnly("ch.qos.logback:logback-classic:1.5.6")
 
     testImplementation("org.junit.jupiter:junit-jupiter-params:$jupiterVersion")
     testImplementation("com.squareup.okhttp3:okhttp:4.12.0")
-    testImplementation("org.assertj:assertj-core:3.24.2")
-    testImplementation("org.mockito:mockito-core:5.8.0")
-    testImplementation("uk.org.webcompere:system-stubs-jupiter:2.1.5")
+    testImplementation("org.assertj:assertj-core:3.26.0")
+    testImplementation("org.mockito:mockito-core:5.12.0")
+    testImplementation("uk.org.webcompere:system-stubs-jupiter:2.1.6")
 }
 
 tasks.getByName<Test>("test") {
