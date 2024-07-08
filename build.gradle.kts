@@ -10,7 +10,7 @@ plugins {
     java
     idea
     signing
-    id("org.sonarqube") version "4.4.1.3373"
+    id("org.sonarqube") version "5.1.0.4882"
     id ("maven-publish")
     id ("java-library")
 }
