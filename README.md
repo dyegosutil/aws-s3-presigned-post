@@ -22,7 +22,7 @@ to be used for the upload, including policy and the signature generated using th
 
 Gradle Kotlin:
 ```kotlin
-implementation("io.github.dyegosutil:aws-s3-presigned-post:1.0.0")
+implementation("io.github.dyegosutil:aws-s3-presigned-post:1.0.1")
 ```
 
 Maven:
@@ -30,7 +30,7 @@ Maven:
 <dependency>
     <groupId>io.github.dyegosutil</groupId>
     <artifactId>aws-s3-presigned-post</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
 </dependency>
 ```
 
