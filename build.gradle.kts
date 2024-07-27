@@ -1,7 +1,7 @@
 import java.net.URI
 
 group = "io.github.dyegosutil"
-version = "1.0.1"
+version = "1.0.2"
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 
 val jupiterVersion = "5.10.3"
