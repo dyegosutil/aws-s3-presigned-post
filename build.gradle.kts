@@ -33,7 +33,7 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-params:$jupiterVersion")
     testImplementation("com.squareup.okhttp3:okhttp:4.12.0")
     testImplementation("org.assertj:assertj-core:3.26.3")
-    testImplementation("org.mockito:mockito-core:5.12.0")
+    testImplementation("org.mockito:mockito-core:5.14.0")
     testImplementation("uk.org.webcompere:system-stubs-jupiter:2.1.6")
 }
 
